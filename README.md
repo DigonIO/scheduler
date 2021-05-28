@@ -3,6 +3,7 @@
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
 [![pipeline status](https://gitlab.com/DigonIO/scheduler/badges/master/pipeline.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![coverage report](https://gitlab.com/DigonIO/scheduler/badges/master/coverage.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
+[![Documentation Status](https://readthedocs.org/projects/python-scheduler/badge/?version=latest)](https://python-scheduler.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ---
@@ -21,7 +22,7 @@ A simple pythonic `Scheduler`, designed to be integrated seamlessly with the `da
 + Oneshot `Job`s
 + Limit and track the `Job` execution count
 + Start `Job`s with a `datetime` offset
-+ [**Online documentation**](REPLACE_ME)
++ [**Online documentation**](https://python-scheduler.readthedocs.io/en/latest/index.html)
 
 ## Installation
 
@@ -37,7 +38,7 @@ pip install .
 
 ## Example: *How to schedule `Job`s*
 
-Some basics are presented here. For advanced scheduling examples please visit the online [**documentation**](REPLACE_ME). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
+Some basics are presented here. For advanced scheduling examples please visit the online [**documentation**](https://python-scheduler.readthedocs.io/en/latest/index.html). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
 
 ```py
 import time
@@ -89,7 +90,7 @@ while True:
 
 ## Build the documentation
 
-The API documentation can either be viewed [**online**](https://REPLACE_ME.readthedocs.io/en/latest/) or be generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) formatting. To build, run:
+The API documentation can either be viewed [**online**](https://python-scheduler.readthedocs.io/en/latest/index.html) or be generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) formatting. To build, run:
 
 ```bash
 sphinx-build -b html doc/ doc/_build/html
