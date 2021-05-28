@@ -1,50 +1,215 @@
+"""
+Implementation of a `Job` as callback function represention.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
+"""
 from __future__ import annotations
-from typing import Callable, Optional
-from enum import Enum, auto
-from abc import ABC, abstractmethod
+
 import datetime as dt
+from typing import Callable, Optional, Union, Any
 
-from scheduler.exceptions import SchedulerError
+import typeguard as tg
+
+from scheduler.util import (
+    SchedulerError,
+    Weekday,
+    next_time_occurrence,
+    next_weekday_occurrence,
+    next_weekday_time_occurrence,
+)
+
+# execution time stamp typing for a cyclic Job
+TimeTypes = Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]
+ExecTimeType = Union[list[TimeTypes], TimeTypes]
+
+# execution time stamp typing for a oneshot Job
+ExecOnceTimeType = Union[dt.datetime, TimeTypes]
 
 
-class Job(ABC):
-    class Type(Enum):
-        ONESHOT = auto()
-        ROUTINE = auto()
+class JobExecTimer:
+    """
+    Auxiliary timer class for the `Job` class.
 
-    def __init__(
-        self,
-        job_type: Job.Type,
-        handle: Callable,
-        weight: int,
-        max_attempts: int,
-    ):
-        self.__type = job_type
-        self.__handle = handle
-        self.__weight = weight
-        self.__max_attempts = max_attempts
+    This timer is needed to parallelise the individual
+    desired execution times and to treat them equally.
 
-        self.__attempts = 0
-        self.__exec_dt_stamp: Optional[dt.datetime] = None
+    Parameters
+    ----------
+    exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]
+        Execution time.
+    start_dt : datetime.datetime
+        Reference `datetime.datetime` object. This reference is used to
+        calculate the first execution and then recursively calculate all
+        further executions.
+    """
+
+    def __init__(self, exec_at: TimeTypes, start_dt: dt.datetime):
+        self.__exec_at = exec_at
+        self.__exec_dt_stamp = start_dt
+
+    def gen_next_exec_dt(self) -> None:
+        """Generate the next execution `datetime.datetime` stamp."""
+        # calculate datetime to next weekday at 00:00
+        if isinstance(self.__exec_at, Weekday):
+            self.__exec_dt_stamp = next_weekday_occurrence(
+                self.__exec_dt_stamp, self.__exec_at
+            )
+
+        # calculate next available datetime for the given time
+        elif isinstance(self.__exec_at, dt.time):
+            self.__exec_dt_stamp = next_time_occurrence(
+                self.__exec_dt_stamp, self.__exec_at
+            )
+
+        # calculate datetime to next weekday and add the given time
+        elif isinstance(self.__exec_at, tuple):
+            self.__exec_dt_stamp = next_weekday_time_occurrence(
+                self.__exec_dt_stamp, *self.__exec_at
+            )
+
+        # just add the timedelta to the current datetime object
+        else:  # isinstance(self.__exec_at, dt.timedelta):
+            self.__exec_dt_stamp = self.__exec_dt_stamp + self.__exec_at
 
     @property
-    def _next_exec_dt_stamp(self, dt_stamp: dt.datetime) -> None:
+    def datetime(self) -> dt.datetime:
         """
-        Set the `dt.datetime` stamp the`Job` execution
-        will be scheduled.
+        Get the `datetime.datetime` object for the planed execution.
+
+        Returns
+        -------
+        datetime.datetime
+            Execution `datetime.datetime` stamp.
+        """
+        return self.__exec_dt_stamp
+
+    def timedelta(self, dt_stamp: dt.datetime) -> dt.timedelta:
+        """
+        Get the `timedelta` until the execution of this `Job`.
 
         Parameters
         ----------
-        dt_stamp : dt.datetime
-            `dt.datetime` stamp of the next `Job` execution.
+        dt_stamp : Optional[datetime.datetime]
+            Time to be compared with the planned execution time
+            to determine the time difference.
 
+        Returns
+        -------
+        timedelta
+            `timedelta` to the execution.
         """
-        self.__exec_dt_stamp = dt_stamp
+        return self.__exec_dt_stamp - dt_stamp
+
+
+class Job:
+    r"""
+    Implementation of a `Job` for the `Scheduler`.
+
+    The `Job` represents a callback function and manages the
+    metrics and time functionalities.
+
+    Notes
+    -----
+    The user will not manually instantiate the `Job`,
+    this can only be done via the `Scheduler`.
+    However, after a `Job` has been created by the `Scheduler`,
+    the user can access the reference to the `Job`
+    and thus query the metrics.
+
+    Parameters
+    ----------
+    handle : Callable[..., Any]
+        Handle to a callback function.
+    exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] | list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]
+        Desired execution time(s).
+    weight : float
+        Relative weight against other `Job`\ s.
+    delay : bool
+        If `False` the `Job` will executed instantly or at a given offset.
+    offset : Optional[datetime.datetime]
+        Set the reference `datetime.datetime` stamp the `Job` will be
+        scheduled against. Default value is `datetime.datetime.now()`.
+    max_attempts : int
+        Number of times the `Job` will be executed. 0 <=> inf
+    """
+
+    def __init__(
+        self,
+        handle: Callable[..., Any],
+        exec_at: ExecTimeType,
+        weight: float = 1,
+        delay: bool = True,
+        offset: Optional[dt.datetime] = None,
+        max_attempts: int = 0,
+        tzinfo: Optional[dt.timezone] = None,
+    ):
+
+        self.__handle = handle
+        self.__weight = weight
+        self.__delay = delay
+        self.__max_attempts = max_attempts
+        self.__tzinfo = tzinfo
+
+        self.__attempts = 0
+
+        try:
+            tg.check_type("exec_at", exec_at, ExecTimeType)
+        except TypeError as err:
+            raise SchedulerError(
+                "Wrong input! Select one of the following input types:\n"
+                + "Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] or \n"
+                + "list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]"
+            ) from err
+
+        self.__start_dt = offset if offset else dt.datetime.now(self.__tzinfo)
+
+        self.__timers: list[JobExecTimer]
+        # exec_at: Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]
+        if not isinstance(exec_at, list):
+            self.__timers = [JobExecTimer(exec_at, self.__start_dt)]
+        # exec_at: list[Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]]
+        else:
+            self.__timers = [JobExecTimer(ele, self.__start_dt) for ele in exec_at]
+
+        # generate first dt_stamps for each JobExecTimer
+        for timer in self.__timers:
+            timer.gen_next_exec_dt()
+
+        # calculate active JobExecTimer
+        self.__set_pending_timer()
 
     def _exec(self) -> None:
         """Execute the callback function."""
         self.__handle()
         self.__attempts += 1
+
+    @property
+    def handle(self) -> Callable[..., Any]:
+        """
+        Get the callback function handle.
+
+        Returns
+        -------
+        Callable
+            Callback function.
+        """
+        return self.__handle
+
+    def _gen_next_exec_dt(self) -> None:
+        """Calculate the next estimated execution `datetime.datetime` of the `Job`."""
+        self.__pending_timer.gen_next_exec_dt()
+        self.__set_pending_timer()
+
+    def __set_pending_timer(self) -> None:
+        """Get the pending timer at the moment."""
+        unsorted_timer_datetimes: dict[JobExecTimer, dt.datetime] = {}
+        for timer in self.__timers:
+            unsorted_timer_datetimes[timer] = timer.datetime
+
+        sorted_timers = sorted(
+            unsorted_timer_datetimes, key=unsorted_timer_datetimes.get
+        )
+        self.__pending_timer = sorted_timers[0]
 
     @property
     def has_attempts(self) -> bool:
@@ -58,30 +223,75 @@ class Job(ABC):
         """
         if self.__max_attempts == 0:
             return True
-        return self.__attempts >= self.__max_attempts
+        return self.__attempts < self.__max_attempts
 
     @property
-    def weight(self) -> int:
+    def attemps(self) -> int:
+        """
+        Get the number of executions for a `Job`.
+
+        Returns
+        -------
+        int
+            Execution attemps.
+        """
+        return self.__attempts
+
+    @property
+    def max_attemps(self) -> int:
+        """
+        Get the execution limit for a `Job`.
+
+        Returns
+        -------
+        int
+            Max execution attemps.
+        """
+        return self.__max_attempts
+
+    @property
+    def weight(self) -> float:
         """
         Return the weight of the job instance.
 
         Returns
         -------
-        int
+        float
             Job weight.
         """
         return self.__weight
 
-    def timedelta(self, dt_stamp: dt.datetime) -> dt.timedelta:
+    @property
+    def datetime(self) -> dt.datetime:
+        """
+        Give the `datetime.datetime` object for the planed execution.
+
+        Returns
+        -------
+        datetime.datetime
+            Execution `datetime.datetime` stamp.
+        """
+        if not self.__delay and self.__attempts == 0:
+            return self.__start_dt
+        return self.__pending_timer.datetime
+
+    def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
         """
         Get the `timedelta` until the next execution of this `Job`.
+
+        Parameters
+        ----------
+        dt_stamp : Optional[datetime.datetime]
+            Time to be compared with the planned execution time
+            to determine the time difference.
 
         Returns
         -------
         timedelta
             `timedelta` to the next execution.
         """
-
-        if self.__exec_dt_stamp is None:
-            raise SchedulerError("Job execution datetime stamp was not set.")
-        return self.__exec_dt_stamp - dt.datetime
+        if dt_stamp is None:
+            dt_stamp = dt.datetime.now(self.__tzinfo)
+        if not self.__delay and self.__attempts == 0:
+            return self.__start_dt - dt_stamp
+        return self.__pending_timer.timedelta(dt_stamp)

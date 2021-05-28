@@ -5,18 +5,20 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(
     name="scheduler",
-    version="1.0.0",
-    description="A simple pythonic scheduler build on top the datetime standard library and supporting timezones.",
+    version="0.1.0",
+    description="A simple pythonic Scheduler, designed to be integrated seamlessly with the datetime standard library. Due to the support of datetime objects, scheduler is able to work with time zones. ",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
-    author="Fabian A. Preiss, Jendrik A. Potyka",
-    author_email="devops@digon.io",
+    author="Jendrik A. Potyka, Fabian A. Preiss",
+    author_email="devops@digon.io, devops@digon.io",
     license="GPLv3",
     packages=[
         "scheduler",
     ],
     keywords="scheduler schedule datetime date time timedelta timezone timing",
-    install_requires=[],
+    install_requires=[
+        "typeguard",
+    ],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -24,7 +26,6 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries",
-        "Operating System :: Unix",
-        "Operating System :: POSIX",
+        "Operating System :: OS Independent",
     ],
 )

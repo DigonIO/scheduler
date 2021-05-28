@@ -1,29 +1,45 @@
-from __future__ import annotations
-from typing import Callable, Union, Tuple, Sequence
-from enum import Enum, auto
-import datetime as dt
+"""
+`Scheduler` implementation for `Job` based callback function execution.
 
-from scheduler.weekday import Weekday
-from scheduler.job import Job
-from scheduler.oneshot import Oneshot
-from scheduler.routine import Routine
+Author: Jendrik A. Potyka
+"""
+from __future__ import annotations
+
+import datetime as dt
+from typing import Callable, Optional, Any
+
+import typeguard as tg
+
+from scheduler.job import ExecOnceTimeType, ExecTimeType, Job
+from scheduler.util import SchedulerError
 
 
 class Scheduler:
-    """
-    A simple pythonic scheduler build on top the `datetime` standard library.
-    Supporting timezones.
+    r"""
+    Implementation of a `Scheduler` for callback functions.
 
-    Two different `Job` types are defined,
-    the `Oneshot` where the callback function will be executed once
-    and a `Routine` with cyclic callback function execution.
+    This implementation enables the planning of `Job`\ s depending on time
+    cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
+
+    Notes
+    -----
+    Due to the support of `datetime` objects, `scheduler` is able to work
+    with time zones.
+
+    Parameters
+    ----------
+    tzinfo : datetime.timezone
+        Set the time zone of the `Scheduler`.
+    max_exec : int
+        Limits the number of overdue `Job`\ s that can be executed
+        by calling function `Scheduler.exec_jobs()`.
     """
 
-    def __init__(self, tzinfo=dt.timezone.utc, max_exec: int = 0):
+    def __init__(self, tzinfo: Optional[dt.timezone] = None, max_exec: int = 0):
         self.__tzinfo = tzinfo
         self.__max_exec = max_exec
 
-        self.__jobs = set()
+        self.__jobs: set[Job] = set()
 
     def _add_job(self, job: Job) -> None:
         """
@@ -32,11 +48,11 @@ class Scheduler:
         Parameters
         ----------
         job : Job
-            `Job` instance to add to the `Scheduler`.
+            `Job` instance that has to be added to the `Scheduler`.
         """
         self.__jobs.add(job)
 
-    def _delete_job(self, job: Job) -> None:
+    def delete_job(self, job: Job) -> None:
         """
         Delete a `Job` from the `Scheduler`.
 
@@ -47,114 +63,152 @@ class Scheduler:
         """
         self.__jobs.remove(job)
 
-    def exec_jobs(self) -> None:
+    @property
+    def jobs(self) -> set[Job]:
+        r"""
+        Get the set of all `Job`\ s.
+
+        Returns
+        -------
+        set[Job]
+            Currently scheduled `Job`\ s.
         """
+        return self.__jobs.copy()
+
+    def exec_jobs(self) -> int:
+        r"""
         Check the `Job`\ s that are overdue and carry them out.
 
         If there is a limit to the number of `Job`\ s that can be
-        performed in an exam, the weighting is relevant.
+        performed in one call, the weighting is relevant.
+
+        Returns
+        -------
+        int
+            Number of executed `Job`\ s.
         """
-
         # get all jobs with overtime in seconds and weight
-        if self.__tzinfo is None:
-            dt_stamp = dt.datetime.now()
-        else:
-            dt_stamp = dt.datetime.now(tz=self.__tzinfo)
+        dt_stamp = dt.datetime.now(tz=self.__tzinfo)
 
-        overtime_jobs = {}
+        overtime_jobs: dict[Job, float] = {}
         for job in self.__jobs:
             delta_seconds = job.timedelta(dt_stamp).total_seconds()
-            if delta_seconds < 0:
+            if delta_seconds <= 0:
                 overtime_jobs[job] = delta_seconds * job.weight
-
         # sort the overtime jobs depending their weight * overtime
         sorted_overtime_jobs = sorted(overtime_jobs, key=overtime_jobs.get)
 
         # execute the sorted overtime jobs and delete the ones with no attemps left
-        for job, _ in zip(sorted_overtime_jobs, range(0, self.__max_exec)):
-            job._exec()
-            if not job.has_attempts:
-                self._delete_job(job)
+        exec_job_count = 0
+        for idx, job in enumerate(sorted_overtime_jobs):
+            if self.__max_exec == 0 or idx < self.__max_exec:
+                job._exec()
+                if not job.has_attempts:
+                    self.delete_job(job)
+                else:
+                    job._gen_next_exec_dt()
+                exec_job_count += 1
+            else:
+                break
+        return exec_job_count
 
-    def oneshot(
+    def schedule(
         self,
-        job: Callable,
-        weight: int = 1,
-        t_delta: dt.timedelta = None,
-        tw_stamp: Union[Weekday, dt.time, Tuple[Weekday, dt.time], None] = None,
-        dt_stamp: dt.datetime = None,
-        wkdy: Weekday = None,
-    ) -> None:
-        """
-        Create a `Job` as `Oneshot` that runs at a specific timestamp.
+        handle: Callable[..., Any],
+        exec_at: ExecTimeType,
+        weight: float = 1,
+        delay: bool = True,
+        offset: Optional[dt.datetime] = None,
+        max_attempts: int = 0,
+    ) -> Job:
+        r"""
+        Create a repeating `Job` that will be executed in a given cycle.
 
         Parameters
         ----------
-        job : Callable
+        handle : Callable[..., Any]
             Handle to a callback function.
-        weight : int
-            Relativ job weight against other jobs.
-        t_delta : dt.timedelta
-            After creation the job will wait this duration to its execution.
-        tw_stamp : Union[Weekday, dt.time, Tuple[Weekday, dt.time], None]
-            Next time at this hour the job will be executed.
-        dt_stamp : dt.datetime
-            Combination of t_stamp and d_stamp.
+        exec_on : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] | list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]
+            Desired execution time(s).
+        weight : float
+            Relative weight against other `Job`\ s.
+        delay : bool
+            If `False` the `Job` will executed instantly or at a given offset.
+        offset : Optional[datetime.datetime]
+            Set the reference `datetime.datetime` stamp the `Job` will be
+            scheduled against. Default value is `datetime.datetime.now()`.
+        max_attempts : int
+            Number of times the `Job` will be executed. 0 <=> inf
+
+        Returns
+        -------
+        Job
+            Reference to the created `Job`.
         """
-        job = Oneshot(
-            job,
+        job = Job(
+            handle=handle,
+            exec_at=exec_at,
             weight=weight,
-            t_delta=t_delta,
-            tw_stamp=tw_stamp,
-            dt_stamp=dt_stamp,
+            delay=delay,
+            offset=offset,
+            max_attempts=max_attempts,
+            tzinfo=self.__tzinfo,
         )
         self._add_job(job)
         return job
 
-    def routine(
+    def once(
         self,
-        job: Callable,
-        weight: int = 1,
-        t_delta: dt.timedelta = None,
-        tw_stamps: Union[
-            Sequence[Union[Weekday, dt.time, Tuple[Weekday, dt.time]]],
-            Weekday,
-            dt.time,
-            Tuple[Weekday, dt.time],
-            None,
-        ] = None,
-        auto_start: Union[bool, dt.datetime] = False,
-        max_attempts: int = 0,
-    ):
-        """
-        Create a repeating `Job` as `Routine` that will be executed in a given interval.
+        handle: Callable[..., Any],
+        exec_at: ExecOnceTimeType,
+        weight: float = 1,
+    ) -> Job:
+        r"""
+        Create a `Job` that runs once at a specific timestamp.
 
         Parameters
         ----------
-        job : Callable
+        handle : Callable[..., Any]
             Handle to a callback function.
-        weight : int
-            Relativ weight against other `Job`\ s.
-        t_delta : dt.timedelta
-            After creation the `Routine` will wait this duration to its execution.
-        tw_stamp : Union[Sequence[Union[Weekday, dt.time, Tuple[Weekday, dt.time]]], Weekday, dt.time, Tuple[Weekday, dt.time], None]
-            Times with weekdays at which the job will be executed.
-        auto_start : Union[bool, dt.datetime]
-            Set `True` to start the `Routine`
-        max_attempts : int
-            Number of times the Job will be executed. 0 <=> inf
+        exec_at : datetime.datetime | Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]
+            Execution time.
+        weight : float
+            Relativ job weight against other `Job`\ s.
+
+        Returns
+        -------
+        Job
+            Reference to the created `Job`.
         """
-        job = Routine(
-            job,
-            weight=weight,
-            t_delta=t_delta,
-            tw_stamps=tw_stamps,
-            max_attempts=max_attempts,
-        )
+        try:
+            tg.check_type("exec_at", exec_at, ExecOnceTimeType)
+        except TypeError as err:
+            raise SchedulerError(
+                'Wrong input for "once"! Select one of the following input types:\n'
+                + "datetime.datetime | Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]"
+            ) from err
+
+        # hack to support dt.datetime objects as exec time
+        if isinstance(exec_at, dt.datetime):
+            # not testable with simple monkey patching because
+            # patching of dt.datetime will corrupt the if statement
+            job = Job(
+                handle=handle,
+                exec_at=dt.timedelta(days=1),  # dummy
+                weight=weight,
+                delay=False,
+                offset=exec_at,
+                max_attempts=1,
+                tzinfo=self.__tzinfo,
+            )
+        else:
+            job = Job(
+                handle=handle,
+                exec_at=exec_at,
+                weight=weight,
+                max_attempts=1,
+                tzinfo=self.__tzinfo,
+            )
+
         self._add_job(job)
-        if auto_start:
-            if isinstance(auto_start, dt.datetime):
-                job._next_exec_dt_stamp(auto_start)
-            else:
-                job._next_exec_dt_stamp(dt.datetime.now(self.__tzinfo))
         return job

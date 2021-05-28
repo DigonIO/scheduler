@@ -4,8 +4,12 @@ __pycache__
 *.egg-info/
 
 # testing
-.coverage
+.coverage*
 *htmlcov/
+
+# sphinx-build
+doc/_build/
+doc/_autosummary/
 
 # vscode
 .vscode/

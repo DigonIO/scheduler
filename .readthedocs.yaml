@@ -1,0 +1,14 @@
+version: 2
+
+sphinx:
+  configuration: doc/conf.py
+
+formats:
+  - pdf
+
+python:
+  version: 3.8
+  install:
+    - requirements: requirements.txt
+    - method: pip
+      path: .

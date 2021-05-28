@@ -1,0 +1,10 @@
+pylint==2.7.4
+pytest==6.2.4
+pytest-cov==2.11.1
+coverage==5.5
+mypy==0.812
+bandit==1.7.0
+pydocstyle==5.1.1
+Sphinx==3.5.4
+numpydoc==1.1.0
+sphinx_rtd_theme==0.5.2

@@ -1,0 +1,63 @@
+before_script:
+  - python --version
+  - pip install -r requirements.txt
+  - pip install -e .
+
+stages:
+  - linting
+  - documentation
+  - testing
+  - release
+
+#### linting ####
+pylint_3_9_5:
+  stage: linting
+  image: "python:3.9.5"
+  script:
+    - pylint scheduler
+  allow_failure: true
+
+mypy_3_9_5:
+  stage: linting
+  image: "python:3.9.5"
+  script:
+    - mypy scheduler
+  allow_failure: true
+
+pydocstyle_3_9_5:
+  stage: linting
+  image: "python:3.9.5"
+  script:
+    - pydocstyle scheduler
+  allow_failure: true
+
+#### documentation ####
+doc_3_9_5:
+  stage: documentation
+  image: "python:3.9.5"
+  script:
+    - sphinx-build -b html doc/ doc/_build/html
+
+#### testing ####
+pytest_3_9_5:
+  stage: testing
+  image: "python:3.9.5"
+  script:
+    - pytest --cov=scheduler/ tests/
+
+pydoctest_3_9_5:
+  stage: testing
+  image: "python:3.9.5"
+  script:
+    - pytest --doctest-modules doc/examples.rst
+
+#### release ####
+pypi:
+  image: python:3.9.5
+  stage: release
+  script:
+    - pip install twine
+    - python setup.py sdist bdist_wheel
+    - twine upload dist/*
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^\d+.\d+.\d+/'
