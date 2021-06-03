@@ -1,4 +1,4 @@
-# **`scheduler`**
+# scheduler
 
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
 [![pipeline status](https://gitlab.com/DigonIO/scheduler/badges/master/pipeline.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
@@ -8,25 +8,27 @@
 
 ---
 
-A simple pythonic `Scheduler`, designed to be integrated seamlessly with the `datetime` standard library. Due to the support of `datetime` objects, `scheduler` is able to work with time zones. This implementation enables the planning of `Job` s depending on time cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
+A simple in-process python scheduler library, designed to be integrated seamlessly with the `datetime` standard library. Due to the support of `datetime` objects, `scheduler` is able to work with time zones. This implementation enables the planning of `Job` s depending on time cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
 
 ---
 
 ## Features
 
-+ Easy and user friendly `Job` scheduling
-+ Linear weights prioritization
-+ `datetime` compatible
-+ Timezone compatible
++ Easy and user friendly in-process `Job` scheduling
+  + Create recurring `Job`s by given date, time, weekday, ...
+  + Create recurring `Job`s with a given timedelta
+  + Oneshot `Job`s
++ `Job` prioritization with linear weighting
++ `datetime` compatibility
++ Timezone compatibility
 + Lightweight
-+ Oneshot `Job`s
 + Limit and track the `Job` execution count
-+ Start `Job`s with a `datetime` offset
-+ [**Online documentation**](https://python-scheduler.readthedocs.io/en/latest/index.html)
++ High test coverage
++ [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
 
 ## Installation
 
-Clone the [**repository**](https://gitlab.com/DigonIO/scheduler), and install with:
+Clone the [repository](https://gitlab.com/DigonIO/scheduler), and install with:
 
 ```bash
 git clone REPLACE_ME
@@ -36,9 +38,9 @@ pip install .
 
 ---
 
-## Example: *How to schedule `Job`s*
+## Example: *How to schedule Jobs*
 
-Some basics are presented here. For advanced scheduling examples please visit the online [**documentation**](https://python-scheduler.readthedocs.io/en/latest/index.html). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
+Some basics are presented here. For advanced scheduling examples please visit the online [documentation](https://python-scheduler.readthedocs.io/en/latest/index.html). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
 
 ```py
 import time
@@ -90,7 +92,7 @@ while True:
 
 ## Build the documentation
 
-The API documentation can either be viewed [**online**](https://python-scheduler.readthedocs.io/en/latest/index.html) or be generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) formatting. To build, run:
+The API documentation can either be viewed [online](https://python-scheduler.readthedocs.io/en/latest/index.html) or be generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) formatting. To build, run:
 
 ```bash
 sphinx-build -b html doc/ doc/_build/html
@@ -108,13 +110,24 @@ coverage html
 To test the examples in the documentation run:
 
 ```bash
-pytest --doctest-modules scheduler/
+pytest --doctest-modules doc/examples.rst
 ```
 
 ## TODO
 
-+ Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
-+ Add `__repr__` methods to `Job` and `Scheduler`
++ Features
+  + Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
+  + Add `__repr__` methods to `Job` and `Scheduler`
+  + Execute all scheduled `Job`s
+  + Delete all scheduled `Job`s
+  + Optional `Job` flag: Discard missed executions befor the last pending execution
+  + Execute a `Job` until a certain datetime stamp
+  + Thread safety and background tasks
++ Documentation
+  + Notes on performance
+  + Comparison to [APScheduler](https://github.com/agronholm/apscheduler) and [schedule](https://github.com/dbader/schedule)
+  + where to get help
+  + FAQ
 
 ---
 

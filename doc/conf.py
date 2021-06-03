@@ -37,7 +37,7 @@ copyright = "2021, Jendrik A. Potyka, Fabian A. Preiss"
 author = "Jendrik A. Potyka, Fabian A. Preiss"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.0"
+release = "0.2.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -52,6 +52,7 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
     "numpydoc",
+    "m2r2",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

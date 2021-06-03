@@ -2,7 +2,6 @@ import pytest
 import datetime as dt
 
 from scheduler.util import (
-    SchedulerError,
     Weekday,
 )
 from scheduler.job import JobExecTimer

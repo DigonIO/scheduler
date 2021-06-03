@@ -6,8 +6,11 @@ sphinx:
 formats:
   - pdf
 
+build:
+  image: testing
+
 python:
-  version: 3.8
+  version: 3.9
   install:
     - requirements: requirements.txt
     - method: pip

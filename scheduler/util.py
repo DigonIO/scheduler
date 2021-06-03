@@ -1,7 +1,7 @@
 """
 Collection of useful utility objects.
 
-Author: Jendrik A. Potyka
+Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import datetime as dt
 from enum import Enum
@@ -139,3 +139,30 @@ def next_weekday_time_occurrence(
         microsecond=target_time.microsecond,
     )
     return target + delta
+
+
+def linear_weight_function(seconds: float, weight: float) -> float:
+    """
+    Compute the default linear weights.
+
+    Linear `Job` weighting such that the effective weight increases linearly with
+    the amount of time that a `Job` is overdue. At the exact time of the desired
+    execution, the effective weight becomes the given weight of the `Job`.
+
+    Parameters
+    ----------
+    seconds : float
+        The time in seconds that a `Job` is overdue.
+    weight : float
+        The weighting factor of a `Job`
+
+    Returns
+    -------
+    float
+        The time dependant effective weight for a `Job`
+    """
+    if seconds < 0:
+        raise SchedulerError(
+            "`seconds` is < 0. Function can only be applied for Job's exceeding the time limit."
+        )
+    return (seconds + 1) * weight

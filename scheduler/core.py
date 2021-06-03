@@ -1,7 +1,7 @@
 """
 `Scheduler` implementation for `Job` based callback function execution.
 
-Author: Jendrik A. Potyka
+Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from typing import Callable, Optional, Any
 import typeguard as tg
 
 from scheduler.job import ExecOnceTimeType, ExecTimeType, Job
-from scheduler.util import SchedulerError
+from scheduler.util import SchedulerError, linear_weight_function
 
 
 class Scheduler:
@@ -33,12 +33,21 @@ class Scheduler:
     max_exec : int
         Limits the number of overdue `Job`\ s that can be executed
         by calling function `Scheduler.exec_jobs()`.
+    weight_function: Callable[[float, float], float]
+        A function handle to compute the effective weight of a `Job` depending
+        on the time it is overdue and its respective weight. Defaults to a linear
+        weight function.
     """
 
-    def __init__(self, tzinfo: Optional[dt.timezone] = None, max_exec: int = 0):
+    def __init__(
+        self,
+        max_exec: int = 0,
+        tzinfo: Optional[dt.timezone] = None,
+        weight_function: Callable[[float, float], float] = linear_weight_function,
+    ):
         self.__tzinfo = tzinfo
         self.__max_exec = max_exec
-
+        self.__weight_function = weight_function
         self.__jobs: set[Job] = set()
 
     def _add_job(self, job: Job) -> None:
@@ -79,8 +88,11 @@ class Scheduler:
         r"""
         Check the `Job`\ s that are overdue and carry them out.
 
+        The `Job`\ s are prioritized by calculating their effective weights dependant
+        on the `Job`'s weight and the amount of time it is overdue.
+
         If there is a limit to the number of `Job`\ s that can be
-        performed in one call, the weighting is relevant.
+        performed in one call, the effective weight is relevant.
 
         Returns
         -------
@@ -94,7 +106,7 @@ class Scheduler:
         for job in self.__jobs:
             delta_seconds = job.timedelta(dt_stamp).total_seconds()
             if delta_seconds <= 0:
-                overtime_jobs[job] = delta_seconds * job.weight
+                overtime_jobs[job] = -self.__weight_function(-delta_seconds, job.weight)
         # sort the overtime jobs depending their weight * overtime
         sorted_overtime_jobs = sorted(overtime_jobs, key=overtime_jobs.get)
 
@@ -128,7 +140,7 @@ class Scheduler:
         ----------
         handle : Callable[..., Any]
             Handle to a callback function.
-        exec_on : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] | list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]
+        exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] | list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]
             Desired execution time(s).
         weight : float
             Relative weight against other `Job`\ s.
@@ -185,30 +197,27 @@ class Scheduler:
         except TypeError as err:
             raise SchedulerError(
                 'Wrong input for "once"! Select one of the following input types:\n'
-                + "datetime.datetime | Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]"
+                + "datetime.datetime | Weekday | datetime.time | datetime.timedelta | "
+                + "tuple[Weekday, datetime.time]"
             ) from err
 
         # hack to support dt.datetime objects as exec time
         if isinstance(exec_at, dt.datetime):
             # not testable with simple monkey patching because
             # patching of dt.datetime will corrupt the if statement
-            job = Job(
+            return self.schedule(
                 handle=handle,
                 exec_at=dt.timedelta(days=1),  # dummy
                 weight=weight,
                 delay=False,
                 offset=exec_at,
                 max_attempts=1,
-                tzinfo=self.__tzinfo,
             )
-        else:
-            job = Job(
-                handle=handle,
-                exec_at=exec_at,
-                weight=weight,
-                max_attempts=1,
-                tzinfo=self.__tzinfo,
-            )
-
-        self._add_job(job)
-        return job
+        return self.schedule(
+            handle=handle,
+            exec_at=exec_at,
+            weight=weight,
+            delay=True,
+            offset=None,
+            max_attempts=1,
+        )

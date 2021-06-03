@@ -1,5 +1,4 @@
 import pytest
-import time
 import datetime as dt
 
 from scheduler import Scheduler, Weekday, SchedulerError
@@ -22,6 +21,7 @@ samples = [
     T_2021_5_26__3_55 + dt.timedelta(hours=2, minutes=2),  # t5
     T_2021_5_26__3_55 + dt.timedelta(days=1, minutes=2),  # t6
     T_2021_5_26__3_55 + dt.timedelta(days=9, minutes=7),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(days=10, minutes=7),  # t8
 ]
 
 
@@ -38,21 +38,42 @@ def patch_datetime_now(monkeypatch, request):
 
 
 @pytest.mark.parametrize(
-    "exec_at, exec_counts, patch_datetime_now",
+    "exec_at, exec_counts, delta, patch_datetime_now",
     (
-        [dt.timedelta(seconds=5), [1, 1, 2, 3, 4, 5, 6], samples],
-        [dt.timedelta(hours=1, minutes=1), [0, 0, 0, 1, 2, 3, 4], samples],
-        [Weekday.THURSDAY, [0, 0, 0, 0, 0, 1, 2], samples],
-        [dt.time(hour=3, minute=55, second=6), [0, 1, 1, 1, 1, 2, 3], samples],
+        [
+            dt.timedelta(seconds=5),
+            [1, 1, 2, 3, 4, 5, 6],
+            dt.timedelta(seconds=-864385.0),
+            samples,
+        ],
+        [
+            dt.timedelta(hours=1, minutes=1),
+            [0, 0, 0, 1, 2, 3, 4],
+            dt.timedelta(seconds=-846120),
+            samples,
+        ],
+        [
+            Weekday.THURSDAY,
+            [0, 0, 0, 0, 0, 1, 2],
+            dt.timedelta(days=4, seconds=71880),
+            samples,
+        ],
+        [
+            dt.time(hour=3, minute=55, second=6),
+            [0, 1, 1, 1, 1, 2, 3],
+            dt.timedelta(days=-8, seconds=85986),
+            samples,
+        ],
         [
             (Weekday.THURSDAY, dt.time(hour=3, minute=55, second=6)),
             [0, 0, 0, 0, 0, 1, 2],
+            dt.timedelta(days=4, seconds=85986),
             samples,
         ],
     ),
     indirect=["patch_datetime_now"],
 )
-def test_general_schedule(patch_datetime_now, exec_at, exec_counts):
+def test_general_schedule(patch_datetime_now, exec_at, exec_counts, delta):
     sch = Scheduler()
     job = sch.schedule(lambda: None, exec_at)
 
@@ -63,6 +84,7 @@ def test_general_schedule(patch_datetime_now, exec_at, exec_counts):
     assert job.max_attemps == 0
     assert job.has_attempts == True
     assert job.handle() is None
+    assert job.timedelta() == delta
 
 
 error_msg = (
@@ -119,7 +141,7 @@ samples_once_datetime = [
 
 @pytest.mark.parametrize(
     "exec_at, exec_counts, patch_datetime_now",
-    (  #                                       t1 t2 t3 t4 t5
+    (
         [
             T_2021_5_26__3_55 + dt.timedelta(seconds=6),
             [0, 1, 1, 1, 1],
@@ -221,3 +243,62 @@ def test_schedule(patch_datetime_now, exec_at, exec_counts):
     for count in exec_counts:
         sch.exec_jobs()
         assert job.attemps == count
+
+
+samples_job_creation = [
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55,
+]
+
+
+@pytest.mark.parametrize(
+    "max_exec, job_count, exec_counts, patch_datetime_now",
+    (
+        [2, 5, 2, samples_job_creation],
+        [2, 2, 2, samples_job_creation],
+        [3, 2, 2, samples_job_creation],
+        [5, 6, 5, samples_job_creation],
+    ),
+    indirect=["patch_datetime_now"],
+)
+def test_schedule_job_limit(patch_datetime_now, max_exec, job_count, exec_counts):
+    sch = Scheduler(max_exec)
+
+    for i in range(job_count):
+        _ = sch.schedule(lambda: None, dt.timedelta())
+
+    count = sch.exec_jobs()
+    assert count == exec_counts
+
+
+wrong_input_msg = (
+    "Wrong input! Select one of the following input types:\n"
+    + "Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] or \n"
+    + "list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]"
+)
+
+
+@pytest.mark.parametrize(
+    "exec_at, exceptionMessage",
+    [
+        ("3min", wrong_input_msg),
+        (dt.timedelta(seconds=5), None),
+        (3.1, wrong_input_msg),
+        (1, wrong_input_msg),
+    ],
+)
+def test_invalid_exec_at(exec_at, exceptionMessage):
+    sch = Scheduler()
+    if exceptionMessage:
+        with pytest.raises(SchedulerError) as excinfo:
+            sch.schedule(lambda: None, exec_at)
+            assert None in str(excinfo.value)
+    else:
+        sch.schedule(lambda: None, exec_at)

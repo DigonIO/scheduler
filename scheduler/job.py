@@ -21,6 +21,9 @@ from scheduler.util import (
 # execution time stamp typing for a cyclic Job
 TimeTypes = Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]
 ExecTimeType = Union[list[TimeTypes], TimeTypes]
+TIME_TYPES_STR = (
+    "Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]"
+)
 
 # execution time stamp typing for a oneshot Job
 ExecOnceTimeType = Union[dt.datetime, TimeTypes]
@@ -157,8 +160,8 @@ class Job:
         except TypeError as err:
             raise SchedulerError(
                 "Wrong input! Select one of the following input types:\n"
-                + "Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] or \n"
-                + "list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]"
+                + f"{TIME_TYPES_STR} or \n"
+                + f"list[{TIME_TYPES_STR}]"
             ) from err
 
         self.__start_dt = offset if offset else dt.datetime.now(self.__tzinfo)

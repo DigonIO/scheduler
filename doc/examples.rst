@@ -19,7 +19,7 @@ Create a `Scheduler` instance:
 >>> def foo():
 ...     print("bar")
 ...
->>> sch = Scheduler(dt.timezone.utc)
+>>> sch = Scheduler(tzinfo=dt.timezone.utc)
 
 Schedule a `Job` for execution every 10 minutes ...
 
@@ -75,7 +75,7 @@ How to use time zones
 
 With the time zone support of the `datetime` library,
 `scheduler` is also able to observe time zones. The following
-example outlines how to use time zones (Please note that as
+example outlines how to use time zones (please note that as
 soon as a `Scheduler` is instantiated with a time zone, all other
 `datetime` objects that are passed must also be provided with time zones):
 
@@ -83,7 +83,7 @@ soon as a `Scheduler` is instantiated with a time zone, all other
 >>> import datetime as dt
 >>> from scheduler import Scheduler, Weekday
 ...
->>> sch = Scheduler(dt.timezone.utc)
+>>> sch = Scheduler(tzinfo=dt.timezone.utc)
 ...
 >>> _ = sch.once(lambda: None, dt.datetime.now(dt.timezone.utc) + dt.timedelta(seconds=10))
 >>> _ = sch.schedule(lambda: None, dt.timedelta(seconds=10))
@@ -94,9 +94,9 @@ Weights
 ^^^^^^^
 
 `Job`\ s can be weighted among each other.
-This becomes more relevant the longer the execution of the
-`Job`\ s compared to the cycle length of the `Scheduler`.
-It may be that the `Job`\ s to be executed takes longer than one
+This becomes more relevant the longer the execution of a
+`Job` is compared to the cycle length of the `Scheduler`.
+It may be that the `Job`\ s to be executed take longer than one
 cycle of the `Scheduler`. In order to enable a constant frequency,
 the maximum number of `Job`\ s to be executed can be limited.
 This is illustrated in the following example with the help of
