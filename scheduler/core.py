@@ -33,7 +33,7 @@ class Scheduler:
     max_exec : int
         Limits the number of overdue `Job`\ s that can be executed
         by calling function `Scheduler.exec_jobs()`.
-    weight_function: Callable[[float, float], float]
+    weight_function: Callable[[float, Job, int, int], float]
         A function handle to compute the effective weight of a `Job` depending
         on the time it is overdue and its respective weight. Defaults to a linear
         weight function.
@@ -43,7 +43,10 @@ class Scheduler:
         self,
         max_exec: int = 0,
         tzinfo: Optional[dt.timezone] = None,
-        weight_function: Callable[[float, float], float] = linear_weight_function,
+        weight_function: Callable[
+            [float, Job, int, int],
+            float,
+        ] = linear_weight_function,
     ):
         self.__tzinfo = tzinfo
         self.__max_exec = max_exec
@@ -102,18 +105,24 @@ class Scheduler:
         # get all jobs with overtime in seconds and weight
         dt_stamp = dt.datetime.now(tz=self.__tzinfo)
 
-        overtime_jobs: dict[Job, float] = {}
+        effective_weight: dict[Job, float] = {}
         for job in self.__jobs:
             delta_seconds = job.timedelta(dt_stamp).total_seconds()
-            if delta_seconds <= 0:
-                overtime_jobs[job] = -self.__weight_function(-delta_seconds, job.weight)
+            effective_weight[job] = -self.__weight_function(
+                seconds=-delta_seconds,
+                job=job,
+                max_exec=self.__max_exec,
+                job_count=len(self.__jobs),
+            )
         # sort the overtime jobs depending their weight * overtime
-        sorted_overtime_jobs = sorted(overtime_jobs, key=overtime_jobs.get)
+        sorted_jobs = sorted(effective_weight, key=effective_weight.get)
 
         # execute the sorted overtime jobs and delete the ones with no attemps left
         exec_job_count = 0
-        for idx, job in enumerate(sorted_overtime_jobs):
-            if self.__max_exec == 0 or idx < self.__max_exec:
+        for idx, job in enumerate(sorted_jobs):
+            if (self.__max_exec == 0 or idx < self.__max_exec) and effective_weight[
+                job
+            ] < 0:
                 job._exec()
                 if not job.has_attempts:
                     self.delete_job(job)

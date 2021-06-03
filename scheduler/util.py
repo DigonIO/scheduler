@@ -141,7 +141,11 @@ def next_weekday_time_occurrence(
     return target + delta
 
 
-def linear_weight_function(seconds: float, weight: float) -> float:
+class Job:
+    """Forward declaration"""
+
+
+def linear_weight_function(seconds: float, job: Job, **kwargs) -> float:
     """
     Compute the default linear weights.
 
@@ -153,8 +157,8 @@ def linear_weight_function(seconds: float, weight: float) -> float:
     ----------
     seconds : float
         The time in seconds that a `Job` is overdue.
-    weight : float
-        The weighting factor of a `Job`
+    job : Job
+        The `Job` instance
 
     Returns
     -------
@@ -162,7 +166,5 @@ def linear_weight_function(seconds: float, weight: float) -> float:
         The time dependant effective weight for a `Job`
     """
     if seconds < 0:
-        raise SchedulerError(
-            "`seconds` is < 0. Function can only be applied for Job's exceeding the time limit."
-        )
-    return (seconds + 1) * weight
+        return 0
+    return (seconds + 1) * job.weight
