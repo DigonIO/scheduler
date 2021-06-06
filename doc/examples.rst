@@ -1,8 +1,8 @@
 Examples
 --------
 
-`Job` scheduling and oneshot `Job`\ s
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+General `Job` scheduling
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 The basic functions and `Job` types of the scheduler module are explained below.
 First, it is shown how cyclic `Job`\ s can be created and how the desired execution
@@ -16,27 +16,27 @@ Create a `Scheduler` instance:
 >>> import datetime as dt
 >>> from scheduler import Scheduler, Weekday
 ...
->>> def foo():
-...     print("bar")
+>>> def foo(msg="bar"):
+...     print(msg)
 ...
 >>> sch = Scheduler(tzinfo=dt.timezone.utc)
 
-Schedule a `Job` for execution every 10 minutes ...
+Schedule a `Job` for execution every 10 minutes:
 
 >>> sch.schedule(foo, dt.timedelta(minutes=10)) # doctest:+ELLIPSIS
 <scheduler.job.Job object at 0x...>
 
-Schedule a `Job` for execution every day at 16:45 ...
+Schedule a `Job` for execution every day at ``16:45``:
 
 >>> sch.schedule(foo, dt.time(hour=16, minute=45)) # doctest:+ELLIPSIS
 <scheduler.job.Job object at 0x...>
 
-Schedule a `Job` every monday at 00:00 ...
+Schedule a `Job` every monday at ``00:00`` with given parameters:
 
->>> sch.schedule(foo, Weekday.MONDAY) # doctest:+ELLIPSIS
+>>> sch.schedule(foo, Weekday.MONDAY, params={"msg": "fizz"}) # doctest:+ELLIPSIS
 <scheduler.job.Job object at 0x...>
 
-Schedule a `Job` every monday at 16:45 ...
+Schedule a `Job` every monday at ``16:45``:
 
 >>> sch.schedule(
 ...     foo,
@@ -44,7 +44,7 @@ Schedule a `Job` every monday at 16:45 ...
 ... ) # doctest:+ELLIPSIS
 <scheduler.job.Job object at 0x...>
 
-Schedule a `Job` every friday at 00:00, every 10 minutes and every monday at 16:45 ...
+Schedule a `Job` every friday at ``00:00``, every 10 minutes and every monday at ``16:45``:
 
 >>> sch.schedule(
 ...     foo,
@@ -56,12 +56,12 @@ Schedule a `Job` every friday at 00:00, every 10 minutes and every monday at 16:
 ... ) # doctest:+ELLIPSIS
 <scheduler.job.Job object at 0x...>
 
-Schedule a oneshot `Job` for the next monday at 00:00 ...
+Schedule a oneshot `Job` for the next monday at ``00:00``:
 
 >>> sch.once(foo, Weekday.MONDAY) # doctest:+ELLIPSIS
 <scheduler.job.Job object at 0x...>
 
-Schedule a oneshot `Job` for a specific date and time ...
+Schedule a oneshot `Job` for a specific date and time:
 
 >>> sch.once(foo, dt.datetime(year=2021, month=5, day=27, hour=3, minute=23)) # doctest:+ELLIPSIS
 <scheduler.job.Job object at 0x...>

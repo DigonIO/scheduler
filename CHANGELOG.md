@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0
+
+### Features
+
++ Allowed parameters to be passed to the function handled by `Job`
+
+### Misc
+
++ Improved examples and docs
++ Full test coverage :)
+
 ## 0.2.0
 
 ### API changes

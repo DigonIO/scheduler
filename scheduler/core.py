@@ -137,6 +137,7 @@ class Scheduler:
         self,
         handle: Callable[..., Any],
         exec_at: ExecTimeType,
+        params: Optional[dict[str, Any]] = None,
         weight: float = 1,
         delay: bool = True,
         offset: Optional[dt.datetime] = None,
@@ -151,6 +152,8 @@ class Scheduler:
             Handle to a callback function.
         exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] | list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]
             Desired execution time(s).
+        params : dict[str, Any]
+            The payload arguments to pass to the function handle within a Job.
         weight : float
             Relative weight against other `Job`\ s.
         delay : bool
@@ -169,6 +172,7 @@ class Scheduler:
         job = Job(
             handle=handle,
             exec_at=exec_at,
+            params=params,
             weight=weight,
             delay=delay,
             offset=offset,
@@ -182,6 +186,7 @@ class Scheduler:
         self,
         handle: Callable[..., Any],
         exec_at: ExecOnceTimeType,
+        params: Optional[dict[str, Any]] = None,
         weight: float = 1,
     ) -> Job:
         r"""
@@ -193,6 +198,8 @@ class Scheduler:
             Handle to a callback function.
         exec_at : datetime.datetime | Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]
             Execution time.
+        params : dict[str, Any]
+            The payload arguments to pass to the function handle within a Job.
         weight : float
             Relativ job weight against other `Job`\ s.
 
@@ -217,6 +224,7 @@ class Scheduler:
             return self.schedule(
                 handle=handle,
                 exec_at=dt.timedelta(days=1),  # dummy
+                params=params,
                 weight=weight,
                 delay=False,
                 offset=exec_at,
@@ -225,6 +233,7 @@ class Scheduler:
         return self.schedule(
             handle=handle,
             exec_at=exec_at,
+            params=params,
             weight=weight,
             delay=True,
             offset=None,

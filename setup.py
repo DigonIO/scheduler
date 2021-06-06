@@ -5,7 +5,7 @@ with open("README.md", encoding="utf-8") as f:
 
 setup(
     name="scheduler",
-    version="0.2.0",
+    version="0.3.0",
     description="A simple in-process python scheduler library, designed to be integrated seamlessly with the datetime standard library. Due to the support of datetime objects, scheduler is able to work with time zones. ",
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",

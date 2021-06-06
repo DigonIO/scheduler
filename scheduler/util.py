@@ -142,7 +142,7 @@ def next_weekday_time_occurrence(
 
 
 class Job:
-    """Forward declaration"""
+    """Forward declaration."""
 
 
 def linear_weight_function(seconds: float, job: Job, **kwargs) -> float:

@@ -125,6 +125,8 @@ class Job:
         Handle to a callback function.
     exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] | list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]
         Desired execution time(s).
+    params : dict[str, Any]
+        The payload arguments to pass to the function handle within a Job.
     weight : float
         Relative weight against other `Job`\ s.
     delay : bool
@@ -140,6 +142,7 @@ class Job:
         self,
         handle: Callable[..., Any],
         exec_at: ExecTimeType,
+        params: Optional[dict[str, Any]] = None,
         weight: float = 1,
         delay: bool = True,
         offset: Optional[dt.datetime] = None,
@@ -148,6 +151,7 @@ class Job:
     ):
 
         self.__handle = handle
+        self.__params = {} if params is None else params
         self.__weight = weight
         self.__delay = delay
         self.__max_attempts = max_attempts
@@ -183,7 +187,7 @@ class Job:
 
     def _exec(self) -> None:
         """Execute the callback function."""
-        self.__handle()
+        self.__handle(**self.__params)
         self.__attempts += 1
 
     @property

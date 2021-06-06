@@ -1,6 +1,7 @@
 # scheduler
 
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
+[![license](https://img.shields.io/pypi/l/imgreg)](https://gitlab.com/DigonIO/imgreg/-/blob/master/LICENSE)
 [![pipeline status](https://gitlab.com/DigonIO/scheduler/badges/master/pipeline.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![coverage report](https://gitlab.com/DigonIO/scheduler/badges/master/coverage.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![Documentation Status](https://readthedocs.org/projects/python-scheduler/badge/?version=latest)](https://python-scheduler.readthedocs.io/en/latest/?badge=latest)
@@ -28,7 +29,13 @@ A simple in-process python scheduler library, designed to be integrated seamless
 
 ## Installation
 
-Clone the [repository](https://gitlab.com/DigonIO/scheduler), and install with:
+`scheduler` can be installed using pip with the following command:
+
+```bash
+pip install git+https://gitlab.com/DigonIO/scheduler.git
+```
+
+Alternatively clone the [repository](https://gitlab.com/DigonIO/scheduler) and install with:
 
 ```bash
 git clone REPLACE_ME
@@ -42,13 +49,15 @@ pip install .
 
 Some basics are presented here. For advanced scheduling examples please visit the online [documentation](https://python-scheduler.readthedocs.io/en/latest/index.html). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
 
+[//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
+
 ```py
 import time
 import datetime as dt
 from scheduler import Scheduler, Weekday
 
-def foo():
-    print("bar")
+def foo(msg = "bar"):
+    print(msg)
 
 sch = Scheduler()
 
@@ -78,6 +87,13 @@ Besides cyclic `Job`s, oneshot `Job`s can also be easily created:
 ```py
 sch.once(foo, dt.datetime(year=2021, month=2, day=11))  # at given datetime
 sch.once(foo, dt.timedelta(minutes=10))  # in 10 minutes
+```
+
+Pass parameters to the function handle `foo`:
+
+```py
+sch.once(foo, dt.timedelta(seconds=10000), params={"msg": "fizz"})
+sch.schedule(foo, dt.timedelta(minutes=1), params={"msg": "buzz"})
 ```
 
 Create a loop in the host program to execute pending `Job`s:
