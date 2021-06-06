@@ -336,3 +336,26 @@ def test_handle_params(oneshot):
 
     for key, value in kwargs["collection"]:
         assert kwargs[key] == value
+
+
+@pytest.mark.xfail(strict=True)
+@pytest.mark.parametrize(
+    "n_jobs",
+    [
+        5,
+        10,
+        3,
+    ],
+)
+def test_delete_all_jobs(n_jobs):
+    sch = Scheduler()
+    for i in range(n_jobs):
+        job = sch.schedule(
+            lambda: None,
+            dt.timedelta(seconds=1),
+        )
+    assert len(sch.jobs) == n_jobs
+    sch.delete_job(job)
+    assert len(sch.jobs) == n_jobs - 1
+    sch.delete_jobs()
+    assert len(sch.jobs) == 0
