@@ -104,6 +104,7 @@ def foo(bar=1):
     pass
 
 
+# TODO: adjust repr string
 @pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize(
     "handle, exec_at, max_attempts, weight, offset, tzinfo, repr, patch_datetime_now",
@@ -126,6 +127,16 @@ def foo(bar=1):
             T_2021_5_26__3_55,
             dt.timezone(dt.timedelta(hours=1)),
             "Foo.foo 1234s 0/5 w=0.5 tz=UTC+01:00",
+            samples,
+        ],
+        [
+            foo,
+            dt.timedelta(seconds=2),
+            5,
+            0.5,
+            T_2021_5_26__3_55,
+            dt.timezone(dt.timedelta(hours=-2, seconds=1)),
+            "foo 1234s 0/5 w=0.5 tz=UTC-01:59",
             samples,
         ],
     ],
