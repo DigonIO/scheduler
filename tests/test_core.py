@@ -338,14 +338,9 @@ def test_handle_params(oneshot):
         assert kwargs[key] == value
 
 
-@pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize(
     "n_jobs",
-    [
-        5,
-        10,
-        3,
-    ],
+    [5, 10, 3],
 )
 def test_delete_all_jobs(n_jobs):
     sch = Scheduler()

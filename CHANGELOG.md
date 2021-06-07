@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.0
+
+### Features
+
++ Delete all scheduled `Job`s using a single command.
+
 ## 0.3.0
 
 ### Features

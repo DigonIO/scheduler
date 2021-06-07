@@ -75,6 +75,13 @@ class Scheduler:
         """
         self.__jobs.remove(job)
 
+    def delete_jobs(self) -> None:
+        r"""
+        Delete all `Job`\ s from the `Scheduler`.
+
+        """
+        self.__jobs = set()
+
     @property
     def jobs(self) -> set[Job]:
         r"""

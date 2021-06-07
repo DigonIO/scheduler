@@ -38,7 +38,7 @@ pip install git+https://gitlab.com/DigonIO/scheduler.git
 Alternatively clone the [repository](https://gitlab.com/DigonIO/scheduler) and install with:
 
 ```bash
-git clone REPLACE_ME
+git clone https://gitlab.com/DigonIO/scheduler.git
 cd scheduler
 pip install .
 ```
@@ -47,7 +47,7 @@ pip install .
 
 ## Example: *How to schedule Jobs*
 
-Some basics are presented here. For advanced scheduling examples please visit the online [documentation](https://python-scheduler.readthedocs.io/en/latest/index.html). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
+Some basics are presented here. For advanced scheduling examples please visit the online [documentation](https://python-scheduler.readthedocs.io/en/latest/examples.html). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
 
 [//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
 
@@ -135,7 +135,6 @@ pytest --doctest-modules doc/examples.rst
   + Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
   + Add `__repr__` methods to `Job` and `Scheduler`
   + Execute all scheduled `Job`s
-  + Delete all scheduled `Job`s
   + Optional `Job` flag: Discard missed executions befor the last pending execution
   + Execute a `Job` until a certain datetime stamp
   + Thread safety and background tasks
