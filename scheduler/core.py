@@ -131,7 +131,7 @@ class Scheduler:
                 job
             ] < 0:
                 job._exec()
-                if not job.has_attempts:
+                if not job.has_attempts_remaining:
                     self.delete_job(job)
                 else:
                     job._gen_next_exec_dt()
