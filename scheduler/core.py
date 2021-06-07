@@ -170,10 +170,10 @@ class Scheduler:
         handle: Callable[..., Any],
         exec_at: ExecTimeType,
         params: Optional[dict[str, Any]] = None,
+        max_attempts: int = 0,
         weight: float = 1,
         delay: bool = True,
         offset: Optional[dt.datetime] = None,
-        max_attempts: int = 0,
     ) -> Job:
         r"""
         Create a repeating `Job` that will be executed in a given cycle.
@@ -205,10 +205,10 @@ class Scheduler:
             handle=handle,
             exec_at=exec_at,
             params=params,
+            max_attempts=max_attempts,
             weight=weight,
             delay=delay,
             offset=offset,
-            max_attempts=max_attempts,
             tzinfo=self.__tzinfo,
         )
         self._add_job(job)
@@ -257,17 +257,17 @@ class Scheduler:
                 handle=handle,
                 exec_at=dt.timedelta(days=1),  # dummy
                 params=params,
+                max_attempts=1,
                 weight=weight,
                 delay=False,
                 offset=exec_at,
-                max_attempts=1,
             )
         return self.schedule(
             handle=handle,
             exec_at=exec_at,
             params=params,
+            max_attempts=1,
             weight=weight,
             delay=True,
             offset=None,
-            max_attempts=1,
         )

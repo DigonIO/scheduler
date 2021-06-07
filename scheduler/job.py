@@ -143,18 +143,18 @@ class Job:
         handle: Callable[..., Any],
         exec_at: ExecTimeType,
         params: Optional[dict[str, Any]] = None,
+        max_attempts: int = 0,
         weight: float = 1,
         delay: bool = True,
         offset: Optional[dt.datetime] = None,
-        max_attempts: int = 0,
         tzinfo: Optional[dt.timezone] = None,
     ):
 
         self.__handle = handle
         self.__params = {} if params is None else params
+        self.__max_attempts = max_attempts
         self.__weight = weight
         self.__delay = delay
-        self.__max_attempts = max_attempts
         self.__tzinfo = tzinfo
 
         self.__attempts = 0
