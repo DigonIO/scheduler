@@ -83,7 +83,7 @@ def test_general_schedule(patch_datetime_now, exec_at, exec_counts, delta):
         assert job.attemps == count
 
     assert job.max_attemps == 0
-    assert job.has_attempts == True
+    assert job._has_attempts_remaining == True
     assert job.handle() is None
     assert job.timedelta() == delta
 
@@ -181,7 +181,7 @@ def test_once_with_datetime_over_schedule(exec_at, exec_counts, patch_datetime_n
     for count in exec_counts:
         sch.exec_jobs()
         assert job.attemps == count
-        assert job.has_attempts == (True if count == 0 else False)
+        assert job._has_attempts_remaining == (True if count == 0 else False)
 
     assert job.datetime == exec_at + dt.timedelta(seconds=1)
 

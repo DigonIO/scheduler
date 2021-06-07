@@ -104,7 +104,7 @@ class Scheduler:
             Instance of a `Job` to execute.
         """
         job._exec()
-        if not job.has_attempts:
+        if not job._has_attempts_remaining:
             self.delete_job(job)
         else:
             job._gen_next_exec_dt()

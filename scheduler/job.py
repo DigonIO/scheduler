@@ -92,7 +92,7 @@ class JobExecTimer:
 
         Parameters
         ----------
-        dt_stamp : Optional[datetime.datetime]
+        dt_stamp : datetime.datetime
             Time to be compared with the planned execution time
             to determine the time difference.
 
@@ -219,7 +219,7 @@ class Job:
         self.__pending_timer = sorted_timers[0]
 
     @property
-    def has_attempts(self) -> bool:
+    def _has_attempts_remaining(self) -> bool:
         """
         Check if a `Job` executed all its execution attempts.
 

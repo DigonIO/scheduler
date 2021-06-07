@@ -145,17 +145,17 @@ their change.
 ...
 >>> job = sch.schedule(lambda: None, dt.timedelta(seconds=1), max_attempts=2, delay=False)
 
->>> print(job.max_attemps, job.attemps ,job.has_attempts)
-2 0 True
+>>> print(job.max_attemps, job.attemps)
+2 0
 
 >>> time.sleep(1)
 >>> print(sch.exec_jobs())
 1
->>> print(job.max_attemps, job.attemps ,job.has_attempts)
-2 1 True
+>>> print(job.max_attemps, job.attemps)
+2 1
 
 >>> time.sleep(1)
 >>> print(sch.exec_jobs())
 1
->>> print(job.max_attemps, job.attemps ,job.has_attempts)
-2 2 False
+>>> print(job.max_attemps, job.attemps)
+2 2
