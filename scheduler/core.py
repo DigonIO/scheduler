@@ -94,6 +94,35 @@ class Scheduler:
         """
         return self.__jobs.copy()
 
+    def __exec_job(self, job: Job) -> None:
+        """
+        Execute a `Job` and handle it's deletion or new scheduling.
+
+        Parameters
+        ----------
+        job : Job
+            Instance of a `Job` to execute.
+        """
+        job._exec()
+        if not job.has_attempts:
+            self.delete_job(job)
+        else:
+            job._gen_next_exec_dt()
+
+    def exec_all_jobs(self) -> int:
+        r"""
+        Execute all scheduled `Job`\ s independent of the planned execution time.
+
+        Returns
+        -------
+        int
+            Number of executed `Job`\ s.
+        """
+        n_jobs = len(self.__jobs)
+        for job in self.__jobs:
+            self.__exec_job(job)
+        return n_jobs
+
     def exec_jobs(self) -> int:
         r"""
         Check the `Job`\ s that are overdue and carry them out.
@@ -130,11 +159,7 @@ class Scheduler:
             if (self.__max_exec == 0 or idx < self.__max_exec) and effective_weight[
                 job
             ] < 0:
-                job._exec()
-                if not job.has_attempts:
-                    self.delete_job(job)
-                else:
-                    job._gen_next_exec_dt()
+                self.__exec_job(job)
                 exec_job_count += 1
             else:
                 break
