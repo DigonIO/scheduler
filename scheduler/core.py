@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import datetime as dt
 from typing import Callable, Optional, Any
+from operator import itemgetter
 
 import typeguard as tg
 
@@ -52,6 +53,25 @@ class Scheduler:
         self.__max_exec = max_exec
         self.__weight_function = weight_function
         self.__jobs: set[Job] = set()
+
+    def __str__(self) -> str:
+        n_fields = 6
+        collection = [[elem for elem in job._repr()] for job in self.jobs]
+        collection = sorted(collection, key=itemgetter(1))
+        str_collection = [[str(elem) for elem in job_rep] for job_rep in collection]
+        len_str_collection = [
+            [len(elem) for elem in job_str] for job_str in str_collection
+        ]
+        flat_collection = sum(len_str_collection, [])
+        column_width = [max(flat_collection[i::n_fields]) for i in range(n_fields)]
+        form = [
+            f"{{{idx}:>{length}}}" for idx, length in zip(range(n_fields), column_width)
+        ]
+        fstring = f"{form[0]} {form[1]}s {form[2]}/{form[3]} weight={form[4]} tzinfo={form[5]}\n"
+        res = ""
+        for line in str_collection:
+            res += fstring.format(*line)
+        return res
 
     def _add_job(self, job: Job) -> None:
         """
