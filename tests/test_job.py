@@ -82,17 +82,11 @@ def patch_datetime_now(monkeypatch, request):
     monkeypatch.setattr(dt, "datetime", datetime_patch)
 
 
-samples = [
-    T_2021_5_26__3_55,  # job creation
-    T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t1
-    T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t2
-    T_2021_5_26__3_55 + dt.timedelta(seconds=11),  # t3
-    T_2021_5_26__3_55 + dt.timedelta(hours=1, minutes=3),  # t4
-    T_2021_5_26__3_55 + dt.timedelta(hours=2, minutes=2),  # t5
-    T_2021_5_26__3_55 + dt.timedelta(days=1, minutes=2),  # t6
-    T_2021_5_26__3_55 + dt.timedelta(days=9, minutes=7),  # t7
-    T_2021_5_26__3_55 + dt.timedelta(days=10, minutes=7),  # t8
-]
+samples = [T_2021_5_26__3_55, T_2021_5_26__3_55]
+
+
+def to_tzinfo_sample(sample: dt.datetime, tzinfo: dt.timezone) -> dt.datetime:
+    return dt.datetime.combine(sample.date(), sample.time(), tzinfo)
 
 
 class Foo:
@@ -104,46 +98,93 @@ def foo(bar=1):
     pass
 
 
+def job_param_template(
+    handle,
+    exec_at,
+    max_attempts,
+    weight,
+    offset,
+    tzinfo,
+    repr,
+    string,
+    patch_datetime_now,
+):
+    if tzinfo is None:
+        return [
+            handle,
+            exec_at,
+            max_attempts,
+            weight,
+            offset,
+            tzinfo,
+            repr,
+            string,
+            patch_datetime_now,
+        ]
+    return [
+        handle,
+        exec_at,
+        max_attempts,
+        weight,
+        to_tzinfo_sample(offset, tzinfo),
+        tzinfo,
+        repr,
+        string,
+        [to_tzinfo_sample(sample, tzinfo) for sample in patch_datetime_now],
+    ]
+
+
 # TODO: adjust repr string
-@pytest.mark.xfail(strict=True)
+# @pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize(
-    "handle, exec_at, max_attempts, weight, offset, tzinfo, repr, patch_datetime_now",
+    "handle, exec_at, max_attempts, weight, offset, tzinfo, repr, string, patch_datetime_now",
     [
-        [
+        job_param_template(
             foo,
             dt.timedelta(seconds=5),
             0,
             1,
             T_2021_5_26__3_55,
             None,
-            "foo 1234s 0/inf w=1 tz=None",
+            "<Job: foo, 5.0s, 0/inf, weight=1, tzinfo=None>",
+            "foo(...) 5.0s 0/inf weight=1.000 tzinfo=None",
             samples,
-        ],
-        [
+        ),
+        job_param_template(
             Foo.foo,
-            dt.timedelta(seconds=5),
+            dt.timedelta(minutes=5, seconds=59),
             5,
             0.5,
             T_2021_5_26__3_55,
             dt.timezone(dt.timedelta(hours=1)),
-            "Foo.foo 1234s 0/5 w=0.5 tz=UTC+01:00",
+            "<Job: Foo.foo, 359.0s, 0/5, weight=0.5, tzinfo=UTC+01:00>",
+            "Foo.foo(...) 3.59e+02s 0/5 weight=0.500 tzinfo=UTC+01:00",
             samples,
-        ],
-        [
+        ),
+        job_param_template(
             foo,
             dt.timedelta(seconds=2),
             5,
             0.5,
             T_2021_5_26__3_55,
             dt.timezone(dt.timedelta(hours=-2, seconds=1)),
-            "foo 1234s 0/5 w=0.5 tz=UTC-01:59",
+            "<Job: foo, 2.0s, 0/5, weight=0.5, tzinfo=UTC-01:59:59>",
+            "foo(...) 2.0s 0/5 weight=0.500 tzinfo=UTC-01:59:59",
             samples,
-        ],
+        ),
     ],
     indirect=["patch_datetime_now"],
 )
 def test_repr(
-    handle, exec_at, max_attempts, weight, offset, tzinfo, repr, patch_datetime_now
+    handle,
+    exec_at,
+    max_attempts,
+    weight,
+    offset,
+    tzinfo,
+    repr,
+    string,
+    patch_datetime_now,
 ):
     job = Job(
         handle,
@@ -153,5 +194,5 @@ def test_repr(
         offset=offset,
         tzinfo=tzinfo,
     )
-    assert job.__repr__ == repr
-    assert job.__str__ == repr
+    assert job.__repr__() == repr
+    assert job.__str__() == string

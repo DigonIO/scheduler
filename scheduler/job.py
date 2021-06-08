@@ -190,6 +190,28 @@ class Job:
         self.__handle(**self.__params)
         self.__attempts += 1
 
+    def _repr(
+        self,
+    ) -> tuple[str, float, int, Union[float, int], float, str]:
+        """Return the objects in __repr__ as a tuple."""
+        dt_stamp = dt.datetime.now(self.__tzinfo)
+        return (
+            self.handle.__qualname__,
+            self.timedelta(dt_stamp).total_seconds(),
+            self.attemps,
+            float("inf") if self.max_attemps == 0 else self.max_attemps,
+            self.weight,
+            dt_stamp.tzname(),
+        )
+
+    def __str__(self) -> str:
+        return "{0}(...) {1:.3}s {2}/{3} weight={4:.3f} tzinfo={5}".format(
+            *self._repr()
+        )
+
+    def __repr__(self) -> str:
+        return "<Job: {0}, {1}s, {2}/{3}, weight={4}, tzinfo={5}>".format(*self._repr())
+
     @property
     def handle(self) -> Callable[..., Any]:
         """

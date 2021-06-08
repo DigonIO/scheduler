@@ -5,6 +5,7 @@
 ### Features
 
 + Delete all scheduled `Job`s using a single command.
++ Added `__repr__` and `__str__` methods to `Job`
 
 ## 0.3.0
 
