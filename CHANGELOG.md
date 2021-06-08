@@ -5,6 +5,15 @@
 ### Features
 
 + Delete all scheduled `Job`s using a single command.
++ Execute all scheduled `Job`s regardless of when they are scheduled.
+
+### API changes
+
++ `Job.has_attempts` is now `Job._has_attempts_remaining` as it has no meaningful use for the end user.
+
+### Misc
+
++ Improved examples and docs.
 
 ## 0.3.0
 

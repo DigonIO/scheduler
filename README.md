@@ -15,15 +15,15 @@ A simple in-process python scheduler library, designed to be integrated seamless
 
 ## Features
 
-+ Easy and user friendly in-process `Job` scheduling
++ Easy and user friendly in-process `Job` scheduling [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#general-job-scheduling)
   + Create recurring `Job`s by given date, time, weekday, ...
   + Create recurring `Job`s with a given timedelta
   + Oneshot `Job`s
-+ `Job` prioritization with linear weighting
++ Timezone compatibility [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
++ `Job` prioritization with linear weighting [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
++ Limit and track the `Job` execution count [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
 + `datetime` compatibility
-+ Timezone compatibility
 + Lightweight
-+ Limit and track the `Job` execution count
 + High test coverage
 + [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
 
