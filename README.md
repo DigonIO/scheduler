@@ -134,7 +134,6 @@ pytest --doctest-modules doc/examples.rst
 + Features
   + Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
   + Add `__repr__` methods to `Job` and `Scheduler`
-  + Execute all scheduled `Job`s
   + Optional `Job` flag: Discard missed executions befor the last pending execution
   + Execute a `Job` until a certain datetime stamp
   + Thread safety and background tasks
