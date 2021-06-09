@@ -56,16 +56,22 @@ class Scheduler:
 
         self.__tz_str = dt.datetime.now(tzinfo).timetz().tzname()
 
+    def __headings(self) -> list[str]:
+        headings = [
+            f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
+            f"zinfo={self.__tz_str}",
+            f"#jobs={len(self.__jobs)}",
+            f"weight_function={self.__weight_function.__qualname__}",
+        ]
+        return headings
+
     def __str__(self) -> str:
         # Scheduler meta heading
-        headings = f"max_exec={self.__max_exec if self.__max_exec else float('inf')}, "
-        headings += f"zinfo={self.__tz_str}, #jobs={len(self.__jobs)}\n"
-        headings += f"weight_function={self.__weight_function.__qualname__}\n\n"
+        headings = "{0}, {1}, {2}\n{3}\n\n".format(*self.__headings())
 
         # Job table
         n_fields = 5
-        collection = [[elem for elem in job._repr()] for job in self.jobs]
-        collection = sorted(collection, key=itemgetter(1))
+        collection = [job._repr() for job in sorted(self.jobs)]
 
         str_collection = []
         for row in collection:
@@ -102,7 +108,9 @@ class Scheduler:
         return headings + job_table
 
     def __repr__(self):
-        return self.__str__()
+        res = f"<scheduler.Scheduler: {', '.join(self.__headings())}"
+        res += f", [{', '.join([job.__repr__() for job in sorted(self.jobs)])}]>"
+        return res
 
     def _add_job(self, job: Job) -> None:
         """

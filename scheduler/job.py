@@ -204,13 +204,22 @@ class Job:
             dt_stamp.tzname(),
         )
 
+    def __lt__(self, other: Job):
+        dt_stamp = dt.datetime.now(self.__tzinfo)
+        return (
+            self.timedelta(dt_stamp).total_seconds()
+            < other.timedelta(dt_stamp).total_seconds()
+        )
+
     def __str__(self) -> str:
         return "{0}(...) {1:.3}s {2}/{3} weight={4:.3f} tzinfo={5}".format(
             *self._repr()
         )
 
     def __repr__(self) -> str:
-        return "<Job: {0}, {1}s, {2}/{3}, weight={4}, tzinfo={5}>".format(*self._repr())
+        return "<scheduler.Job: {0}, {1}s, {2}/{3}, weight={4}, tzinfo={5}>".format(
+            *self._repr()
+        )
 
     @property
     def handle(self) -> Callable[..., Any]:
