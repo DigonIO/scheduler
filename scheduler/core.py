@@ -54,24 +54,55 @@ class Scheduler:
         self.__weight_function = weight_function
         self.__jobs: set[Job] = set()
 
+        self.__tz_str = dt.datetime.now(tzinfo).timetz().tzname()
+
     def __str__(self) -> str:
-        n_fields = 6
+        # Scheduler meta heading
+        headings = f"max_exec={self.__max_exec if self.__max_exec else float('inf')}, "
+        headings += f"zinfo={self.__tz_str}, #jobs={len(self.__jobs)}\n"
+        headings += f"weight_function={self.__weight_function.__qualname__}\n\n"
+
+        # Job table
+        n_fields = 5
         collection = [[elem for elem in job._repr()] for job in self.jobs]
         collection = sorted(collection, key=itemgetter(1))
-        str_collection = [[str(elem) for elem in job_rep] for job_rep in collection]
+
+        str_collection = []
+        for row in collection:
+            inner = []
+            for idx, ele in enumerate(row):
+                if idx == 2:
+                    inner.append(f"{ele}/{row[3]}")
+                elif idx == 3:
+                    continue
+                else:
+                    inner.append(f"{ele}")
+            str_collection.append(inner)
+
+        jheadings = ["func", "due in [s]", "attempts", "weight", "tzinfo"]
+
         len_str_collection = [
-            [len(elem) for elem in job_str] for job_str in str_collection
+            [max(len(head), len(elem)) for head, elem in zip(jheadings, job_str)]
+            for job_str in str_collection
         ]
+
         flat_collection = sum(len_str_collection, [])
         column_width = [max(flat_collection[i::n_fields]) for i in range(n_fields)]
         form = [
-            f"{{{idx}:>{length}}}" for idx, length in zip(range(n_fields), column_width)
+            f"{{{idx}:{'>' if idx else '<'}{length}}}"
+            for idx, length in zip(range(n_fields), column_width)
         ]
-        fstring = f"{form[0]} {form[1]}s {form[2]}/{form[3]} weight={form[4]} tzinfo={form[5]}\n"
-        res = ""
+        fstring = f"{form[0]} {form[1]} {form[2]} {form[3]} {form[4]}\n"
+
+        job_table = fstring.format(*jheadings)
+        job_table += " ".join(["-" * width for width in column_width]) + "\n"
         for line in str_collection:
-            res += fstring.format(*line)
-        return res
+            job_table += fstring.format(*line)
+
+        return headings + job_table
+
+    def __repr__(self):
+        return self.__str__()
 
     def _add_job(self, job: Job) -> None:
         """

@@ -14,6 +14,7 @@ def test_scheduler_instantiation():
 
 
 samples = [
+    T_2021_5_26__3_55,  # scheduler init
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t2
@@ -130,6 +131,7 @@ def test_once(patch_datetime_now, exec_at, exec_counts, err_msg):
 
 
 samples_once_datetime = [
+    T_2021_5_26__3_55,  # scheduler init
     T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(seconds=6),  # t2
     T_2021_5_26__3_55 + dt.timedelta(seconds=7),  # t3
@@ -187,6 +189,7 @@ def test_once_with_datetime_over_schedule(exec_at, exec_counts, patch_datetime_n
 
 
 samples_seconds = [
+    T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t2
@@ -199,6 +202,7 @@ samples_seconds = [
 ]
 
 samples_days = [
+    T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(days=1, seconds=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(days=1, seconds=8),  # t2
