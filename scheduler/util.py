@@ -168,3 +168,14 @@ def linear_weight_function(seconds: float, job: Job, **kwargs) -> float:
     if seconds < 0:
         return 0
     return (seconds + 1) * job.weight
+
+
+def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
+    if len(string) > max_length:
+        pos = max_length - 2
+        if cut_tail:
+            return string[:pos] + ".."
+        else:
+            return ".." + string[-pos:]
+    else:
+        return string

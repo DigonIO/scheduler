@@ -12,7 +12,7 @@ from operator import itemgetter
 import typeguard as tg
 
 from scheduler.job import ExecOnceTimeType, ExecTimeType, Job
-from scheduler.util import SchedulerError, linear_weight_function
+from scheduler.util import SchedulerError, str_cutoff, linear_weight_function
 
 
 class Scheduler:
@@ -69,36 +69,45 @@ class Scheduler:
         # Scheduler meta heading
         headings = "{0}, {1}, {2}\n{3}\n\n".format(*self.__headings())
 
-        # Job table
-        n_fields = 5
+        # Job table (we join two of the Job._repr() fields into one)
+        n_fields = 6
+        jheadings = ["func", "due at", "due in", "attempts", "weight", "tzinfo"]
+        column_width = [16, 19, 9, 13, 6, 12]
+
         collection = [job._repr() for job in sorted(self.jobs)]
 
         str_collection = []
         for row in collection:
             inner = []
             for idx, ele in enumerate(row):
-                if idx == 2:
-                    inner.append(f"{ele}/{row[3]}")
+                width = column_width[idx] if idx < 4 else column_width[idx - 1]
+                if idx == 0:
+                    tmp_str = str_cutoff(f"{ele}", width, False)
+                elif idx == 1:
+                    tmp_str = str(ele).split(".")[0]
+                elif idx == 2:
+                    # ~6x faster than with regex
+                    tmp_str = str_cutoff(
+                        str(ele).split(",")[0].split(".")[0], width, True
+                    )
                 elif idx == 3:
+                    tmp_str = str_cutoff(f"{ele}/{row[idx+1]}", width, False)
+                elif idx == 4:
                     continue
-                else:
-                    inner.append(f"{ele}")
+                elif idx == 5:
+                    tmp_str = str_cutoff(f"{ele}", width, True)
+                elif idx == 6:
+                    tmp_str = str_cutoff(f"{ele}", width, False)
+                inner.append(tmp_str)
             str_collection.append(inner)
 
-        jheadings = ["func", "due in [s]", "attempts", "weight", "tzinfo"]
-
-        len_str_collection = [
-            [max(len(head), len(elem)) for head, elem in zip(jheadings, job_str)]
-            for job_str in str_collection
-        ]
-
-        flat_collection = sum(len_str_collection, [])
-        column_width = [max(flat_collection[i::n_fields]) for i in range(n_fields)]
+        # right align except first column
         form = [
             f"{{{idx}:{'>' if idx else '<'}{length}}}"
             for idx, length in zip(range(n_fields), column_width)
         ]
-        fstring = f"{form[0]} {form[1]} {form[2]} {form[3]} {form[4]}\n"
+
+        fstring = f"{form[0]} {form[1]} {form[2]} {form[3]} {form[4]} {form[5]}\n"
 
         job_table = fstring.format(*jheadings)
         job_table += " ".join(["-" * width for width in column_width]) + "\n"

@@ -171,6 +171,7 @@ class Job:
         self.__start_dt = offset if offset else dt.datetime.now(self.__tzinfo)
 
         self.__timers: list[JobExecTimer]
+        self.__pending_timer: JobExecTimer
         # exec_at: Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]
         if not isinstance(exec_at, list):
             self.__timers = [JobExecTimer(exec_at, self.__start_dt)]
@@ -195,9 +196,11 @@ class Job:
     ) -> tuple[str, float, int, Union[float, int], float, str]:
         """Return the objects in __repr__ as a tuple."""
         dt_stamp = dt.datetime.now(self.__tzinfo)
+        dt_timedelta = self.timedelta(dt_stamp)
         return (
             self.handle.__qualname__,
-            self.timedelta(dt_stamp).total_seconds(),
+            self.__pending_timer.datetime,
+            dt_timedelta,
             self.attemps,
             float("inf") if self.max_attemps == 0 else self.max_attemps,
             self.weight,
@@ -212,13 +215,15 @@ class Job:
         )
 
     def __str__(self) -> str:
-        return "{0}(...) {1:.3}s {2}/{3} weight={4:.3f} tzinfo={5}".format(
-            *self._repr()
-        )
+        repr = self._repr()
+        timedelta = str(repr[1]).split(".")[0]
+        return "{0}(...) {7} {3}/{4} weight={5:.3f} tzinfo={6}".format(*repr, timedelta)
 
     def __repr__(self) -> str:
-        return "<scheduler.Job: {0}, {1}s, {2}/{3}, weight={4}, tzinfo={5}>".format(
-            *self._repr()
+        repr = self._repr()
+        timedelta = str(repr[1]).split(".")[0]
+        return "<scheduler.Job: {0}, {7}, {3}/{4}, weight={5}, tzinfo={6}>".format(
+            *repr, timedelta
         )
 
     @property
