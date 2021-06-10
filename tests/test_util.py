@@ -1,5 +1,6 @@
-import pytest
 import datetime as dt
+
+import pytest
 
 from scheduler.util import (
     SchedulerError,
@@ -9,7 +10,6 @@ from scheduler.util import (
     next_weekday_occurrence,
     next_weekday_time_occurrence,
 )
-
 
 err_msg = "Weekday enumeration interval: [0,6] <=> [Monday, Sunday]"
 

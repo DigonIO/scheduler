@@ -1,10 +1,9 @@
-import pytest
 import datetime as dt
 
-from scheduler.util import (
-    Weekday,
-)
-from scheduler.job import JobExecTimer, Job
+import pytest
+
+from scheduler.job import Job, JobExecTimer
+from scheduler.util import Weekday
 
 T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
 
