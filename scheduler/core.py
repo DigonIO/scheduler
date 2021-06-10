@@ -102,10 +102,16 @@ class Scheduler:
             str_collection.append(inner)
 
         # right align except first column
-        form = [
-            f"{{{idx}:{'>' if idx else '<'}{length}}}"
-            for idx, length in zip(range(n_fields), column_width)
-        ]
+        form = []
+        for idx, length in zip(range(n_fields), column_width):
+            align = ""
+            if idx == 0:
+                align = "<"
+            if idx == 1:
+                align = "^"
+            if idx > 1:
+                align = ">"
+            form.append(f"{{{idx}:{align}{length}}}")
 
         fstring = f"{form[0]} {form[1]} {form[2]} {form[3]} {form[4]} {form[5]}\n"
 

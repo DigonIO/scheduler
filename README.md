@@ -19,6 +19,7 @@ A simple in-process python scheduler library, designed to be integrated seamless
   + Create recurring `Job`s by given date, time, weekday, ...
   + Create recurring `Job`s with a given timedelta
   + Oneshot `Job`s
+  + Passing of parameters to `Job`
 + Timezone compatibility [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
 + `Job` prioritization with linear weighting [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
 + Limit and track the `Job` execution count [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
@@ -89,14 +90,36 @@ sch.once(foo, dt.datetime(year=2021, month=2, day=11))  # at given datetime
 sch.once(foo, dt.timedelta(minutes=10))  # in 10 minutes
 ```
 
-Pass parameters to the function handle `foo`:
+`Scheduler` has support for calling scheduled functions with parameters:
 
 ```py
 sch.once(foo, dt.timedelta(seconds=10000), params={"msg": "fizz"})
 sch.schedule(foo, dt.timedelta(minutes=1), params={"msg": "buzz"})
 ```
 
-Create a loop in the host program to execute pending `Job`s:
+A human readable overview of the scheduled jobs can be created by a simple `print` statement:
+
+```py
+print(sch)
+```
+
+```raw
+max_exec=inf, zinfo=None, #jobs=9, weight_function=linear_weight_function
+
+function               due at           due in      attempts weight       tzinfo
+---------------- ------------------- --------- ------------- ------ ------------
+foo              2021-02-12 00:00:00 -120 days           0/1      1         None
+foo              2021-06-10 04:13:11   0:00:58         0/inf      1         None
+foo              2021-06-10 04:22:11   0:09:58         0/inf      1         None
+foo              2021-06-10 04:22:11   0:09:58         0/inf      1         None
+foo              2021-06-10 04:22:11   0:09:58           0/1      1         None
+foo              2021-06-10 06:58:51   2:46:38           0/1      1         None
+foo              2021-06-10 16:45:00  12:32:47         0/inf      1         None
+foo              2021-06-14 00:00:00    3 days         0/inf      1         None
+foo              2021-06-14 16:45:00    4 days         0/inf      1         None
+```
+
+Executing pending `Job`s periodically can be achieved with a simple loop:
 
 ```py
 while True:
