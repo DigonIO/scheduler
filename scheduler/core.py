@@ -67,11 +67,11 @@ class Scheduler:
 
     def __str__(self) -> str:
         # Scheduler meta heading
-        headings = "{0}, {1}, {2}\n{3}\n\n".format(*self.__headings())
+        headings = "{0}, {1}, {2}, {3}\n\n".format(*self.__headings())
 
         # Job table (we join two of the Job._repr() fields into one)
         n_fields = 6
-        jheadings = ["func", "due at", "due in", "attempts", "weight", "tzinfo"]
+        jheadings = ["function", "due at", "due in", "attempts", "weight", "tzinfo"]
         column_width = [16, 19, 9, 13, 6, 12]
 
         collection = [job._repr() for job in sorted(self.jobs)]
@@ -118,7 +118,7 @@ class Scheduler:
 
     def __repr__(self):
         res = f"<scheduler.Scheduler: {', '.join(self.__headings())}"
-        res += f", [{', '.join([job.__repr__() for job in sorted(self.jobs)])}]>"
+        res += f", jobs={{{', '.join([job.__repr__() for job in sorted(self.jobs)])}}}>"
         return res
 
     def _add_job(self, job: Job) -> None:

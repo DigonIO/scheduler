@@ -216,14 +216,14 @@ class Job:
 
     def __str__(self) -> str:
         repr = self._repr()
-        timedelta = str(repr[1]).split(".")[0]
-        return "{0}(...) {7} {3}/{4} weight={5:.3f} tzinfo={6}".format(*repr, timedelta)
+        return "{0}(...) {7} {8} {3}/{4} weight={5:.3f} tzinfo={6}".format(
+            *repr, *[str(elem).split(".")[0] for elem in repr[1:3]]
+        )
 
     def __repr__(self) -> str:
         repr = self._repr()
-        timedelta = str(repr[1]).split(".")[0]
-        return "<scheduler.Job: {0}, {7}, {3}/{4}, weight={5}, tzinfo={6}>".format(
-            *repr, timedelta
+        return "<scheduler.Job: {0}, {7}, {8}, {3}/{4}, weight={5}, tzinfo={6}>".format(
+            *repr, *[str(elem).split(".")[0] for elem in repr[1:3]]
         )
 
     @property
