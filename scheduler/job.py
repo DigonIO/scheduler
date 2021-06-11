@@ -60,12 +60,20 @@ class JobExecTimer:
 
         # calculate next available datetime for the given time
         elif isinstance(self.__exec_at, dt.time):
+            if self.__exec_at.tzinfo:
+                self.__exec_dt_stamp = self.__exec_dt_stamp.astimezone(
+                    self.__exec_at.tzinfo
+                )
             self.__exec_dt_stamp = next_time_occurrence(
                 self.__exec_dt_stamp, self.__exec_at
             )
 
         # calculate datetime to next weekday and add the given time
         elif isinstance(self.__exec_at, tuple):
+            if self.__exec_at[1].tzinfo:
+                self.__exec_dt_stamp = self.__exec_dt_stamp.astimezone(
+                    self.__exec_at[1].tzinfo
+                )
             self.__exec_dt_stamp = next_weekday_time_occurrence(
                 self.__exec_dt_stamp, *self.__exec_at
             )
@@ -204,7 +212,7 @@ class Job:
             self.attemps,
             float("inf") if self.max_attemps == 0 else self.max_attemps,
             self.weight,
-            dt_stamp.tzname(),
+            self.__pending_timer.datetime.tzname(),
         )
 
     def __lt__(self, other: Job):
