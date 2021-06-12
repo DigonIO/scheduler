@@ -29,6 +29,13 @@ TIME_TYPES_STR = (
 ExecOnceTimeType = Union[dt.datetime, TimeTypes]
 
 
+def check_tz_aware(exec_at: TimeTypes, exec_dt: dt.datetime) -> None:
+    if bool(exec_at.tzinfo) ^ bool(exec_dt.tzinfo):
+        raise SchedulerError(
+            "can't use offset-naive and offset-aware datetimes together"
+        )
+
+
 class JobExecTimer:
     """
     Auxiliary timer class for the `Job` class.
@@ -63,12 +70,14 @@ class JobExecTimer:
 
         # calculate next available datetime for the given time
         elif isinstance(self.__exec_at, dt.time):
+            check_tz_aware(self.__exec_at, self.__exec_dt)
             if self.__exec_at.tzinfo:
                 self.__exec_dt = self.__exec_dt.astimezone(self.__exec_at.tzinfo)
             self.__exec_dt = next_time_occurrence(self.__exec_dt, self.__exec_at)
 
         # calculate datetime to next weekday and add the given time
         elif isinstance(self.__exec_at, tuple):
+            check_tz_aware(self.__exec_at[1], self.__exec_dt)
             if self.__exec_at[1].tzinfo:
                 self.__exec_dt = self.__exec_dt.astimezone(self.__exec_at[1].tzinfo)
             self.__exec_dt = next_weekday_time_occurrence(
@@ -79,7 +88,7 @@ class JobExecTimer:
         else:  # isinstance(self.__exec_at, dt.timedelta):
             self.__exec_dt = self.__exec_dt + self.__exec_at
 
-        if self.__skip_missing and self.__exec_dt < ref_dt:
+        if self.__skip_missing and ref_dt is not None and self.__exec_dt < ref_dt:
             self.__exec_dt = ref_dt
             self.calc_next_exec_dt()
 
@@ -161,7 +170,6 @@ class Job:
         skip_missing: bool = False,
         tzinfo: Optional[dt.timezone] = None,
     ):
-
         self.__handle = handle
         self.__params = {} if params is None else params
         self.__max_attempts = max_attempts
@@ -198,8 +206,11 @@ class Job:
             ]
 
         # generate first dt_stamps for each JobExecTimer
-        for timer in self.__timers:
-            timer.calc_next_exec_dt()
+        try:
+            for timer in self.__timers:
+                timer.calc_next_exec_dt()
+        except SchedulerError:
+            raise
 
         # calculate active JobExecTimer
         self.__set_pending_timer()
@@ -363,3 +374,7 @@ class Job:
         if not self.__delay and self.__attempts == 0:
             return self.__start_dt - dt_stamp
         return self.__pending_timer.timedelta(dt_stamp)
+
+    @property
+    def tzinfo(self) -> Optional[dt.timezone]:
+        return self.__tzinfo

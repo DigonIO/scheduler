@@ -34,10 +34,12 @@ class Scheduler:
     max_exec : int
         Limits the number of overdue `Job`\ s that can be executed
         by calling function `Scheduler.exec_jobs()`.
-    weight_function: Callable[[float, Job, int, int], float]
+    weight_function : Callable[[float, Job, int, int], float]
         A function handle to compute the effective weight of a `Job` depending
         on the time it is overdue and its respective weight. Defaults to a linear
         weight function.
+    jobs : set[Job]
+        A collection of job instances.
     """
 
     def __init__(
@@ -48,11 +50,17 @@ class Scheduler:
             [float, Job, int, int],
             float,
         ] = linear_weight_function,
+        jobs: Optional[set[Job]] = None,
     ):
         self.__tzinfo = tzinfo
         self.__max_exec = max_exec
         self.__weight_function = weight_function
-        self.__jobs: set[Job] = set()
+        self.__jobs: set[Job] = set() if jobs is None else jobs
+        for job in self.__jobs:
+            if job.tzinfo != self.__tzinfo:
+                raise SchedulerError(
+                    "Job internal timezone does not match scheduler timezone."
+                )
 
         self.__tz_str = dt.datetime.now(tzinfo).timetz().tzname()
 
@@ -126,17 +134,6 @@ class Scheduler:
         res = f"<scheduler.Scheduler: {', '.join(self.__headings())}"
         res += f", jobs={{{', '.join([job.__repr__() for job in sorted(self.jobs)])}}}>"
         return res
-
-    def _add_job(self, job: Job) -> None:
-        """
-        Add a `Job` to the `Scheduler`.
-
-        Parameters
-        ----------
-        job : Job
-            `Job` instance that has to be added to the `Scheduler`.
-        """
-        self.__jobs.add(job)
 
     def delete_job(self, job: Job) -> None:
         """
@@ -279,17 +276,20 @@ class Scheduler:
         Job
             Reference to the created `Job`.
         """
-        job = Job(
-            handle=handle,
-            exec_at=exec_at,
-            params=params,
-            max_attempts=max_attempts,
-            weight=weight,
-            delay=delay,
-            offset=offset,
-            tzinfo=self.__tzinfo,
-        )
-        self._add_job(job)
+        try:
+            job = Job(
+                handle=handle,
+                exec_at=exec_at,
+                params=params,
+                max_attempts=max_attempts,
+                weight=weight,
+                delay=delay,
+                offset=offset,
+                tzinfo=self.__tzinfo,
+            )
+        except SchedulerError:
+            raise
+        self.__jobs.add(job)
         return job
 
     def once(

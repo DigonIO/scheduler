@@ -7,10 +7,13 @@
 + Delete all scheduled `Job`s using a single command.
 + Added `__repr__` and `__str__` methods to `Job`
 + Execute all scheduled `Job`s regardless of when they are scheduled.
++ `Job`s can be passed to `Scheduler.__init__`
++ `Job` exposes property `tzinfo`
 
 ### API changes
 
 + `Job.has_attempts` is now `Job._has_attempts_remaining` as it has no meaningful use for the end user.
++ `Scheduler._add_job` removed
 
 ### Misc
 
