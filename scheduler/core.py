@@ -184,7 +184,7 @@ class Scheduler:
         if not job._has_attempts_remaining:
             self.delete_job(job)
         else:
-            job._gen_next_exec_dt(ref_dt)
+            job._calc_next_exec_dt(ref_dt)
 
     def exec_all_jobs(self) -> int:
         r"""

@@ -55,7 +55,7 @@ class JobExecTimer:
         self.__exec_dt: dt.datetime = ref_dt
         self.__skip_missing = skip_missing
 
-    def gen_next_exec_dt(self, ref_dt: Optional[dt.datetime] = None) -> None:
+    def calc_next_exec_dt(self, ref_dt: Optional[dt.datetime] = None) -> None:
         """Generate the next execution `datetime.datetime` stamp."""
         # calculate datetime to next weekday at 00:00
         if isinstance(self.__exec_at, Weekday):
@@ -81,7 +81,7 @@ class JobExecTimer:
 
         if self.__skip_missing and self.__exec_dt < ref_dt:
             self.__exec_dt = ref_dt
-            self.gen_next_exec_dt()
+            self.calc_next_exec_dt()
 
     @property
     def datetime(self) -> dt.datetime:
@@ -199,7 +199,7 @@ class Job:
 
         # generate first dt_stamps for each JobExecTimer
         for timer in self.__timers:
-            timer.gen_next_exec_dt()
+            timer.calc_next_exec_dt()
 
         # calculate active JobExecTimer
         self.__set_pending_timer()
@@ -256,7 +256,7 @@ class Job:
         """
         return self.__handle
 
-    def _gen_next_exec_dt(self, ref_dt: dt.datetime) -> None:
+    def _calc_next_exec_dt(self, ref_dt: dt.datetime) -> None:
         """
         Calculate the next estimated execution `datetime.datetime` of the `Job`.
 
@@ -265,7 +265,7 @@ class Job:
         ref_dt : datetime.datetime
             Reference time stamp to which the `Job` caluclates it's next execution.
         """
-        self.__pending_timer.gen_next_exec_dt(ref_dt)
+        self.__pending_timer.calc_next_exec_dt(ref_dt)
         self.__set_pending_timer()
 
     def __set_pending_timer(self) -> None:
