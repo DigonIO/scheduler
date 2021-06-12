@@ -40,47 +40,48 @@ class JobExecTimer:
     ----------
     exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]
         Execution time.
-    start_dt : datetime.datetime
+    ref_dt : datetime.datetime
         Reference `datetime.datetime` object. This reference is used to
         calculate the first execution and then recursively calculate all
         further executions.
+    skip_missing : bool
+        Skip missed execution datetime stamps expect the newest one.
     """
 
-    def __init__(self, exec_at: TimeTypes, start_dt: dt.datetime):
+    def __init__(
+        self, exec_at: TimeTypes, ref_dt: dt.datetime, skip_missing: bool = False
+    ):
         self.__exec_at = exec_at
-        self.__exec_dt_stamp = start_dt
+        self.__exec_dt: dt.datetime = ref_dt
+        self.__skip_missing = skip_missing
 
-    def gen_next_exec_dt(self) -> None:
+    def gen_next_exec_dt(self, ref_dt: Optional[dt.datetime] = None) -> None:
         """Generate the next execution `datetime.datetime` stamp."""
         # calculate datetime to next weekday at 00:00
         if isinstance(self.__exec_at, Weekday):
-            self.__exec_dt_stamp = next_weekday_occurrence(
-                self.__exec_dt_stamp, self.__exec_at
-            )
+            self.__exec_dt = next_weekday_occurrence(self.__exec_dt, self.__exec_at)
 
         # calculate next available datetime for the given time
         elif isinstance(self.__exec_at, dt.time):
             if self.__exec_at.tzinfo:
-                self.__exec_dt_stamp = self.__exec_dt_stamp.astimezone(
-                    self.__exec_at.tzinfo
-                )
-            self.__exec_dt_stamp = next_time_occurrence(
-                self.__exec_dt_stamp, self.__exec_at
-            )
+                self.__exec_dt = self.__exec_dt.astimezone(self.__exec_at.tzinfo)
+            self.__exec_dt = next_time_occurrence(self.__exec_dt, self.__exec_at)
 
         # calculate datetime to next weekday and add the given time
         elif isinstance(self.__exec_at, tuple):
             if self.__exec_at[1].tzinfo:
-                self.__exec_dt_stamp = self.__exec_dt_stamp.astimezone(
-                    self.__exec_at[1].tzinfo
-                )
-            self.__exec_dt_stamp = next_weekday_time_occurrence(
-                self.__exec_dt_stamp, *self.__exec_at
+                self.__exec_dt = self.__exec_dt.astimezone(self.__exec_at[1].tzinfo)
+            self.__exec_dt = next_weekday_time_occurrence(
+                self.__exec_dt, *self.__exec_at
             )
 
         # just add the timedelta to the current datetime object
         else:  # isinstance(self.__exec_at, dt.timedelta):
-            self.__exec_dt_stamp = self.__exec_dt_stamp + self.__exec_at
+            self.__exec_dt = self.__exec_dt + self.__exec_at
+
+        if self.__skip_missing and self.__exec_dt < ref_dt:
+            self.__exec_dt = ref_dt
+            self.gen_next_exec_dt()
 
     @property
     def datetime(self) -> dt.datetime:
@@ -92,7 +93,7 @@ class JobExecTimer:
         datetime.datetime
             Execution `datetime.datetime` stamp.
         """
-        return self.__exec_dt_stamp
+        return self.__exec_dt
 
     def timedelta(self, dt_stamp: dt.datetime) -> dt.timedelta:
         """
@@ -109,7 +110,7 @@ class JobExecTimer:
         timedelta
             `timedelta` to the execution.
         """
-        return self.__exec_dt_stamp - dt_stamp
+        return self.__exec_dt - dt_stamp
 
 
 class Job:
@@ -142,6 +143,8 @@ class Job:
     offset : Optional[datetime.datetime]
         Set the reference `datetime.datetime` stamp the `Job` will be
         scheduled against. Default value is `datetime.datetime.now()`.
+    skip_missing : bool
+        Skip missed executions, do only the newest planned execution.
     max_attempts : int
         Number of times the `Job` will be executed. 0 <=> inf
     """
@@ -155,6 +158,7 @@ class Job:
         weight: float = 1,
         delay: bool = True,
         offset: Optional[dt.datetime] = None,
+        skip_missing: bool = False,
         tzinfo: Optional[dt.timezone] = None,
     ):
 
@@ -163,6 +167,7 @@ class Job:
         self.__max_attempts = max_attempts
         self.__weight = weight
         self.__delay = delay
+        self.__skip_missing = skip_missing
         self.__tzinfo = tzinfo
 
         self.__attempts = 0
@@ -182,10 +187,15 @@ class Job:
         self.__pending_timer: JobExecTimer
         # exec_at: Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]
         if not isinstance(exec_at, list):
-            self.__timers = [JobExecTimer(exec_at, self.__start_dt)]
+            self.__timers = [
+                JobExecTimer(exec_at, self.__start_dt, self.__skip_missing)
+            ]
         # exec_at: list[Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]]
         else:
-            self.__timers = [JobExecTimer(ele, self.__start_dt) for ele in exec_at]
+            self.__timers = [
+                JobExecTimer(ele, self.__start_dt, self.__skip_missing)
+                for ele in exec_at
+            ]
 
         # generate first dt_stamps for each JobExecTimer
         for timer in self.__timers:
@@ -246,9 +256,16 @@ class Job:
         """
         return self.__handle
 
-    def _gen_next_exec_dt(self) -> None:
-        """Calculate the next estimated execution `datetime.datetime` of the `Job`."""
-        self.__pending_timer.gen_next_exec_dt()
+    def _gen_next_exec_dt(self, ref_dt: dt.datetime) -> None:
+        """
+        Calculate the next estimated execution `datetime.datetime` of the `Job`.
+
+        Parameters
+        ----------
+        ref_dt : datetime.datetime
+            Reference time stamp to which the `Job` caluclates it's next execution.
+        """
+        self.__pending_timer.gen_next_exec_dt(ref_dt)
         self.__set_pending_timer()
 
     def __set_pending_timer(self) -> None:

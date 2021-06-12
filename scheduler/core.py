@@ -168,7 +168,7 @@ class Scheduler:
         """
         return self.__jobs.copy()
 
-    def __exec_job(self, job: Job) -> None:
+    def __exec_job(self, job: Job, ref_dt: dt.datetime) -> None:
         """
         Execute a `Job` and handle it's deletion or new scheduling.
 
@@ -176,12 +176,15 @@ class Scheduler:
         ----------
         job : Job
             Instance of a `Job` to execute.
+        ref_dt : datetime:datetime
+            Reference time when the `Job` will be executed.
+
         """
         job._exec()
         if not job._has_attempts_remaining:
             self.delete_job(job)
         else:
-            job._gen_next_exec_dt()
+            job._gen_next_exec_dt(ref_dt)
 
     def exec_all_jobs(self) -> int:
         r"""
@@ -192,9 +195,10 @@ class Scheduler:
         int
             Number of executed `Job`\ s.
         """
+        ref_dt = dt.datetime.now(tz=self.__tzinfo)
         n_jobs = len(self.__jobs)
         for job in self.__jobs:
-            self.__exec_job(job)
+            self.__exec_job(job, ref_dt)
         return n_jobs
 
     def exec_jobs(self) -> int:
@@ -213,11 +217,11 @@ class Scheduler:
             Number of executed `Job`\ s.
         """
         # get all jobs with overtime in seconds and weight
-        dt_stamp = dt.datetime.now(tz=self.__tzinfo)
+        ref_dt = dt.datetime.now(tz=self.__tzinfo)
 
         effective_weight: dict[Job, float] = {}
         for job in self.__jobs:
-            delta_seconds = job.timedelta(dt_stamp).total_seconds()
+            delta_seconds = job.timedelta(ref_dt).total_seconds()
             effective_weight[job] = -self.__weight_function(
                 seconds=-delta_seconds,
                 job=job,
@@ -233,7 +237,7 @@ class Scheduler:
             if (self.__max_exec == 0 or idx < self.__max_exec) and effective_weight[
                 job
             ] < 0:
-                self.__exec_job(job)
+                self.__exec_job(job, ref_dt)
                 exec_job_count += 1
             else:
                 break
