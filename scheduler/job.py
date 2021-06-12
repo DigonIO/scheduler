@@ -171,6 +171,7 @@ class Job:
         tzinfo: Optional[dt.timezone] = None,
     ):
         self.__handle = handle
+        self.__exec_at = exec_at
         self.__params = {} if params is None else params
         self.__max_attempts = max_attempts
         self.__weight = weight
@@ -229,11 +230,11 @@ class Job:
         return (
             self.handle.__qualname__,
             self.__pending_timer.datetime,
+            self.__pending_timer.datetime.tzname(),
             dt_timedelta,
             self.attemps,
             float("inf") if self.max_attemps == 0 else self.max_attemps,
             self.weight,
-            self.__pending_timer.datetime.tzname(),
         )
 
     def __lt__(self, other: Job):
@@ -245,11 +246,31 @@ class Job:
 
     def __str__(self) -> str:
         repr = self._repr()
-        return "{0}(...) {7} {8} {3}/{4} weight={5:.3f} tzinfo={6}".format(
-            *repr, *[str(elem).split(".")[0] for elem in repr[1:3]]
+        return "{0}(...) {7} tz={2} {8} {4}/{5} w={6:.3f}".format(
+            *repr, *[str(elem).split(".")[0] for elem in (repr[1], repr[3])]
         )
 
+    # TODO: find out why repr(elem) does not work
     def __repr__(self) -> str:
+        return "scheduler.Job({})".format(
+            ", ".join(
+                (
+                    elem.__repr__()
+                    for elem in (
+                        self.__handle,
+                        self.__exec_at,
+                        self.__params,
+                        self.__max_attempts,
+                        self.__weight,
+                        self.__delay,
+                        self.__start_dt,
+                        self.__skip_missing,
+                        self.__tzinfo,
+                    )
+                )
+            )
+        )
+
         repr = self._repr()
         return "<scheduler.Job: {0}, {7}, {8}, {3}/{4}, weight={5}, tzinfo={6}>".format(
             *repr, *[str(elem).split(".")[0] for elem in repr[1:3]]

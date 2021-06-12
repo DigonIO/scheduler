@@ -17,22 +17,22 @@ def test_general_readme():
 
     Schedule a job that runs every 10 minutes
     >>> sch.schedule(foo, dt.timedelta(minutes=10)) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, ..., 0:09:59, 0/inf, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, datetime.timedelta(seconds=600), {}, 0, 1, True, datetime.datetime(...), False, None)
 
     Schedule a job that runs every day at 16:45
     >>> sch.schedule(foo, dt.time(hour=16, minute=45)) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, ... 16:45:00, ..., 0/inf, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, datetime.time(16, 45), {}, 0, 1, True, datetime.datetime(...), False, None)
 
     Schedule a job that runs every monday at 00:00
     >>> sch.schedule(foo, Weekday.MONDAY) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, ... 00:00:00, ..., 0/inf, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, <Weekday.MONDAY: 0>, {}, 0, 1, True, datetime.datetime(...), False, None)
 
     Schedule a job that runs every monday at 16:45
     >>> sch.schedule(
     ...     foo,
     ...     (Weekday.MONDAY, dt.time(hour=16, minute=45)),
     ... ) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, ... 16:45:00, ..., 0/inf, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, (<Weekday.MONDAY: 0>, datetime.time(16, 45)), {}, 0, 1, True, datetime.datetime(...), False, None)
 
     Schedule a job that runs every friday at 00:00, every 10 minutes and every monday at 16:45
     >>> sch.schedule(
@@ -43,35 +43,35 @@ def test_general_readme():
     ...         (Weekday.MONDAY, dt.time(hour=16, minute=45)),
     ...     ],
     ... ) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, ..., 0/inf, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, [<Weekday.FRIDAY: 4>, datetime.timedelta(seconds=600), (<Weekday.MONDAY: 0>, datetime.time(16, 45))], {}, 0, 1, True, datetime.datetime(...), False, None)
 
     Schedule a job at given datetime (here 2021.02.11)
     >>> sch.once(foo, dt.datetime(year=2021, month=2, day=11)) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, 2021-02-12 00:00:00, ..., 0/1, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, datetime.timedelta(days=1), {}, 1, 1, False, datetime.datetime(...), False, None)
 
     Schedule a job in 10 minutes
     >>> sch.once(foo, dt.timedelta(minutes=10)) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, ..., 0:09:59, 0/1, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, datetime.timedelta(seconds=600), {}, 1, 1, True, datetime.datetime(...), False, None)
 
     Schedule a job in 10000 seconds with parameters
     >>> sch.once(foo, dt.timedelta(seconds=10000), params={"msg": "fizz"}) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, ..., 2:46:39, 0/1, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, datetime.timedelta(seconds=10000), {'msg': 'fizz'}, 1, 1, True, datetime.datetime(...), False, None)
 
     Schedule a job that runs every minute with parameters
     >>> sch.schedule(foo, dt.timedelta(minutes=1), params={"msg": "buzz"}) # doctest:+ELLIPSIS
-    <scheduler.Job: foo, ..., 0:00:59, 0/inf, weight=1, tzinfo=None>
+    scheduler.Job(<function foo at 0x...>, datetime.timedelta(seconds=60), {'msg': 'buzz'}, 0, 1, True, datetime.datetime(...), False, None)
 
     >>> print(sch) # doctest:+ELLIPSIS
-    max_exec=inf, zinfo=None, #jobs=9, weight_function=linear_weight_function
+    max_exec=inf, timezone=None, #jobs=9, weight_function=linear_weight_function
     <BLANKLINE>
-    function               due at           due in      attempts weight       tzinfo
-    ---------------- ------------------- --------- ------------- ------ ------------
-    ...              ... 0:00:59         0/inf      1         None...
-    foo              ... 0:09:59         0/inf      1         None
-    foo              ... 0:09:59         0/inf      1         None
-    foo              ... 0:09:59           0/1      1         None...
-    foo              ... 2:46:39           0/1      1         None
-    ...
+    function               due at        timezone        due in      attempts weight
+    ---------------- ------------------- ------------ --------- ------------- ------
+    foo              2021-02-12 00:00:00 None         ...           0/1      1...
+    foo              ... None           0:00:59         0/inf      1...
+    foo              ... None           0:09:59         0/inf      1
+    foo              ... None           0:09:59         0/inf      1
+    foo              ... None           0:09:59           0/1      1...
+    foo              ... None           2:46:39           0/1      1...
     <BLANKLINE>
 
     >>> sch.exec_jobs()

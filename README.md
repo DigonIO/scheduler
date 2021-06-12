@@ -104,19 +104,19 @@ print(sch)
 ```
 
 ```raw
-max_exec=inf, zinfo=None, #jobs=9, weight_function=linear_weight_function
+max_exec=inf, timezone=None, #jobs=9, weight_function=linear_weight_function
 
-function               due at           due in      attempts weight       tzinfo
----------------- ------------------- --------- ------------- ------ ------------
-foo              2021-02-12 00:00:00 -120 days           0/1      1         None
-foo              2021-06-10 04:13:11   0:00:58         0/inf      1         None
-foo              2021-06-10 04:22:11   0:09:58         0/inf      1         None
-foo              2021-06-10 04:22:11   0:09:58         0/inf      1         None
-foo              2021-06-10 04:22:11   0:09:58           0/1      1         None
-foo              2021-06-10 06:58:51   2:46:38           0/1      1         None
-foo              2021-06-10 16:45:00  12:32:47         0/inf      1         None
-foo              2021-06-14 00:00:00    3 days         0/inf      1         None
-foo              2021-06-14 16:45:00    4 days         0/inf      1         None
+function               due at        timezone        due in      attempts weight
+---------------- ------------------- ------------ --------- ------------- ------
+foo              2021-02-12 00:00:00 None         -122 days           0/1      1
+foo              2021-06-12 23:30:01 None           0:00:59         0/inf      1
+foo              2021-06-12 23:39:01 None           0:09:59         0/inf      1
+foo              2021-06-12 23:39:01 None           0:09:59         0/inf      1
+foo              2021-06-12 23:39:01 None           0:09:59           0/1      1
+foo              2021-06-13 02:15:41 None           2:46:39           0/1      1
+foo              2021-06-13 16:45:00 None          17:15:58         0/inf      1
+foo              2021-06-14 00:00:00 None             1 day         0/inf      1
+foo              2021-06-14 16:45:00 None             1 day         0/inf      1
 ```
 
 Executing pending `Job`s periodically can be achieved with a simple loop:

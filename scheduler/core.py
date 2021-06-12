@@ -52,8 +52,8 @@ class Scheduler:
         ] = linear_weight_function,
         jobs: Optional[set[Job]] = None,
     ):
-        self.__tzinfo = tzinfo
         self.__max_exec = max_exec
+        self.__tzinfo = tzinfo
         self.__weight_function = weight_function
         self.__jobs: set[Job] = set() if jobs is None else jobs
         for job in self.__jobs:
@@ -67,7 +67,7 @@ class Scheduler:
     def __headings(self) -> list[str]:
         headings = [
             f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
-            f"zinfo={self.__tz_str}",
+            f"timezone={self.__tz_str}",
             f"#jobs={len(self.__jobs)}",
             f"weight_function={self.__weight_function.__qualname__}",
         ]
@@ -75,12 +75,19 @@ class Scheduler:
 
     def __str__(self) -> str:
         # Scheduler meta heading
-        headings = "{0}, {1}, {2}, {3}\n\n".format(*self.__headings())
+        scheduler_headings = "{0}, {1}, {2}, {3}\n\n".format(*self.__headings())
 
         # Job table (we join two of the Job._repr() fields into one)
         n_fields = 6
-        jheadings = ["function", "due at", "due in", "attempts", "weight", "tzinfo"]
-        column_width = [16, 19, 9, 13, 6, 12]
+        job_headings = [
+            "function",
+            "due at",
+            "timezone",
+            "due in",
+            "attempts",
+            "weight",
+        ]
+        column_width = [16, 19, 12, 9, 13, 6]
 
         collection = [job._repr() for job in sorted(self.jobs)]
 
@@ -94,46 +101,58 @@ class Scheduler:
                 elif idx == 1:
                     tmp_str = str(ele).split(".")[0]
                 elif idx == 2:
+                    tmp_str = str_cutoff(f"{ele}", width, False)
+                elif idx == 3:
                     # ~6x faster than with regex
                     tmp_str = str_cutoff(
                         str(ele).split(",")[0].split(".")[0], width, True
                     )
-                elif idx == 3:
-                    tmp_str = str_cutoff(f"{ele}/{row[idx+1]}", width, False)
                 elif idx == 4:
-                    continue
+                    tmp_str = str_cutoff(f"{ele}/{row[idx+1]}", width, False)
                 elif idx == 5:
-                    tmp_str = str_cutoff(f"{ele}", width, True)
+                    continue
                 elif idx == 6:
-                    tmp_str = str_cutoff(f"{ele}", width, False)
+                    tmp_str = str_cutoff(f"{ele}", width, True)
                 inner.append(tmp_str)
+
             str_collection.append(inner)
 
         # right align except first column
         form = []
         for idx, length in zip(range(n_fields), column_width):
             align = ""
-            if idx == 0:
+            if idx in (0, 2):
                 align = "<"
-            if idx == 1:
+            elif idx == 1:
                 align = "^"
-            if idx > 1:
+            else:
                 align = ">"
             form.append(f"{{{idx}:{align}{length}}}")
 
         fstring = f"{form[0]} {form[1]} {form[2]} {form[3]} {form[4]} {form[5]}\n"
 
-        job_table = fstring.format(*jheadings)
+        job_table = fstring.format(*job_headings)
         job_table += " ".join(["-" * width for width in column_width]) + "\n"
         for line in str_collection:
             job_table += fstring.format(*line)
 
-        return headings + job_table
+        return scheduler_headings + job_table
 
     def __repr__(self):
-        res = f"<scheduler.Scheduler: {', '.join(self.__headings())}"
-        res += f", jobs={{{', '.join([job.__repr__() for job in sorted(self.jobs)])}}}>"
-        return res
+        return "scheduler.Scheduler({0}, jobs={{{1}}})".format(
+            ", ".join(
+                (
+                    elem.__repr__()
+                    for elem in (
+                        self.__max_exec,
+                        self.__tzinfo,
+                        self.__weight_function,
+                        self.__jobs,
+                    )
+                )
+            ),
+            ", ".join([repr(job) for job in sorted(self.jobs)]),
+        )
 
     def delete_job(self, job: Job) -> None:
         """
@@ -249,6 +268,7 @@ class Scheduler:
         weight: float = 1,
         delay: bool = True,
         offset: Optional[dt.datetime] = None,
+        skip_missing: bool = False,
     ) -> Job:
         r"""
         Create a repeating `Job` that will be executed in a given cycle.
@@ -285,6 +305,7 @@ class Scheduler:
                 weight=weight,
                 delay=delay,
                 offset=offset,
+                skip_missing=skip_missing,
                 tzinfo=self.__tzinfo,
             )
         except SchedulerError:

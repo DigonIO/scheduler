@@ -145,8 +145,11 @@ def job_param_template(
             1,
             T_2021_5_26__3_55,
             None,
-            "<scheduler.Job: foo, 2021-05-26 03:55:05, 0:00:05, 0/inf, weight=1, tzinfo=None>",
-            "foo(...) 2021-05-26 03:55:05 0:00:05 0/inf weight=1.000 tzinfo=None",
+            [
+                "scheduler.Job(<function foo at 0x",
+                ", datetime.timedelta(seconds=5), {}, 0, 1, True, datetime.datetime(2021, 5, 26, 3, 55), False, None)",
+            ],
+            "foo(...) 2021-05-26 03:55:05 tz=None 0:00:05 0/inf w=1.000",
             samples,
         ),
         job_param_template(
@@ -156,8 +159,11 @@ def job_param_template(
             0.5,
             T_2021_5_26__3_55,
             dt.timezone(dt.timedelta(hours=1)),
-            "<scheduler.Job: Foo.foo, 2021-05-26 04:00:59+01:00, 0:05:59, 0/5, weight=0.5, tzinfo=UTC+01:00>",
-            "Foo.foo(...) 2021-05-26 04:00:59+01:00 0:05:59 0/5 weight=0.500 tzinfo=UTC+01:00",
+            [
+                "scheduler.Job(<function Foo.foo at 0x",
+                ">, datetime.timedelta(seconds=359), {}, 5, 0.5, True, datetime.datetime(2021, 5, 26, 3, 55, tzinfo=datetime.timezone(datetime.timedelta(seconds=3600))), False, datetime.timezone(datetime.timedelta(seconds=3600)))",
+            ],
+            "Foo.foo(...) 2021-05-26 04:00:59+01:00 tz=UTC+01:00 0:05:59 0/5 w=0.500",
             samples,
         ),
         job_param_template(
@@ -167,8 +173,11 @@ def job_param_template(
             0.5,
             T_2021_5_26__3_55,
             dt.timezone(dt.timedelta(hours=-2, seconds=1)),
-            "<scheduler.Job: foo, 2021-05-26 03:55:02-01:59:59, 0:00:02, 0/5, weight=0.5, tzinfo=UTC-01:59:59>",
-            "foo(...) 2021-05-26 03:55:02-01:59:59 0:00:02 0/5 weight=0.500 tzinfo=UTC-01:59:59",
+            [
+                "scheduler.Job(<function foo at 0x",
+                ">, datetime.timedelta(seconds=2), {}, 5, 0.5, True, datetime.datetime(2021, 5, 26, 3, 55, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=79201))), False, datetime.timezone(datetime.timedelta(days=-1, seconds=79201)))",
+            ],
+            "foo(...) 2021-05-26 03:55:02-01:59:59 tz=UTC-01:59:59 0:00:02 0/5 w=0.500",
             samples,
         ),
     ],
@@ -193,5 +202,6 @@ def test_repr(
         offset=offset,
         tzinfo=tzinfo,
     )
-    assert job.__repr__() == repr
+    for substing in repr:
+        assert substing in job.__repr__()
     assert job.__str__() == string
