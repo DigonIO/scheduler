@@ -40,11 +40,11 @@ T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
         ],
     ),
 )
-def test_JobExecTimer_gen_next_exec_dt(start_dt, exec_at, target, next_target):
+def test_JobExecTimer_calc_next_exec_dt(start_dt, exec_at, target, next_target):
     timer = JobExecTimer(exec_at, start_dt)
-    timer.gen_next_exec_dt()
+    timer.calc_next_exec_dt()
     assert timer.datetime == target
-    timer.gen_next_exec_dt()
+    timer.calc_next_exec_dt()
     assert timer.datetime == next_target
 
 
@@ -65,7 +65,7 @@ def test_JobExecTimer_gen_next_exec_dt(start_dt, exec_at, target, next_target):
 )
 def test_JobExecTimer_timedelta(start_dt, exec_at, target):
     timer = JobExecTimer(exec_at, start_dt)
-    timer.gen_next_exec_dt()
+    timer.calc_next_exec_dt()
     assert timer.timedelta(start_dt) == target - start_dt
 
 
