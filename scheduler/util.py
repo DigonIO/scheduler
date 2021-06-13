@@ -7,7 +7,6 @@ from __future__ import annotations
 import datetime as dt
 from enum import Enum
 from abc import ABC, abstractproperty
-from typing import Callable, cast
 
 
 class SchedulerError(Exception):
@@ -145,9 +144,17 @@ def next_weekday_time_occurrence(
 
 
 class AbstractJob(ABC):
+    """
+    Abstract definition of the `Job` class.
+
+    Notes
+    -----
+    Needed to provide linting and typing in the `scheduler.util.py` module.
+    """
+
     @abstractproperty
     def weight(self) -> float:
-        pass
+        """Abstract weight."""
 
 
 def linear_weight_function(
@@ -177,17 +184,38 @@ def linear_weight_function(
     float
         The time dependant effective weight for a `Job`
     """
+    _ = max_exec
+    _ = job_count
+
     if seconds < 0:
         return 0
     return (seconds + 1) * job.weight
 
 
 def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
+    """
+    Abbreviate a string to a given length.
+
+    The resulting string will carry an indicator if it's abbreviated,
+    like ``stri#``.
+
+    Parameters
+    ----------
+    string : str
+        String which is to be cut.
+    max_length : int
+        Max resulting string length.
+    cut_tail : bool
+        `False` for string abbreviation from the front, else `True`.
+
+    Returns
+    -------
+    str
+        Resulting string
+    """
     if len(string) > max_length:
-        pos = max_length - 2
+        pos = max_length - 1
         if cut_tail:
-            return string[:pos] + ".."
-        else:
-            return ".." + string[-pos:]
-    else:
-        return string
+            return string[:pos] + "#"
+        return "#" + string[-pos:]
+    return string

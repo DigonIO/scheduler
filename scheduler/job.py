@@ -31,6 +31,21 @@ ExecOnceTimeType = Union[dt.datetime, TimeTypes]
 
 
 def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
+    """
+    Raises if both arguments have incompatible timezone informations.
+
+    Parameters
+    ----------
+    exec_at : datetime.time
+        A time object
+    exec_dt : datetime.datetime
+        A datetime object
+
+    Raises
+    ------
+    SchedulerError
+        If one argument has a timezone and the other doesn't
+    """
     if bool(exec_at.tzinfo) ^ bool(exec_dt.tzinfo):
         raise SchedulerError(
             "can't use offset-naive and offset-aware datetimes together"
@@ -64,7 +79,13 @@ class JobExecTimer:
         self.__skip_missing = skip_missing
 
     def calc_next_exec_dt(self, ref_dt: Optional[dt.datetime] = None) -> None:
-        """Generate the next execution `datetime.datetime` stamp."""
+        """Generate the next execution `datetime.datetime` stamp.
+
+        Parameters
+        ----------
+        ref_dt : Optional[datetime.datetime]
+            Datetime reference for scheduling the next execution datetime.
+        """
         # calculate datetime to next weekday at 00:00
         if isinstance(self.__exec_at, Weekday):
             self.__exec_dt = next_weekday_occurrence(self.__exec_dt, self.__exec_at)
@@ -208,11 +229,8 @@ class Job(AbstractJob):
             ]
 
         # generate first dt_stamps for each JobExecTimer
-        try:
-            for timer in self.__timers:
-                timer.calc_next_exec_dt()
-        except SchedulerError:
-            raise
+        for timer in self.__timers:
+            timer.calc_next_exec_dt()
 
         # calculate active JobExecTimer
         self.__set_pending_timer()
@@ -248,17 +266,16 @@ class Job(AbstractJob):
         )
 
     def __str__(self) -> str:
-        repr = self._repr()
+        _repr = self._repr()
         return "{0}(...) {7} tz={2} {8} {4}/{5} w={6:.3f}".format(
-            *repr, *[str(elem).split(".")[0] for elem in (repr[1], repr[3])]
+            *_repr, *[str(elem).split(".")[0] for elem in (_repr[1], _repr[3])]
         )
 
-    # TODO: find out why repr(elem) does not work
     def __repr__(self) -> str:
         return "scheduler.Job({})".format(
             ", ".join(
                 (
-                    elem.__repr__()
+                    repr(elem)
                     for elem in (
                         self.__handle,
                         self.__exec_at,
@@ -272,11 +289,6 @@ class Job(AbstractJob):
                     )
                 )
             )
-        )
-
-        repr = self._repr()
-        return "<scheduler.Job: {0}, {7}, {8}, {3}/{4}, weight={5}, tzinfo={6}>".format(
-            *repr, *[str(elem).split(".")[0] for elem in repr[1:3]]
         )
 
     @property
@@ -402,4 +414,12 @@ class Job(AbstractJob):
 
     @property
     def tzinfo(self) -> Optional[dt.timezone]:
+        """
+        Get the timezone of a `Job` if it has one.
+
+        Returns
+        -------
+        Optinal[datetime.timezone]
+            Timezone of the "Job".
+        """
         return self.__tzinfo

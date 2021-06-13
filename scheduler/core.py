@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import datetime as dt
 from typing import Callable, Optional, Any
-from operator import itemgetter
 
 import typeguard as tg
 
@@ -301,20 +300,17 @@ class Scheduler:
         Job
             Reference to the created `Job`.
         """
-        try:
-            job = Job(
-                handle=handle,
-                exec_at=exec_at,
-                params=params,
-                max_attempts=max_attempts,
-                weight=weight,
-                delay=delay,
-                offset=offset,
-                skip_missing=skip_missing,
-                tzinfo=self.__tzinfo,
-            )
-        except SchedulerError:
-            raise
+        job = Job(
+            handle=handle,
+            exec_at=exec_at,
+            params=params,
+            max_attempts=max_attempts,
+            weight=weight,
+            delay=delay,
+            offset=offset,
+            skip_missing=skip_missing,
+            tzinfo=self.__tzinfo,
+        )
         self.__jobs.add(job)
         return job
 
