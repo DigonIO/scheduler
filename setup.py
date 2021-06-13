@@ -11,7 +11,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Jendrik A. Potyka, Fabian A. Preiss",
     author_email="devops@digon.io",
-    license="GPLv3",
+    license="LGPLv3",
     packages=[
         "scheduler",
     ],
@@ -22,7 +22,7 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Scientific/Engineering",
