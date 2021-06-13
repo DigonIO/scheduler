@@ -16,14 +16,13 @@ A simple in-process python scheduler library, designed to be integrated seamless
 ## Features
 
 + Easy and user friendly in-process `Job` scheduling [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#general-job-scheduling)
-  + Create recurring `Job`s by given date, time, weekday, ...
+  + Create recurring `Job`s by given date, time, datetime, weekday, ...
   + Create recurring `Job`s with a given timedelta
   + Oneshot `Job`s
   + Passing of parameters to `Job`
 + Timezone compatibility [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
 + `Job` prioritization with linear weighting [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
 + Limit and track the `Job` execution count [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
-+ `datetime` compatibility
 + Lightweight
 + High test coverage
 + [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
@@ -129,7 +128,7 @@ while True:
 
 ---
 
-## Build the documentation
+## Documentation
 
 The API documentation can either be viewed [online](https://python-scheduler.readthedocs.io/en/latest/index.html) or be generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) formatting. To build, run:
 
@@ -156,8 +155,6 @@ pytest --doctest-modules doc/examples.rst
 
 + Features
   + Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
-  + Add `__repr__` and `__str__` methods to `Scheduler`
-  + Optional `Job` flag: Discard missed executions befor the last pending execution
   + Execute a `Job` until a certain datetime stamp
   + Thread safety and background tasks
 + Documentation

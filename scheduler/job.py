@@ -32,7 +32,7 @@ ExecOnceTimeType = Union[dt.datetime, TimeTypes]
 
 def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
     """
-    Raises if both arguments have incompatible timezone informations.
+    Raise if both arguments have incompatible timezone informations.
 
     Parameters
     ----------
