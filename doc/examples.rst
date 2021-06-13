@@ -19,22 +19,22 @@ Create a `Scheduler` instance:
 >>> def foo(msg="bar"):
 ...     print(msg)
 ...
->>> sch = Scheduler(tzinfo=dt.timezone.utc)
+>>> sch = Scheduler()
 
 Schedule a `Job` for execution every 10 minutes:
 
 >>> sch.schedule(foo, dt.timedelta(minutes=10)) # doctest:+ELLIPSIS
-<scheduler.job.Job object at 0x...>
+scheduler.Job(<function foo at 0x...>, datetime.timedelta(seconds=600), ...)
 
 Schedule a `Job` for execution every day at ``16:45``:
 
 >>> sch.schedule(foo, dt.time(hour=16, minute=45)) # doctest:+ELLIPSIS
-<scheduler.job.Job object at 0x...>
+scheduler.Job(<function foo at 0x...>, datetime.time(16, 45), ...)
 
 Schedule a `Job` every monday at ``00:00`` with given parameters:
 
 >>> sch.schedule(foo, Weekday.MONDAY, params={"msg": "fizz"}) # doctest:+ELLIPSIS
-<scheduler.job.Job object at 0x...>
+scheduler.Job(...foo..., <Weekday.MONDAY: 0>, {'msg': 'fizz'}, ...)
 
 Schedule a `Job` every monday at ``16:45``:
 
@@ -42,7 +42,7 @@ Schedule a `Job` every monday at ``16:45``:
 ...     foo,
 ...     (Weekday.MONDAY, dt.time(hour=16, minute=45)),
 ... ) # doctest:+ELLIPSIS
-<scheduler.job.Job object at 0x...>
+scheduler.Job(..., (<Weekday.MONDAY: 0>, datetime.time(16, 45)), ...)
 
 Schedule a `Job` every friday at ``00:00``, every 10 minutes and every monday at ``16:45``:
 
@@ -54,17 +54,17 @@ Schedule a `Job` every friday at ``00:00``, every 10 minutes and every monday at
 ...         (Weekday.MONDAY, dt.time(hour=16, minute=45)),
 ...     ],
 ... ) # doctest:+ELLIPSIS
-<scheduler.job.Job object at 0x...>
+scheduler.Job(..., [<Weekday.FRIDAY: 4>, datetime.timedelta(seconds=600), (<Weekday.MONDAY: 0>, datetime.time(16, 45))], ...)
 
 Schedule a oneshot `Job` for the next monday at ``00:00``:
 
 >>> sch.once(foo, Weekday.MONDAY) # doctest:+ELLIPSIS
-<scheduler.job.Job object at 0x...>
+scheduler.Job(..., <Weekday.MONDAY: 0>, {}, 1, ...)
 
 Schedule a oneshot `Job` for a specific date and time:
 
 >>> sch.once(foo, dt.datetime(year=2021, month=5, day=27, hour=3, minute=23)) # doctest:+ELLIPSIS
-<scheduler.job.Job object at 0x...>
+scheduler.Job(..., datetime.datetime(2021, 5, 27, 3, 23), False, None)
 
 In order to execute the `Job`\ s, the corresponding function
 `Scheduler.exec_jobs()` must be called cyclically.
@@ -108,11 +108,12 @@ oneshot `Job`\ s, but is also possible with normal `Job`\ s:
 ...
 >>> exec_at = dt.datetime.now() + dt.timedelta(seconds=1)
 ...
+>>> def print_weight(x):
+...     print(f"Weight: {x}")
+...
 >>> sch = Scheduler(max_exec=3)
->>> _ = sch.once(lambda: print("Weight 2"), exec_at, weight=2)
->>> _ = sch.once(lambda: print("Weight 3"), exec_at, weight=3)
->>> _ = sch.once(lambda: print("Weight 1"), exec_at, weight=1)
->>> _ = sch.once(lambda: print("Weight 4"), exec_at, weight=4)
+>>> for weight in (2, 3, 1, 4):
+...     _ = sch.once(print_weight, exec_at, weight=weight, params={"x": weight})
 
 If the `Job`\ s are now executed, only 3 of 4 `Job`\ s are processed.
 Note that a `Job` in the next cycle is now one execution behind,
@@ -121,9 +122,9 @@ the `Job` cannot finish all overdue executions.
 
 >>> time.sleep(1)
 >>> print(sch.exec_jobs())
-Weight 4
-Weight 3
-Weight 2
+Weight: 4
+Weight: 3
+Weight: 2
 3
 
 Metrics

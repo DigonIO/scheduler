@@ -229,8 +229,8 @@ class Job:
         dt_timedelta = self.timedelta(dt_stamp)
         return (
             self.handle.__qualname__,
-            self.__pending_timer.datetime,
-            self.__pending_timer.datetime.tzname(),
+            self.datetime,
+            self.datetime.tzname(),
             dt_timedelta,
             self.attemps,
             float("inf") if self.max_attemps == 0 else self.max_attemps,

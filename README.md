@@ -103,12 +103,12 @@ A human readable overview of the scheduled jobs can be created by a simple `prin
 print(sch)
 ```
 
-```raw
+```text
 max_exec=inf, timezone=None, #jobs=9, weight_function=linear_weight_function
 
 function               due at        timezone        due in      attempts weight
 ---------------- ------------------- ------------ --------- ------------- ------
-foo              2021-02-12 00:00:00 None         -122 days           0/1      1
+foo              2021-02-11 00:00:00 None         -122 days           0/1      1
 foo              2021-06-12 23:30:01 None           0:00:59         0/inf      1
 foo              2021-06-12 23:39:01 None           0:09:59         0/inf      1
 foo              2021-06-12 23:39:01 None           0:09:59         0/inf      1

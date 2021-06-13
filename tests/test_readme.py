@@ -47,7 +47,7 @@ def test_general_readme():
 
     Schedule a job at given datetime (here 2021.02.11)
     >>> sch.once(foo, dt.datetime(year=2021, month=2, day=11)) # doctest:+ELLIPSIS
-    scheduler.Job(<function foo at 0x...>, datetime.timedelta(days=1), {}, 1, 1, False, datetime.datetime(...), False, None)
+    scheduler.Job(<function foo at 0x...>, datetime.timedelta(0), {}, 1, 1, False, datetime.datetime(...), False, None)
 
     Schedule a job in 10 minutes
     >>> sch.once(foo, dt.timedelta(minutes=10)) # doctest:+ELLIPSIS
@@ -66,7 +66,7 @@ def test_general_readme():
     <BLANKLINE>
     function               due at        timezone        due in      attempts weight
     ---------------- ------------------- ------------ --------- ------------- ------
-    foo              2021-02-12 00:00:00 None         ...           0/1      1...
+    foo              2021-02-11 00:00:00 None         ...           0/1      1...
     foo              ... None           0:00:59         0/inf      1...
     foo              ... None           0:09:59         0/inf      1
     foo              ... None           0:09:59         0/inf      1

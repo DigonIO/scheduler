@@ -354,7 +354,7 @@ class Scheduler:
             # patching of dt.datetime will corrupt the if statement
             return self.schedule(
                 handle=handle,
-                exec_at=dt.timedelta(days=1),  # dummy
+                exec_at=dt.timedelta(),  # dummy
                 params=params,
                 max_attempts=1,
                 weight=weight,
