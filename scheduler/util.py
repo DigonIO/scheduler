@@ -3,8 +3,11 @@ Collection of useful utility objects.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
+from __future__ import annotations
 import datetime as dt
 from enum import Enum
+from abc import ABC, abstractproperty
+from typing import Callable, cast
 
 
 class SchedulerError(Exception):
@@ -141,12 +144,16 @@ def next_weekday_time_occurrence(
     return target + delta
 
 
-class Job:
-    """Forward declaration."""
+class AbstractJob(ABC):
+    @abstractproperty
+    def weight(self) -> float:
+        pass
 
 
-def linear_weight_function(seconds: float, job: Job, **kwargs) -> float:
-    """
+def linear_weight_function(
+    seconds: float, job: AbstractJob, max_exec: int, job_count: int
+) -> float:
+    r"""
     Compute the default linear weights.
 
     Linear `Job` weighting such that the effective weight increases linearly with
@@ -159,6 +166,11 @@ def linear_weight_function(seconds: float, job: Job, **kwargs) -> float:
         The time in seconds that a `Job` is overdue.
     job : Job
         The `Job` instance
+    _max_exec : int
+        Limits the number of overdue `Job`\ s that can be executed
+        by calling function `Scheduler.exec_jobs()`.
+    _job_count : int
+        Number of scheduled `Job`\ s
 
     Returns
     -------

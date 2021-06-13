@@ -12,7 +12,12 @@ from operator import itemgetter
 import typeguard as tg
 
 from scheduler.job import ExecOnceTimeType, ExecTimeType, Job
-from scheduler.util import SchedulerError, str_cutoff, linear_weight_function
+from scheduler.util import (
+    SchedulerError,
+    AbstractJob,
+    str_cutoff,
+    linear_weight_function,
+)
 
 
 class Scheduler:
@@ -47,7 +52,7 @@ class Scheduler:
         max_exec: int = 0,
         tzinfo: Optional[dt.timezone] = None,
         weight_function: Callable[
-            [float, Job, int, int],
+            [float, AbstractJob, int, int],
             float,
         ] = linear_weight_function,
         jobs: Optional[set[Job]] = None,
@@ -239,13 +244,13 @@ class Scheduler:
         for job in self.__jobs:
             delta_seconds = job.timedelta(ref_dt).total_seconds()
             effective_weight[job] = -self.__weight_function(
-                seconds=-delta_seconds,
-                job=job,
-                max_exec=self.__max_exec,
-                job_count=len(self.__jobs),
+                -delta_seconds,
+                job,
+                self.__max_exec,
+                len(self.__jobs),
             )
         # sort the overtime jobs depending their weight * overtime
-        sorted_jobs = sorted(effective_weight, key=effective_weight.get)
+        sorted_jobs = sorted(effective_weight, key=effective_weight.get)  # type: ignore
 
         # execute the sorted overtime jobs and delete the ones with no attemps left
         exec_job_count = 0

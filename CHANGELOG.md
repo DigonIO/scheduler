@@ -2,11 +2,14 @@
 
 ## 0.4.0
 
++ Switched to LGPLv3 License
+
 ### Features
 
 + Delete all scheduled `Job`s using a single command.
-+ Added `__repr__` and `__str__` methods to `Job`
++ Added `__repr__` and `__str__` methods to `Job` and `Scheduler`
 + Execute all scheduled `Job`s regardless of when they are scheduled.
++ Added optional `Job` flag: Discard missed executions befor the last pending execution
 + `Job`s can be passed to `Scheduler.__init__`
 + `Job` exposes property `tzinfo`
 

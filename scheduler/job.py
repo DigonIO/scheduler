@@ -6,11 +6,12 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 from __future__ import annotations
 
 import datetime as dt
-from typing import Callable, Optional, Union, Any
+from typing import Callable, Optional, Union, Any, cast
 
 import typeguard as tg
 
 from scheduler.util import (
+    AbstractJob,
     SchedulerError,
     Weekday,
     next_time_occurrence,
@@ -29,7 +30,7 @@ TIME_TYPES_STR = (
 ExecOnceTimeType = Union[dt.datetime, TimeTypes]
 
 
-def check_tz_aware(exec_at: TimeTypes, exec_dt: dt.datetime) -> None:
+def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
     if bool(exec_at.tzinfo) ^ bool(exec_dt.tzinfo):
         raise SchedulerError(
             "can't use offset-naive and offset-aware datetimes together"
@@ -70,14 +71,14 @@ class JobExecTimer:
 
         # calculate next available datetime for the given time
         elif isinstance(self.__exec_at, dt.time):
-            check_tz_aware(self.__exec_at, self.__exec_dt)
+            check_tz_aware(cast(dt.time, self.__exec_at), self.__exec_dt)
             if self.__exec_at.tzinfo:
                 self.__exec_dt = self.__exec_dt.astimezone(self.__exec_at.tzinfo)
             self.__exec_dt = next_time_occurrence(self.__exec_dt, self.__exec_at)
 
         # calculate datetime to next weekday and add the given time
         elif isinstance(self.__exec_at, tuple):
-            check_tz_aware(self.__exec_at[1], self.__exec_dt)
+            check_tz_aware(cast(dt.time, self.__exec_at[1]), self.__exec_dt)
             if self.__exec_at[1].tzinfo:
                 self.__exec_dt = self.__exec_dt.astimezone(self.__exec_at[1].tzinfo)
             self.__exec_dt = next_weekday_time_occurrence(
@@ -122,7 +123,7 @@ class JobExecTimer:
         return self.__exec_dt - dt_stamp
 
 
-class Job:
+class Job(AbstractJob):
     r"""
     Implementation of a `Job` for the `Scheduler`.
 
@@ -223,7 +224,9 @@ class Job:
 
     def _repr(
         self,
-    ) -> tuple[str, float, int, Union[float, int], float, str]:
+    ) -> tuple[
+        str, dt.datetime, Optional[str], dt.timedelta, int, Union[float, int], float
+    ]:
         """Return the objects in __repr__ as a tuple."""
         dt_stamp = dt.datetime.now(self.__tzinfo)
         dt_timedelta = self.timedelta(dt_stamp)
@@ -307,7 +310,8 @@ class Job:
             unsorted_timer_datetimes[timer] = timer.datetime
 
         sorted_timers = sorted(
-            unsorted_timer_datetimes, key=unsorted_timer_datetimes.get
+            unsorted_timer_datetimes,
+            key=unsorted_timer_datetimes.get,  # type: ignore
         )
         self.__pending_timer = sorted_timers[0]
 
