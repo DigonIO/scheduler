@@ -9,6 +9,7 @@ from scheduler.util import (
     next_time_occurrence,
     next_weekday_occurrence,
     next_weekday_time_occurrence,
+    str_cutoff,
 )
 
 err_msg = "Weekday enumeration interval: [0,6] <=> [Monday, Sunday]"
@@ -140,3 +141,21 @@ def test_next_time_occurrence(now, timestamp, target):
 )
 def test_next_weekday_time_occurrence(now, wkdy, timestamp, target):
     assert next_weekday_time_occurrence(now, wkdy, timestamp) == target
+
+
+@pytest.mark.parametrize(
+    "string, max_length, cut_tail, result, err",
+    [
+        ("abcdefg", 10, False, "abcdefg", None),
+        ("abcdefg", 4, False, "#efg", None),
+        ("abcdefg", 2, True, "a#", None),
+        ("abcdefg", 1, True, "#", None),
+        ("abcdefg", 0, True, "", "max_length < 1 not allowed"),
+    ],
+)
+def test_str_cutoff(string, max_length, cut_tail, result, err):
+    if err:
+        with pytest.raises(ValueError, match=err) as execinfo:
+            str_cutoff(string, max_length, cut_tail)
+    else:
+        assert str_cutoff(string, max_length, cut_tail) == result

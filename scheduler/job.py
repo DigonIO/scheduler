@@ -28,6 +28,7 @@ TIME_TYPES_STR = (
 
 # execution time stamp typing for a oneshot Job
 ExecOnceTimeType = Union[dt.datetime, TimeTypes]
+TZ_ERROR_MSG = "can't use offset-naive and offset-aware datetimes together"
 
 
 def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
@@ -47,9 +48,7 @@ def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
         If one argument has a timezone and the other doesn't
     """
     if bool(exec_at.tzinfo) ^ bool(exec_dt.tzinfo):
-        raise SchedulerError(
-            "can't use offset-naive and offset-aware datetimes together"
-        )
+        raise SchedulerError(TZ_ERROR_MSG)
 
 
 class JobExecTimer:
@@ -212,7 +211,12 @@ class Job(AbstractJob):
                 + f"list[{TIME_TYPES_STR}]"
             ) from err
 
-        self.__start_dt = offset if offset else dt.datetime.now(self.__tzinfo)
+        if offset:
+            if bool(offset.tzinfo) ^ bool(self.__tzinfo):
+                raise SchedulerError(TZ_ERROR_MSG)
+            self.__start_dt = offset
+        else:
+            self.__start_dt = dt.datetime.now(self.__tzinfo)
 
         self.__timers: list[JobExecTimer]
         self.__pending_timer: JobExecTimer

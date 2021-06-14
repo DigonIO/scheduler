@@ -213,6 +213,9 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
     str
         Resulting string
     """
+    if max_length < 1:
+        raise ValueError("max_length < 1 not allowed")
+
     if len(string) > max_length:
         pos = max_length - 1
         if cut_tail:

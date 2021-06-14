@@ -2,6 +2,7 @@ import datetime as dt
 
 import pytest
 
+from scheduler import SchedulerError
 from scheduler.job import Job, JobExecTimer
 from scheduler.util import Weekday
 
@@ -136,7 +137,7 @@ def job_param_template(
 # TODO: adjust repr string
 # @pytest.mark.xfail(strict=True)
 @pytest.mark.parametrize(
-    "handle, exec_at, max_attempts, weight, offset, tzinfo, repr, string, patch_datetime_now",
+    "handle, exec_at, max_attempts, weight, offset, tzinfo, _repr, string, patch_datetime_now",
     [
         job_param_template(
             foo,
@@ -190,7 +191,7 @@ def test_repr(
     weight,
     offset,
     tzinfo,
-    repr,
+    _repr,
     string,
     patch_datetime_now,
 ):
@@ -202,6 +203,79 @@ def test_repr(
         offset=offset,
         tzinfo=tzinfo,
     )
-    for substing in repr:
-        assert substing in job.__repr__()
-    assert job.__str__() == string
+    for substing in _repr:
+        assert substing in repr(job)
+    assert str(job) == string
+
+
+TZ_ERROR_MSG = "can't use offset-naive and offset-aware datetimes together"
+# @pytest.mark.skip()
+@pytest.mark.parametrize(
+    "exec_at, tzinfo, offset, err_msg",
+    [
+        (dt.time(), None, None, None),
+        (dt.time(tzinfo=dt.timezone.utc), dt.timezone.utc, None, None),
+        (
+            dt.time(tzinfo=dt.timezone(dt.timedelta(hours=1))),
+            dt.timezone.utc,
+            None,
+            None,
+        ),
+        (
+            (Weekday.MONDAY, dt.time(tzinfo=dt.timezone.utc)),
+            dt.timezone(dt.timedelta(hours=1)),
+            None,
+            None,
+        ),
+        (
+            [dt.time(), dt.time(tzinfo=dt.timezone.utc)],
+            dt.timezone.utc,
+            None,
+            TZ_ERROR_MSG,
+        ),
+        ([dt.time(), dt.time(tzinfo=dt.timezone.utc)], None, None, TZ_ERROR_MSG),
+        (dt.time(tzinfo=dt.timezone.utc), None, None, TZ_ERROR_MSG),
+        (dt.time(), dt.timezone.utc, None, TZ_ERROR_MSG),
+        (dt.time(), dt.timezone.utc, dt.datetime.now(), TZ_ERROR_MSG),
+        (dt.time(), dt.timezone.utc, dt.datetime.now(dt.timezone.utc), TZ_ERROR_MSG),
+        (
+            dt.time(tzinfo=dt.timezone.utc),
+            dt.timezone.utc,
+            dt.datetime.now(dt.timezone.utc),
+            None,
+        ),
+    ],
+)
+def test_tzinfo(exec_at, tzinfo, offset, err_msg):
+    if err_msg:
+        with pytest.raises(SchedulerError, match=err_msg) as execinfo:
+            job = Job(lambda: None, exec_at, offset=offset, tzinfo=tzinfo)
+    else:
+        job = Job(lambda: None, exec_at, offset=offset, tzinfo=tzinfo)
+        assert job.tzinfo == tzinfo
+
+
+def test_lt():
+    job0 = Job(lambda: None, dt.timedelta())
+    job1 = Job(lambda: None, dt.timedelta(seconds=1))
+    assert job0 < job1
+
+
+@pytest.mark.parametrize(
+    "delta_m, offset_m, res_delta_m",
+    (
+        [20, 21, 41],
+        [1, 21, 22],
+        [1, 1, 1],
+        [20, 20, 20],
+        [20, 1, 20],
+    ),
+)
+def test_skip(delta_m, offset_m, res_delta_m):
+    delta = dt.timedelta(minutes=delta_m)
+    offset = dt.timedelta(minutes=offset_m)
+    res_delta = dt.timedelta(minutes=res_delta_m)
+    jet = JobExecTimer(delta, T_2021_5_26__3_55, True)
+    assert jet.datetime == T_2021_5_26__3_55
+    jet.calc_next_exec_dt(T_2021_5_26__3_55 + offset)
+    assert jet.datetime == T_2021_5_26__3_55 + res_delta
