@@ -16,21 +16,11 @@ from scheduler.util import (
     AbstractJob,
     SchedulerError,
     Weekday,
-    next_time_occurrence,
+    next_minutely_occurrence,
+    next_hourly_occurrence,
+    next_daily_occurrence,
     next_weekday_occurrence,
     next_weekday_time_occurrence,
-)
-
-# execution time stamp typing for a cyclic Job
-# TODO: DEPRICATE TimeTypes, TIME_TYPES_STR, ExecTimeType, ExecOnceTimeType
-TimeTypes = Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]
-ExecTimeType = Union[list[TimeTypes], TimeTypes]
-
-# execution time stamp typing for a oneshot Job
-ExecOnceTimeType = Union[dt.datetime, TimeTypes]
-
-TIME_TYPES_STR = (
-    "Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]"
 )
 
 # execution interval
@@ -39,14 +29,37 @@ TimingTypeCyclic = Union[dt.timedelta, list[dt.timedelta]]
 TimingTypeDaily = Union[dt.time, list[dt.time]]
 
 # day of the week or time on the clock
-_TimingTypeDay = Union[Weekday, dt.time, tuple[Weekday, dt.time]]
+_TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
 # day of the week or time on the clock
 TimingTypeWeekly = Union[_TimingTypeDay, list[_TimingTypeDay]]
+
+TimingJobUnion = Union[TimingTypeCyclic, TimingTypeDaily, TimingTypeWeekly]
 
 # specify point in time, distance to reference time, day of the week or time on the clock
 TimingTypeOnce = Union[
     dt.datetime, dt.timedelta, Weekday, dt.time, tuple[Weekday, dt.time]
 ]
+
+
+CYCLIC_TYPE_ERROR_MSG = (
+    "Wrong input for Cyclic! Select one of the following input types:\n"
+    + "datetime.timedelta | list[datetime.timedelta]"
+)
+_DAILY_TYPE_ERROR_MSG = (
+    "Wrong input for {0}! Select one of the following input types:\n"
+    + "datetime.time | list[datetime.time]"
+)
+MINUTELY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Minutely")
+HOURLY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Hourly")
+DAILY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Daily")
+WEEKLY_TYPE_ERROR_MSG = (
+    "Wrong input for Weekly! Select one of the following input types:\n"
+    + "DAY | list[DAY]\n"
+    + "where `DAY = Weekday | tuple[Weekday, dt.time]`"
+)
+
+_TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
+TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
 
 
 class JobType(Enum):  # in job
@@ -55,9 +68,6 @@ class JobType(Enum):  # in job
     HOURLY = auto()
     DAILY = auto()
     WEEKLY = auto()
-
-
-TZ_ERROR_MSG = "can't use offset-naive and offset-aware datetimes together"
 
 
 def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
@@ -80,67 +90,67 @@ def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
         raise SchedulerError(TZ_ERROR_MSG)
 
 
-class JobExecTimer:
-    """
-    Auxiliary timer class for the `Job` class.
-
-    This timer is needed to parallelise the individual
-    desired execution times and to treat them equally.
-
-    Parameters
-    ----------
-    exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]
-        Execution time.
-    ref_dt : datetime.datetime
-        Reference `datetime.datetime` object. This reference is used to
-        calculate the first execution and then recursively calculate all
-        further executions.
-    skip_missing : bool
-        Skip missed execution datetime stamps expect the newest one.
-    """
-
+class JobTimer:  # in job
     def __init__(
-        self, exec_at: TimeTypes, ref_dt: dt.datetime, skip_missing: bool = False
+        self,
+        job_type: JobType,
+        timing: TimingJobUnion,
+        start: dt.datetime,
+        skip_missing: bool = False,
     ):
-        self.__exec_at = exec_at
-        self.__exec_dt: dt.datetime = ref_dt
-        self.__skip_missing = skip_missing
+        self.__job_type = job_type
+        self.__timing = timing
+        self.__next_exec = start
+        self.__skip = skip_missing
 
-    def calc_next_exec_dt(self, ref_dt: Optional[dt.datetime] = None) -> None:
+    def calc_next_exec(self, ref: Optional[dt.datetime] = None) -> None:
         """Generate the next execution `datetime.datetime` stamp.
 
         Parameters
         ----------
-        ref_dt : Optional[datetime.datetime]
+        ref : Optional[datetime.datetime]
             Datetime reference for scheduling the next execution datetime.
         """
-        # calculate datetime to next weekday at 00:00
-        if isinstance(self.__exec_at, Weekday):
-            self.__exec_dt = next_weekday_occurrence(self.__exec_dt, self.__exec_at)
+        if self.__job_type == JobType.CYCLIC:
+            self.__next_exec = self.__next_exec + self.__timing
 
-        # calculate next available datetime for the given time
-        elif isinstance(self.__exec_at, dt.time):
-            check_tz_aware(cast(dt.time, self.__exec_at), self.__exec_dt)
-            if self.__exec_at.tzinfo:
-                self.__exec_dt = self.__exec_dt.astimezone(self.__exec_at.tzinfo)
-            self.__exec_dt = next_time_occurrence(self.__exec_dt, self.__exec_at)
+        elif self.__job_type == JobType.MINUTELY:
+            check_tz_aware(cast(dt.time, self.__timing), self.__next_exec)
+            if self.__next_exec.tzinfo:
+                self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
+            self.__next_exec = next_minutely_occurrence(self.__next_exec, self.__timing)
 
-        # calculate datetime to next weekday and add the given time
-        elif isinstance(self.__exec_at, tuple):
-            check_tz_aware(cast(dt.time, self.__exec_at[1]), self.__exec_dt)
-            if self.__exec_at[1].tzinfo:
-                self.__exec_dt = self.__exec_dt.astimezone(self.__exec_at[1].tzinfo)
-            self.__exec_dt = next_weekday_time_occurrence(
-                self.__exec_dt, *self.__exec_at
-            )
+        elif self.__job_type == JobType.HOURLY:
+            check_tz_aware(cast(dt.time, self.__timing), self.__next_exec)
+            if self.__next_exec.tzinfo:
+                self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
+            self.__next_exec = next_hourly_occurrence(self.__next_exec, self.__timing)
 
-        # just add the timedelta to the current datetime object
-        else:  # isinstance(self.__exec_at, dt.timedelta):
-            self.__exec_dt = self.__exec_dt + self.__exec_at
+        elif self.__job_type == JobType.DAILY:
+            check_tz_aware(cast(dt.time, self.__timing), self.__next_exec)
+            if self.__next_exec.tzinfo:
+                self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
+            self.__next_exec = next_daily_occurrence(self.__next_exec, self.__timing)
 
-        if self.__skip_missing and ref_dt is not None and self.__exec_dt < ref_dt:
-            self.__exec_dt = ref_dt
-            self.calc_next_exec_dt()
+        elif self.__job_type == JobType.WEEKLY:
+            # check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
+            if isinstance(self.__timing, Weekday):
+                self.__next_exec = next_weekday_occurrence(
+                    self.__next_exec, self.__timing
+                )
+            else:
+                check_tz_aware(cast(dt.time, self.__timing[1]), self.__next_exec)
+                if self.__timing[1].tzinfo:
+                    self.__next_exec = self.__next_exec.astimezone(
+                        self.__timing[1].tzinfo
+                    )
+                self.__next_exec = next_weekday_time_occurrence(
+                    self.__next_exec, *self.__timing
+                )
+
+        if self.__skip and ref is not None and self.__next_exec < ref:
+            self.__next_exec = ref
+            self.calc_next_exec()
 
     @property
     def datetime(self) -> dt.datetime:
@@ -152,7 +162,7 @@ class JobExecTimer:
         datetime.datetime
             Execution `datetime.datetime` stamp.
         """
-        return self.__exec_dt
+        return self.__next_exec
 
     def timedelta(self, dt_stamp: dt.datetime) -> dt.timedelta:
         """
@@ -169,103 +179,86 @@ class JobExecTimer:
         timedelta
             `timedelta` to the execution.
         """
-        return self.__exec_dt - dt_stamp
+        return self.__next_exec - dt_stamp
 
 
-class Job(AbstractJob):
-    r"""
-    Implementation of a `Job` for the `Scheduler`.
+def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
+    if job_type not in JobType:
+        raise SchedulerError(f"Invalid type for JobType: {job_type}")
+    mapping = {
+        JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
+        JobType.MINUTELY: {"type": TimingTypeDaily, "err": MINUTELY_TYPE_ERROR_MSG},
+        JobType.HOURLY: {"type": TimingTypeDaily, "err": HOURLY_TYPE_ERROR_MSG},
+        JobType.DAILY: {"type": TimingTypeDaily, "err": DAILY_TYPE_ERROR_MSG},
+        JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
+    }
 
-    The `Job` represents a callback function and manages the
-    metrics and time functionalities.
+    try:
+        tg.check_type("timing", timing, mapping[job_type]["type"])
+    except TypeError as err:
+        raise SchedulerError(mapping[job_type]["err"]) from err
 
-    Notes
-    -----
-    The user will not manually instantiate the `Job`,
-    this can only be done via the `Scheduler`.
-    However, after a `Job` has been created by the `Scheduler`,
-    the user can access the reference to the `Job`
-    and thus query the metrics.
 
-    Parameters
-    ----------
-    handle : Callable[..., Any]
-        Handle to a callback function.
-    exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] | list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]
-        Desired execution time(s).
-    params : dict[str, Any]
-        The payload arguments to pass to the function handle within a Job.
-    weight : float
-        Relative weight against other `Job`\ s.
-    delay : bool
-        If `False` the `Job` will executed instantly or at a given offset.
-    offset : Optional[datetime.datetime]
-        Set the reference `datetime.datetime` stamp the `Job` will be
-        scheduled against. Default value is `datetime.datetime.now()`.
-    skip_missing : bool
-        Skip missed executions, do only the newest planned execution.
-    max_attempts : int
-        Number of times the `Job` will be executed. 0 <=> inf
-    """
+# NOTE new API design
 
+# Change exec_at to timing, change JobExecTimer to JobTimer
+
+# Maybe rename offset to start(_at), for preparing a stop(_at)
+class Job(AbstractJob):  # in job
     def __init__(
         self,
+        job_type: JobType,
+        timing: TimingJobUnion,
         handle: Callable[..., Any],
-        exec_at: ExecTimeType,
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
         delay: bool = True,
-        offset: Optional[dt.datetime] = None,
+        start: Optional[dt.datetime] = None,
+        stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
         tzinfo: Optional[dt.timezone] = None,
     ):
+        sane_timing_types(job_type, timing)
+        self.__type = job_type
+        self.__timing = timing
         self.__handle = handle
-        self.__exec_at = exec_at
         self.__params = {} if params is None else params
         self.__max_attempts = max_attempts
         self.__weight = weight
         self.__delay = delay
+        self.__start: dt.datetime
+        self.__stop: Optional[dt.datetime] = None
         self.__skip_missing = skip_missing
         self.__tzinfo = tzinfo
 
         self.__attempts = 0
+        self.__timers: list[JobTimer]
+        self.__pending_timer: JobTimer
 
-        try:
-            tg.check_type("exec_at", exec_at, ExecTimeType)
-        except TypeError as err:
-            raise SchedulerError(
-                "Wrong input! Select one of the following input types:\n"
-                + f"{TIME_TYPES_STR} or \n"
-                + f"list[{TIME_TYPES_STR}]"
-            ) from err
-
-        if offset:
-            if bool(offset.tzinfo) ^ bool(self.__tzinfo):
-                raise SchedulerError(TZ_ERROR_MSG)
-            self.__start_dt = offset
+        if start:
+            if bool(start.tzinfo) ^ bool(self.__tzinfo):
+                raise SchedulerError(_TZ_ERROR_MSG.format("start"))
+            self.__start = start
         else:
-            self.__start_dt = dt.datetime.now(self.__tzinfo)
+            self.__start = dt.datetime.now(self.__tzinfo)
 
-        self.__timers: list[JobExecTimer]
-        self.__pending_timer: JobExecTimer
-        # exec_at: Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]
-        if not isinstance(exec_at, list):
-            self.__timers = [
-                JobExecTimer(exec_at, self.__start_dt, self.__skip_missing)
-            ]
-        # exec_at: list[Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]]
+        if stop:
+            if bool(stop.tzinfo) ^ bool(self.__tzinfo):
+                raise SchedulerError(_TZ_ERROR_MSG.format("stop"))
+            self.__stop = stop
+
+        if not isinstance(timing, list):
+            self.__timers = [JobTimer(job_type, timing, self.__start, skip_missing)]
         else:
             self.__timers = [
-                JobExecTimer(ele, self.__start_dt, self.__skip_missing)
-                for ele in exec_at
+                JobTimer(job_type, tim, self.__start, skip_missing) for tim in timing
             ]
-
-        # generate first dt_stamps for each JobExecTimer
+        # generate first dt_stamps for each JobTimer
         for timer in self.__timers:
-            timer.calc_next_exec_dt()
+            timer.calc_next_exec()
 
-        # calculate active JobExecTimer
+        # calculate active JobTimer
         self.__set_pending_timer()
 
     def _exec(self) -> None:
@@ -273,55 +266,11 @@ class Job(AbstractJob):
         self.__handle(**self.__params)
         self.__attempts += 1
 
-    def _repr(
-        self,
-    ) -> tuple[
-        str, dt.datetime, Optional[str], dt.timedelta, int, Union[float, int], float
-    ]:
-        """Return the objects in __repr__ as a tuple."""
-        dt_stamp = dt.datetime.now(self.__tzinfo)
-        dt_timedelta = self.timedelta(dt_stamp)
-        return (
-            self.handle.__qualname__,
-            self.datetime,
-            self.datetime.tzname(),
-            dt_timedelta,
-            self.attemps,
-            float("inf") if self.max_attemps == 0 else self.max_attemps,
-            self.weight,
-        )
-
     def __lt__(self, other: Job):
         dt_stamp = dt.datetime.now(self.__tzinfo)
         return (
             self.timedelta(dt_stamp).total_seconds()
             < other.timedelta(dt_stamp).total_seconds()
-        )
-
-    def __str__(self) -> str:
-        _repr = self._repr()
-        return "{0}(...) {7} tz={2} {8} {4}/{5} w={6:.3f}".format(
-            *_repr, *[str(elem).split(".")[0] for elem in (_repr[1], _repr[3])]
-        )
-
-    def __repr__(self) -> str:
-        return "scheduler.Job({})".format(
-            ", ".join(
-                (
-                    repr(elem)
-                    for elem in (
-                        self.__handle,
-                        self.__exec_at,
-                        self.__params,
-                        self.__max_attempts,
-                        self.__weight,
-                        self.__delay,
-                        self.__start_dt,
-                        self.__skip_missing,
-                        self.__tzinfo,
-                    )
-                )
-            )
         )
 
     @property
@@ -336,7 +285,7 @@ class Job(AbstractJob):
         """
         return self.__handle
 
-    def _calc_next_exec_dt(self, ref_dt: dt.datetime) -> None:
+    def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
         """
         Calculate the next estimated execution `datetime.datetime` of the `Job`.
 
@@ -345,12 +294,12 @@ class Job(AbstractJob):
         ref_dt : datetime.datetime
             Reference time stamp to which the `Job` caluclates it's next execution.
         """
-        self.__pending_timer.calc_next_exec_dt(ref_dt)
+        self.__pending_timer.calc_next_exec(ref_dt)
         self.__set_pending_timer()
 
     def __set_pending_timer(self) -> None:
         """Get the pending timer at the moment."""
-        unsorted_timer_datetimes: dict[JobExecTimer, dt.datetime] = {}
+        unsorted_timer_datetimes: dict[JobTimer, dt.datetime] = {}
         for timer in self.__timers:
             unsorted_timer_datetimes[timer] = timer.datetime
 
@@ -446,13 +395,26 @@ class Job(AbstractJob):
         return self.__pending_timer.timedelta(dt_stamp)
 
     @property
-    def tzinfo(self) -> Optional[dt.timezone]:
+    def _tzinfo(self) -> Optional[dt.timezone]:
         """
-        Get the timezone of a `Job` if it has one.
+        Get the timezone of the `Scheduler` in which the `Job` is living.
+
+        Returns
+        -------
+        Optional[datetime.timezone]
+            Timezone of the `Job`.
+        """
+        return self.__tzinfo
+
+    # TODO docstring
+    @property
+    def tzinfo(self) -> Optional[dt.timezone]:
+        r"""
+        Get the timezone of the `Job`\ s next execution.
 
         Returns
         -------
         Optinal[datetime.timezone]
-            Timezone of the "Job".
+            Timezone of the `Job`\ s next execution.
         """
-        return self.__tzinfo
+        return self.datetime.tzinfo()

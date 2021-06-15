@@ -1,25 +1,47 @@
 """
-`Scheduler` implementation for `Job` based callback function execution.
+Implementation of a `Job` as callback function represention.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
-from __future__ import annotations
-
 import datetime as dt
+
 from typing import Callable, Optional, Any
 
 import typeguard as tg
 
-from scheduler.job import ExecOnceTimeType, ExecTimeType, Job
-from scheduler.util import (
-    SchedulerError,
-    AbstractJob,
-    str_cutoff,
-    linear_weight_function,
+from scheduler.job import (
+    TimingTypeCyclic,
+    TimingTypeDaily,
+    TimingTypeWeekly,
+    TimingJobUnion,
+    TimingTypeOnce,
+    CYCLIC_TYPE_ERROR_MSG,
+    MINUTELY_TYPE_ERROR_MSG,
+    HOURLY_TYPE_ERROR_MSG,
+    DAILY_TYPE_ERROR_MSG,
+    WEEKLY_TYPE_ERROR_MSG,
+    TZ_ERROR_MSG,
+    JobType,
+    Job,
+)
+from scheduler.util import SchedulerError, AbstractJob, linear_weight_function
+
+ONCE_TYPE_ERROR_MSG = (
+    "Wrong input for Once! Select one of the following input types:\n" + ""
 )
 
+# NOTE new API design
+# advantages are easier and understandable use,
+# further you can create hourly and minutely as well as weekly jobs
+# Also it is easy to note months and years by the architecture
+# The disadvantage is that it is not possible to combine e.g. minute
+# and cyclic timings in one job.
 
-class Scheduler:
+# Maybe rename offset to start(_at), for preparing a stop(_at)
+# Change exec_at to timing, change JobExecTimer to JobTimer
+
+
+class Scheduler:  # in core
     r"""
     Implementation of a `Scheduler` for callback functions.
 
@@ -62,101 +84,9 @@ class Scheduler:
         self.__jobs: set[Job] = set() if jobs is None else jobs
         for job in self.__jobs:
             if job.tzinfo != self.__tzinfo:
-                raise SchedulerError(
-                    "Job internal timezone does not match scheduler timezone."
-                )
+                raise SchedulerError(TZ_ERROR_MSG)
 
         self.__tz_str = dt.datetime.now(tzinfo).timetz().tzname()
-
-    def __headings(self) -> list[str]:
-        headings = [
-            f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
-            f"timezone={self.__tz_str}",
-            f"#jobs={len(self.__jobs)}",
-            f"weight_function={self.__weight_function.__qualname__}",
-        ]
-        return headings
-
-    def __str__(self) -> str:
-        # Scheduler meta heading
-        scheduler_headings = "{0}, {1}, {2}, {3}\n\n".format(*self.__headings())
-
-        # Job table (we join two of the Job._repr() fields into one)
-        n_fields = 6
-        job_headings = [
-            "function",
-            "due at",
-            "timezone",
-            "due in",
-            "attempts",
-            "weight",
-        ]
-        column_width = [16, 19, 12, 9, 13, 6]
-
-        collection = [job._repr() for job in sorted(self.jobs)]
-
-        str_collection = []
-        for row in collection:
-            inner = []
-            for idx, ele in enumerate(row):
-                width = column_width[idx] if idx < 4 else column_width[idx - 1]
-                if idx == 0:
-                    tmp_str = str_cutoff(f"{ele}", width, False)
-                elif idx == 1:
-                    tmp_str = str(ele).split(".")[0]
-                elif idx == 2:
-                    tmp_str = str_cutoff(f"{ele}", width, False)
-                elif idx == 3:
-                    # ~6x faster than with regex
-                    tmp_str = str_cutoff(
-                        str(ele).split(",")[0].split(".")[0], width, True
-                    )
-                elif idx == 4:
-                    tmp_str = str_cutoff(f"{ele}/{row[idx+1]}", width, False)
-                elif idx == 5:
-                    continue
-                elif idx == 6:
-                    tmp_str = str_cutoff(f"{ele}", width, True)
-                inner.append(tmp_str)
-
-            str_collection.append(inner)
-
-        # right align except first column
-        form = []
-        for idx, length in zip(range(n_fields), column_width):
-            align = ""
-            if idx in (0, 2):
-                align = "<"
-            elif idx == 1:
-                align = "^"
-            else:
-                align = ">"
-            form.append(f"{{{idx}:{align}{length}}}")
-
-        fstring = f"{form[0]} {form[1]} {form[2]} {form[3]} {form[4]} {form[5]}\n"
-
-        job_table = fstring.format(*job_headings)
-        job_table += " ".join(["-" * width for width in column_width]) + "\n"
-        for line in str_collection:
-            job_table += fstring.format(*line)
-
-        return scheduler_headings + job_table
-
-    def __repr__(self):
-        return "scheduler.Scheduler({0}, jobs={{{1}}})".format(
-            ", ".join(
-                (
-                    elem.__repr__()
-                    for elem in (
-                        self.__max_exec,
-                        self.__tzinfo,
-                        self.__weight_function,
-                        self.__jobs,
-                    )
-                )
-            ),
-            ", ".join([repr(job) for job in sorted(self.jobs)]),
-        )
 
     def delete_job(self, job: Job) -> None:
         """
@@ -172,18 +102,6 @@ class Scheduler:
     def delete_jobs(self) -> None:
         r"""Delete all `Job`\ s from the `Scheduler`."""
         self.__jobs = set()
-
-    @property
-    def jobs(self) -> set[Job]:
-        r"""
-        Get the set of all `Job`\ s.
-
-        Returns
-        -------
-        set[Job]
-            Currently scheduled `Job`\ s.
-        """
-        return self.__jobs.copy()
 
     def __exec_job(self, job: Job, ref_dt: dt.datetime) -> None:
         """
@@ -201,24 +119,9 @@ class Scheduler:
         if not job._has_attempts_remaining:
             self.delete_job(job)
         else:
-            job._calc_next_exec_dt(ref_dt)
+            job._calc_next_exec(ref_dt)
 
-    def exec_all_jobs(self) -> int:
-        r"""
-        Execute all scheduled `Job`\ s independent of the planned execution time.
-
-        Returns
-        -------
-        int
-            Number of executed `Job`\ s.
-        """
-        ref_dt = dt.datetime.now(tz=self.__tzinfo)
-        n_jobs = len(self.__jobs)
-        for job in self.__jobs:
-            self.__exec_job(job, ref_dt)
-        return n_jobs
-
-    def exec_jobs(self) -> int:
+    def exec_pending_jobs(self) -> int:
         r"""
         Check the `Job`\ s that are overdue and carry them out.
 
@@ -260,111 +163,249 @@ class Scheduler:
                 break
         return exec_job_count
 
-    def schedule(
-        self,
-        handle: Callable[..., Any],
-        exec_at: ExecTimeType,
-        params: Optional[dict[str, Any]] = None,
-        max_attempts: int = 0,
-        weight: float = 1,
-        delay: bool = True,
-        offset: Optional[dt.datetime] = None,
-        skip_missing: bool = False,
-    ) -> Job:
+    def exec_all_jobs(self) -> int:
         r"""
-        Create a repeating `Job` that will be executed in a given cycle.
-
-        Parameters
-        ----------
-        handle : Callable[..., Any]
-            Handle to a callback function.
-        exec_at : Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time] | list[Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]]
-            Desired execution time(s).
-        params : dict[str, Any]
-            The payload arguments to pass to the function handle within a Job.
-        weight : float
-            Relative weight against other `Job`\ s.
-        delay : bool
-            If `False` the `Job` will executed instantly or at a given offset.
-        offset : Optional[datetime.datetime]
-            Set the reference `datetime.datetime` stamp the `Job` will be
-            scheduled against. Default value is `datetime.datetime.now()`.
-        max_attempts : int
-            Number of times the `Job` will be executed. 0 <=> inf
+        Execute all scheduled `Job`\ s independent of the planned execution time.
 
         Returns
         -------
-        Job
-            Reference to the created `Job`.
+        int
+            Number of executed `Job`\ s.
         """
+        ref_dt = dt.datetime.now(tz=self.__tzinfo)
+        n_jobs = len(self.__jobs)
+        for job in self.__jobs:
+            self.__exec_job(job, ref_dt)
+        return n_jobs
+
+    @property
+    def jobs(self) -> set[Job]:
+        r"""
+        Get the set of all `Job`\ s.
+
+        Returns
+        -------
+        set[Job]
+            Currently scheduled `Job`\ s.
+        """
+        return self.__jobs.copy()
+
+    def __schedule(  # this function encapsulates the job and add the scheduler timezone
+        self,
+        job_type: JobType,
+        timing: TimingJobUnion,
+        handle: Callable[..., Any],
+        params: Optional[dict[str, Any]],
+        max_attempts: int,
+        weight: float,
+        delay: bool,
+        start: Optional[dt.datetime],
+        stop: Optional[dt.datetime],
+        skip_missing: bool,
+    ) -> Job:
         job = Job(
+            job_type=job_type,
+            timing=timing,
             handle=handle,
-            exec_at=exec_at,
             params=params,
             max_attempts=max_attempts,
             weight=weight,
             delay=delay,
-            offset=offset,
+            start=start,
+            stop=stop,
             skip_missing=skip_missing,
             tzinfo=self.__tzinfo,
         )
         self.__jobs.add(job)
         return job
 
+    def cyclic(
+        self,
+        timing: TimingTypeCyclic,
+        handle: Callable,
+        params: Optional[dict[str, Any]] = None,
+        max_attempts: int = 0,
+        weight: float = 1,
+        delay: bool = True,
+        start: Optional[dt.datetime] = None,
+        stop: Optional[dt.datetime] = None,
+        skip_missing: bool = False,
+    ):
+        try:
+            tg.check_type("timing", timing, TimingTypeCyclic)
+        except TypeError as err:
+            raise SchedulerError(CYCLIC_TYPE_ERROR_MSG) from err
+        return self.__schedule(
+            job_type=JobType.CYCLIC,
+            timing=timing,
+            handle=handle,
+            params=params,
+            max_attempts=max_attempts,
+            weight=weight,
+            delay=delay,
+            start=start,
+            stop=stop,
+            skip_missing=skip_missing,
+        )
+
+    def minutely(
+        self,
+        timing: TimingTypeDaily,
+        handle: Callable,
+        params: Optional[dict[str, Any]] = None,
+        max_attempts: int = 0,
+        weight: float = 1,
+        delay: bool = True,
+        start: Optional[dt.datetime] = None,
+        stop: Optional[dt.datetime] = None,
+        skip_missing: bool = False,
+    ):
+        try:
+            tg.check_type("timing", timing, TimingTypeDaily)
+        except TypeError as err:
+            raise SchedulerError(MINUTELY_TYPE_ERROR_MSG) from err
+        return self.__schedule(
+            job_type=JobType.MINUTELY,
+            timing=timing,
+            handle=handle,
+            params=params,
+            max_attempts=max_attempts,
+            weight=weight,
+            delay=delay,
+            start=start,
+            stop=stop,
+            skip_missing=skip_missing,
+        )
+
+    def hourly(
+        self,
+        timing: TimingTypeDaily,
+        handle: Callable,
+        params: Optional[dict[str, Any]] = None,
+        max_attempts: int = 0,
+        weight: float = 1,
+        delay: bool = True,
+        start: Optional[dt.datetime] = None,
+        stop: Optional[dt.datetime] = None,
+        skip_missing: bool = False,
+    ):
+        try:
+            tg.check_type("timing", timing, TimingTypeDaily)
+        except TypeError as err:
+            raise SchedulerError(HOURLY_TYPE_ERROR_MSG) from err
+        return self.__schedule(
+            job_type=JobType.HOURLY,
+            timing=timing,
+            handle=handle,
+            params=params,
+            max_attempts=max_attempts,
+            weight=weight,
+            delay=delay,
+            start=start,
+            stop=stop,
+            skip_missing=skip_missing,
+        )
+
+    def daily(
+        self,
+        timing: TimingTypeDaily,
+        handle: Callable,
+        params: Optional[dict[str, Any]] = None,
+        max_attempts: int = 0,
+        weight: float = 1,
+        delay: bool = True,
+        start: Optional[dt.datetime] = None,
+        stop: Optional[dt.datetime] = None,
+        skip_missing: bool = False,
+    ):
+        try:
+            tg.check_type("timing", timing, TimingTypeDaily)
+        except TypeError as err:
+            raise SchedulerError(DAILY_TYPE_ERROR_MSG) from err
+        return self.__schedule(
+            job_type=JobType.DAILY,
+            timing=timing,
+            handle=handle,
+            params=params,
+            max_attempts=max_attempts,
+            weight=weight,
+            delay=delay,
+            start=start,
+            stop=stop,
+            skip_missing=skip_missing,
+        )
+
+    def weekly(
+        self,
+        timing: TimingTypeWeekly,
+        handle: Callable,
+        params: Optional[dict[str, Any]] = None,
+        max_attempts: int = 0,
+        weight: float = 1,
+        delay: bool = True,
+        start: Optional[dt.datetime] = None,
+        stop: Optional[dt.datetime] = None,
+        skip_missing: bool = False,
+    ):
+        try:
+            tg.check_type("timing", timing, TimingTypeWeekly)
+        except TypeError as err:
+            raise SchedulerError(WEEKLY_TYPE_ERROR_MSG) from err
+        return self.__schedule(
+            job_type=JobType.WEEKLY,
+            timing=timing,
+            handle=handle,
+            params=params,
+            max_attempts=max_attempts,
+            weight=weight,
+            delay=delay,
+            start=start,
+            stop=stop,
+            skip_missing=skip_missing,
+        )
+
+    # TODO check for type list and throw error to user
     def once(
         self,
-        handle: Callable[..., Any],
-        exec_at: ExecOnceTimeType,
+        timing: TimingTypeOnce,
+        handle: Callable,
         params: Optional[dict[str, Any]] = None,
         weight: float = 1,
-    ) -> Job:
-        r"""
-        Create a `Job` that runs once at a specific timestamp.
+    ):
+        # use the same trick to support datetime.datetime objects like in the old API
+        # So JobType.ONCE is only an alias for JobType.CYCLIC
+        # TODO: fix by wrapping the above functions within a switch case
 
-        Parameters
-        ----------
-        handle : Callable[..., Any]
-            Handle to a callback function.
-        exec_at : datetime.datetime | Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]
-            Execution time.
-        params : dict[str, Any]
-            The payload arguments to pass to the function handle within a Job.
-        weight : float
-            Relativ job weight against other `Job`\ s.
+        for type_option in [TimingTypeCyclic, TimingTypeDaily, dt.datetime]:
+            try:
+                tg.check_type("timing", timing, type_option)
+            except TypeError:
+                pass
+            else:
+                if type_option == dt.datetime:
+                    return self.__schedule(
+                        job_type=type_option,
+                        timing=dt.timedelta(),
+                        handle=handle,
+                        params=params,
+                        max_attempts=1,
+                        weight=weight,
+                        delay=False,
+                        start=timing,
+                        stop=None,
+                        skip_missing=False,
+                    )
+                return self.__schedule(
+                    job_type=type_option,
+                    timing=timing,
+                    handle=handle,
+                    params=params,
+                    max_attempts=1,
+                    weight=weight,
+                    delay=True,
+                    start=None,
+                    stop=None,
+                    skip_missing=False,
+                )
 
-        Returns
-        -------
-        Job
-            Reference to the created `Job`.
-        """
-        try:
-            tg.check_type("exec_at", exec_at, ExecOnceTimeType)
-        except TypeError as err:
-            raise SchedulerError(
-                'Wrong input for "once"! Select one of the following input types:\n'
-                + "datetime.datetime | Weekday | datetime.time | datetime.timedelta | "
-                + "tuple[Weekday, datetime.time]"
-            ) from err
-
-        # hack to support dt.datetime objects as exec time
-        if isinstance(exec_at, dt.datetime):
-            # not testable with simple monkey patching because
-            # patching of dt.datetime will corrupt the if statement
-            return self.schedule(
-                handle=handle,
-                exec_at=dt.timedelta(),  # dummy
-                params=params,
-                max_attempts=1,
-                weight=weight,
-                delay=False,
-                offset=exec_at,
-            )
-        return self.schedule(
-            handle=handle,
-            exec_at=exec_at,
-            params=params,
-            max_attempts=1,
-            weight=weight,
-            delay=True,
-            offset=None,
-        )
+        raise SchedulerError(ONCE_TYPE_ERROR_MSG)
