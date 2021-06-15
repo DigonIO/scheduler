@@ -6,6 +6,8 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 from __future__ import annotations
 
 import datetime as dt
+from enum import Enum, auto
+
 from typing import Callable, Optional, Union, Any, cast
 
 import typeguard as tg
@@ -20,14 +22,41 @@ from scheduler.util import (
 )
 
 # execution time stamp typing for a cyclic Job
+# TODO: DEPRICATE TimeTypes, TIME_TYPES_STR, ExecTimeType, ExecOnceTimeType
 TimeTypes = Union[Weekday, dt.time, dt.timedelta, tuple[Weekday, dt.time]]
 ExecTimeType = Union[list[TimeTypes], TimeTypes]
+
+# execution time stamp typing for a oneshot Job
+ExecOnceTimeType = Union[dt.datetime, TimeTypes]
+
 TIME_TYPES_STR = (
     "Weekday | datetime.time | datetime.timedelta | tuple[Weekday, datetime.time]"
 )
 
-# execution time stamp typing for a oneshot Job
-ExecOnceTimeType = Union[dt.datetime, TimeTypes]
+# execution interval
+TimingTypeCyclic = Union[dt.timedelta, list[dt.timedelta]]
+# time on the clock
+TimingTypeDaily = Union[dt.time, list[dt.time]]
+
+# day of the week or time on the clock
+_TimingTypeDay = Union[Weekday, dt.time, tuple[Weekday, dt.time]]
+# day of the week or time on the clock
+TimingTypeWeekly = Union[_TimingTypeDay, list[_TimingTypeDay]]
+
+# specify point in time, distance to reference time, day of the week or time on the clock
+TimingTypeOnce = Union[
+    dt.datetime, dt.timedelta, Weekday, dt.time, tuple(Weekday, dt.time)
+]
+
+
+class JobType(Enum):  # in job
+    CYCLIC = auto()
+    MINUTELY = auto()
+    HOURLY = auto()
+    DAILY = auto()
+    WEEKLY = auto()
+
+
 TZ_ERROR_MSG = "can't use offset-naive and offset-aware datetimes together"
 
 
