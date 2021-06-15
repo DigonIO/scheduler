@@ -24,10 +24,11 @@ from scheduler.job import (
     JobType,
     Job,
 )
-from scheduler.util import SchedulerError, AbstractJob, linear_weight_function
+from scheduler.util import SchedulerError, AbstractJob, Weekday, linear_weight_function
 
 ONCE_TYPE_ERROR_MSG = (
-    "Wrong input for Once! Select one of the following input types:\n" + ""
+    "Wrong input for Once! Select one of the following input types:\n"
+    + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
 )
 
 # NOTE new API design
@@ -364,7 +365,6 @@ class Scheduler:  # in core
             skip_missing=skip_missing,
         )
 
-    # TODO check for type list and throw error to user
     def once(
         self,
         timing: TimingTypeOnce,
@@ -372,31 +372,33 @@ class Scheduler:  # in core
         params: Optional[dict[str, Any]] = None,
         weight: float = 1,
     ):
-        # use the same trick to support datetime.datetime objects like in the old API
-        # So JobType.ONCE is only an alias for JobType.CYCLIC
-        # TODO: fix by wrapping the above functions within a switch case
-
-        for type_option in [TimingTypeCyclic, TimingTypeDaily, dt.datetime]:
-            try:
-                tg.check_type("timing", timing, type_option)
-            except TypeError:
-                pass
-            else:
-                if type_option == dt.datetime:
-                    return self.__schedule(
-                        job_type=type_option,
-                        timing=dt.timedelta(),
-                        handle=handle,
-                        params=params,
-                        max_attempts=1,
-                        weight=weight,
-                        delay=False,
-                        start=timing,
-                        stop=None,
-                        skip_missing=False,
-                    )
+        try:
+            tg.check_type("timing", timing, TimingTypeOnce)
+        except TypeError as err:
+            raise SchedulerError(ONCE_TYPE_ERROR_MSG) from err
+        if isinstance(timing, dt.datetime):
+            return self.__schedule(
+                job_type=JobType.CYCLIC,
+                timing=dt.timedelta(),
+                handle=handle,
+                params=params,
+                max_attempts=1,
+                weight=weight,
+                delay=False,
+                start=timing,
+                stop=None,
+                skip_missing=False,
+            )
+        mapping = {
+            dt.timedelta: JobType.CYCLIC,
+            Weekday: JobType.WEEKLY,
+            tuple: JobType.WEEKLY,
+            dt.time: JobType.DAILY,
+        }
+        for timing_type, job_type in mapping.items():
+            if isinstance(timing, timing_type):
                 return self.__schedule(
-                    job_type=type_option,
+                    job_type=job_type,
                     timing=timing,
                     handle=handle,
                     params=params,
@@ -407,5 +409,3 @@ class Scheduler:  # in core
                     stop=None,
                     skip_missing=False,
                 )
-
-        raise SchedulerError(ONCE_TYPE_ERROR_MSG)

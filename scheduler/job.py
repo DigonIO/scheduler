@@ -183,7 +183,7 @@ class JobTimer:  # in job
 
 
 def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
-    if job_type not in JobType:
+    if job_type not in JobType and job_type is not dt.datetime:
         raise SchedulerError(f"Invalid type for JobType: {job_type}")
     mapping = {
         JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
@@ -191,6 +191,7 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
         JobType.HOURLY: {"type": TimingTypeDaily, "err": HOURLY_TYPE_ERROR_MSG},
         JobType.DAILY: {"type": TimingTypeDaily, "err": DAILY_TYPE_ERROR_MSG},
         JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
+        dt.datetime: {"type": dt.datetime, "err": None},
     }
 
     try:
@@ -271,6 +272,32 @@ class Job(AbstractJob):  # in job
         return (
             self.timedelta(dt_stamp).total_seconds()
             < other.timedelta(dt_stamp).total_seconds()
+        )
+
+    def _str(self) -> tuple:
+        """Return the objects relevant for readable string representation."""
+        pass
+
+    def __repr__(self) -> str:
+        return "scheduler.Job({})".format(
+            ", ".join(
+                (
+                    repr(elem)
+                    for elem in (
+                        self.__type,
+                        self.__timing,
+                        self.__handle,
+                        self.__params,
+                        self.__max_attempts,
+                        self.__weight,
+                        self.__delay,
+                        self.__start,
+                        self.__stop,
+                        self.__skip_missing,
+                        self.__tzinfo,
+                    )
+                )
+            )
         )
 
     @property
@@ -370,7 +397,7 @@ class Job(AbstractJob):  # in job
             Execution `datetime.datetime` stamp.
         """
         if not self.__delay and self.__attempts == 0:
-            return self.__start_dt
+            return self.__start
         return self.__pending_timer.datetime
 
     def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
@@ -391,7 +418,7 @@ class Job(AbstractJob):  # in job
         if dt_stamp is None:
             dt_stamp = dt.datetime.now(self.__tzinfo)
         if not self.__delay and self.__attempts == 0:
-            return self.__start_dt - dt_stamp
+            return self.__start - dt_stamp
         return self.__pending_timer.timedelta(dt_stamp)
 
     @property
