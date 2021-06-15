@@ -119,9 +119,9 @@ class Scheduler:  # in core
         if not job._has_attempts_remaining:
             self.delete_job(job)
         else:
-            job._calc_next_exec_dt(ref_dt)
+            job._calc_next_exec(ref_dt)
 
-    def exec_jobs(self) -> int:
+    def exec_pending_jobs(self) -> int:
         r"""
         Check the `Job`\ s that are overdue and carry them out.
 

@@ -85,33 +85,6 @@ def next_weekday_occurrence(now: dt.datetime, weekday: Weekday) -> dt.datetime:
     return target + delta
 
 
-def next_time_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
-    """
-    Estimate the next occurency of a given time.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    target_time : datetime.time
-        Desired time.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` object with the desired time.
-    """
-    target = now.replace(
-        hour=target_time.hour,
-        minute=target_time.minute,
-        second=target_time.second,
-        microsecond=target_time.microsecond,
-    )
-    if (target - now).total_seconds() <= 0:
-        target = target + dt.timedelta(days=1)
-    return target
-
-
 def next_weekday_time_occurrence(
     now: dt.datetime, weekday: Weekday, target_time: dt.time
 ) -> dt.datetime:
@@ -141,6 +114,84 @@ def next_weekday_time_occurrence(
         microsecond=target_time.microsecond,
     )
     return target + delta
+
+
+def next_daily_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
+    """
+    Estimate the next daily occurency of a given time.
+
+    Parameters
+    ----------
+    now : datetime.datetime
+        `datetime.datetime` object of today
+    target_time : datetime.time
+        Desired time.
+
+    Returns
+    -------
+    datetime.datetime
+        Next `datetime.datetime` object with the desired time.
+    """
+    target = now.replace(
+        hour=target_time.hour,
+        minute=target_time.minute,
+        second=target_time.second,
+        microsecond=target_time.microsecond,
+    )
+    if (target - now).total_seconds() <= 0:
+        target = target + dt.timedelta(days=1)
+    return target
+
+
+def next_hourly_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
+    """
+    Estimate the next hourly occurency of a given time.
+
+    Parameters
+    ----------
+    now : datetime.datetime
+        `datetime.datetime` object of today
+    target_time : datetime.time
+        Desired time.
+
+    Returns
+    -------
+    datetime.datetime
+        Next `datetime.datetime` object with the desired time.
+    """
+    target = now.replace(
+        minute=target_time.minute,
+        second=target_time.second,
+        microsecond=target_time.microsecond,
+    )
+    if (target - now).total_seconds() <= 0:
+        target = target + dt.timedelta(hours=1)
+    return target
+
+
+def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
+    """
+    Estimate the next weekly occurency of a given time.
+
+    Parameters
+    ----------
+    now : datetime.datetime
+        `datetime.datetime` object of today
+    target_time : datetime.time
+        Desired time.
+
+    Returns
+    -------
+    datetime.datetime
+        Next `datetime.datetime` object with the desired time.
+    """
+    target = now.replace(
+        second=target_time.second,
+        microsecond=target_time.microsecond,
+    )
+    if (target - now).total_seconds() <= 0:
+        target = target + dt.timedelta(minutes=1)
+    return target
 
 
 class AbstractJob(ABC):
@@ -222,81 +273,3 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
             return string[:pos] + "#"
         return "#" + string[-pos:]
     return string
-
-
-def next_daily_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
-    """
-    Estimate the next daily occurency of a given time.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    target_time : datetime.time
-        Desired time.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` object with the desired time.
-    """
-    target = now.replace(
-        hour=target_time.hour,
-        minute=target_time.minute,
-        second=target_time.second,
-        microsecond=target_time.microsecond,
-    )
-    if (target - now).total_seconds() <= 0:
-        target = target + dt.timedelta(days=1)
-    return target
-
-
-def next_hourly_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
-    """
-    Estimate the next hourly occurency of a given time.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    target_time : datetime.time
-        Desired time.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` object with the desired time.
-    """
-    target = now.replace(
-        minute=target_time.minute,
-        second=target_time.second,
-        microsecond=target_time.microsecond,
-    )
-    if (target - now).total_seconds() <= 0:
-        target = target + dt.timedelta(hours=1)
-    return target
-
-
-def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
-    """
-    Estimate the next weekly occurency of a given time.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    target_time : datetime.time
-        Desired time.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` object with the desired time.
-    """
-    target = now.replace(
-        second=target_time.second,
-        microsecond=target_time.microsecond,
-    )
-    if (target - now).total_seconds() <= 0:
-        target = target + dt.timedelta(minutes=1)
-    return target

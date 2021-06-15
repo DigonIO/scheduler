@@ -37,7 +37,7 @@ TimingJobUnion = Union[TimingTypeCyclic, TimingTypeDaily, TimingTypeWeekly]
 
 # specify point in time, distance to reference time, day of the week or time on the clock
 TimingTypeOnce = Union[
-    dt.datetime, dt.timedelta, Weekday, dt.time, tuple(Weekday, dt.time)
+    dt.datetime, dt.timedelta, Weekday, dt.time, tuple[Weekday, dt.time]
 ]
 
 
