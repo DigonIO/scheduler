@@ -93,7 +93,7 @@ class Scheduler:  # in core
             if job._tzinfo != self.__tzinfo:
                 raise SchedulerError(TZ_ERROR_MSG)
 
-        self.__tz_str = dt.datetime.now(tzinfo).timetz().tzname()
+        self.__tz_str = dt.datetime.now(tzinfo).tzname()
 
     def __repr__(self) -> str:
         return "scheduler.Scheduler({0}, jobs={{{1}}})".format(
