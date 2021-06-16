@@ -137,10 +137,7 @@ class Scheduler:  # in core
             "attempts",
             "weight",
         )
-        form = [
-            f"{{{idx}:{align}{width}}}"
-            for idx, (align, width) in enumerate(zip(c_align, c_width))
-        ]
+        form = [f"{{:{align}{width}}}" for (align, width) in zip(c_align, c_width)]
         fstring = " ".join(form) + "\n"
         job_table = fstring.format(*c_name)
         job_table += " ".join(["-" * width for width in c_width]) + "\n"
@@ -151,7 +148,7 @@ class Scheduler:  # in core
                 row[0],
                 str_cutoff(row[1] + row[2], c_width[1], False),
                 row[4],
-                str_cutoff(row[5], c_width[3], False),
+                str_cutoff("" if row[5] is None else row[5], c_width[3], False),
                 str_cutoff(row[7], c_width[4], True),
                 str_cutoff(f"{row[8]}/{row[9]}", c_width[5], True),
                 str_cutoff(f"{row[10]}", c_width[6], True),

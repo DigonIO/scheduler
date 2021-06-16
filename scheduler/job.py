@@ -302,7 +302,7 @@ class Job(AbstractJob):  # in job
             "(..)" if self.handle.__code__.co_nlocals else "()",
             self.datetime,
             str(self.datetime).split(".")[0],
-            str(self.datetime.tzname()),
+            self.datetime.tzname(),
             dt_timedelta,
             str(dt_timedelta).split(",")[0].split(".")[0],
             self.attemps,
