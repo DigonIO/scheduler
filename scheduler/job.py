@@ -287,7 +287,7 @@ class Job(AbstractJob):  # in job
                         self.__start,
                         self.__stop,
                         self.__skip_missing,
-                        self.__tzinfo,
+                        self.tzinfo,
                     )
                 )
             )
@@ -448,7 +448,6 @@ class Job(AbstractJob):  # in job
         """
         return self.__tzinfo
 
-    # TODO docstring
     @property
     def tzinfo(self) -> Optional[dt.timezone]:
         r"""
@@ -459,4 +458,4 @@ class Job(AbstractJob):  # in job
         Optinal[datetime.timezone]
             Timezone of the `Job`\ s next execution.
         """
-        return self.datetime.tzinfo()
+        return self.datetime.tzinfo

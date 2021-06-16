@@ -90,7 +90,7 @@ class Scheduler:  # in core
         self.__weight_function = weight_function
         self.__jobs: set[Job] = set() if jobs is None else jobs
         for job in self.__jobs:
-            if job.tzinfo != self.__tzinfo:
+            if job._tzinfo != self.__tzinfo:
                 raise SchedulerError(TZ_ERROR_MSG)
 
         self.__tz_str = dt.datetime.now(tzinfo).timetz().tzname()
