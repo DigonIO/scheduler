@@ -137,14 +137,19 @@ class Scheduler:  # in core
             "attempts",
             "weight",
         )
-        form = [f"{{:{align}{width}}}" for (align, width) in zip(c_align, c_width)]
+        form = [
+            f"{{{idx}:{align}{width}}}"
+            for idx, (align, width) in enumerate(zip(c_align, c_width))
+        ]
+        if self.__tz_str is None:
+            form = form[:3] + form[4:]
+
         fstring = " ".join(form) + "\n"
         job_table = fstring.format(*c_name)
-        job_table += " ".join(["-" * width for width in c_width]) + "\n"
-
+        job_table += fstring.format(*("-" * width for width in c_width))
         for job in sorted(self.jobs):
             row = job._str()
-            job_table += fstring.format(
+            entries = (
                 row[0],
                 str_cutoff(row[1] + row[2], c_width[1], False),
                 row[4],
@@ -153,6 +158,8 @@ class Scheduler:  # in core
                 str_cutoff(f"{row[8]}/{row[9]}", c_width[5], True),
                 str_cutoff(f"{row[10]}", c_width[6], True),
             )
+            job_table += fstring.format(*entries)
+
         return scheduler_headings + job_table
 
     def delete_job(self, job: Job) -> None:
