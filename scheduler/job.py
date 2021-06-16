@@ -274,10 +274,6 @@ class Job(AbstractJob):  # in job
             < other.timedelta(dt_stamp).total_seconds()
         )
 
-    def _str(self) -> tuple:
-        """Return the objects relevant for readable string representation."""
-        pass
-
     def __repr__(self) -> str:
         return "scheduler.Job({})".format(
             ", ".join(
@@ -298,6 +294,28 @@ class Job(AbstractJob):  # in job
                     )
                 )
             )
+        )
+
+    def _str(self) -> tuple:
+        """Return the objects relevant for readable string representation."""
+        dt_timedelta = self.timedelta(dt.datetime.now(self.__tzinfo))
+        return (
+            self.__type.name if self.max_attemps != 1 else "ONCE",
+            self.handle.__qualname__,
+            "(..)" if self.handle.__code__.co_nlocals else "()",
+            self.datetime,
+            str(self.datetime).split(".")[0],
+            str(self.datetime.tzname()),
+            dt_timedelta,
+            str(dt_timedelta).split(",")[0].split(".")[0],
+            self.attemps,
+            float("inf") if self.max_attemps == 0 else self.max_attemps,
+            self.weight,
+        )
+
+    def __str__(self) -> str:
+        return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}, w={10:.3f}".format(
+            *self._str()
         )
 
     @property

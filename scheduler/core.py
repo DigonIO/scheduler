@@ -24,7 +24,13 @@ from scheduler.job import (
     JobType,
     Job,
 )
-from scheduler.util import SchedulerError, AbstractJob, Weekday, linear_weight_function
+from scheduler.util import (
+    SchedulerError,
+    AbstractJob,
+    Weekday,
+    linear_weight_function,
+    str_cutoff,
+)
 
 ONCE_TYPE_ERROR_MSG = (
     "Wrong input for Once! Select one of the following input types:\n"
@@ -88,6 +94,69 @@ class Scheduler:  # in core
                 raise SchedulerError(TZ_ERROR_MSG)
 
         self.__tz_str = dt.datetime.now(tzinfo).timetz().tzname()
+
+    def __repr__(self) -> str:
+        return "scheduler.Scheduler({0}, jobs={{{1}}})".format(
+            ", ".join(
+                (
+                    repr(elem)
+                    for elem in (
+                        self.__max_exec,
+                        self.__tzinfo,
+                        self.__weight_function,
+                        self.__jobs,
+                    )
+                )
+            ),
+            ", ".join([repr(job) for job in sorted(self.jobs)]),
+        )
+
+    def __headings(self) -> list[str]:
+        headings = [
+            f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
+            f"timezone={self.__tz_str}",
+            f"weight_function={self.__weight_function.__qualname__}",
+            f"#jobs={len(self.__jobs)}",
+        ]
+        return headings
+
+    def __str__(self) -> str:
+        # Scheduler meta heading
+        scheduler_headings = "{0}, {1}, {2}, {3}\n\n".format(*self.__headings())
+
+        # Job table (we join two of the Job._repr() fields into one)
+        # columns
+        c_align = ("<", "<", "^", "<", ">", ">", ">")
+        c_width = (8, 16, 19, 12, 9, 13, 6)
+        c_name = (
+            "job type",
+            "function",
+            "due at",
+            "timezone",
+            "due in",
+            "attempts",
+            "weight",
+        )
+        form = [
+            f"{{{idx}:{align}{width}}}"
+            for idx, (align, width) in enumerate(zip(c_align, c_width))
+        ]
+        fstring = " ".join(form) + "\n"
+        job_table = fstring.format(*c_name)
+        job_table += " ".join(["-" * width for width in c_width]) + "\n"
+
+        for job in sorted(self.jobs):
+            row = job._str()
+            job_table += fstring.format(
+                row[0],
+                str_cutoff(row[1], c_width[1], False),
+                row[4],
+                str_cutoff(row[5], c_width[3], False),
+                str_cutoff(row[7], c_width[4], True),
+                str_cutoff(f"{row[8]}/{row[9]}", c_width[5], True),
+                str_cutoff(f"{row[10]}", c_width[6], True),
+            )
+        return scheduler_headings + job_table
 
     def delete_job(self, job: Job) -> None:
         """
