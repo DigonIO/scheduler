@@ -126,7 +126,7 @@ class Scheduler:  # in core
 
         # Job table (we join two of the Job._repr() fields into one)
         # columns
-        c_align = ("<", "<", "^", "<", ">", ">", ">")
+        c_align = ("<", "<", "<", "<", ">", ">", ">")
         c_width = (8, 16, 19, 12, 9, 13, 6)
         c_name = (
             "job type",
@@ -296,7 +296,7 @@ class Scheduler:  # in core
     def cyclic(
         self,
         timing: TimingTypeCyclic,
-        handle: Callable,
+        handle: Callable[..., Any],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -325,7 +325,7 @@ class Scheduler:  # in core
     def minutely(
         self,
         timing: TimingTypeDaily,
-        handle: Callable,
+        handle: Callable[..., Any],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -354,7 +354,7 @@ class Scheduler:  # in core
     def hourly(
         self,
         timing: TimingTypeDaily,
-        handle: Callable,
+        handle: Callable[..., Any],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -383,7 +383,7 @@ class Scheduler:  # in core
     def daily(
         self,
         timing: TimingTypeDaily,
-        handle: Callable,
+        handle: Callable[..., Any],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -412,7 +412,7 @@ class Scheduler:  # in core
     def weekly(
         self,
         timing: TimingTypeWeekly,
-        handle: Callable,
+        handle: Callable[..., Any],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -441,7 +441,7 @@ class Scheduler:  # in core
     def once(
         self,
         timing: TimingTypeOnce,
-        handle: Callable,
+        handle: Callable[..., Any],
         params: Optional[dict[str, Any]] = None,
         weight: float = 1,
     ):
@@ -472,7 +472,7 @@ class Scheduler:  # in core
             if isinstance(timing, timing_type):
                 return self.__schedule(
                     job_type=job_type,
-                    timing=timing,
+                    timing=timing,  # type: ignore
                     handle=handle,
                     params=params,
                     max_attempts=1,

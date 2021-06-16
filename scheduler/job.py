@@ -30,9 +30,9 @@ TimingTypeDaily = Union[dt.time, list[dt.time]]
 
 # day of the week or time on the clock
 _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
-# day of the week or time on the clock
 TimingTypeWeekly = Union[_TimingTypeDay, list[_TimingTypeDay]]
 
+TimingJobTimerUnion = Union[dt.timedelta, dt.time, _TimingTypeDay]
 TimingJobUnion = Union[TimingTypeCyclic, TimingTypeDaily, TimingTypeWeekly]
 
 # specify point in time, distance to reference time, day of the week or time on the clock
@@ -94,7 +94,7 @@ class JobTimer:  # in job
     def __init__(
         self,
         job_type: JobType,
-        timing: TimingJobUnion,
+        timing: TimingJobTimerUnion,
         start: dt.datetime,
         skip_missing: bool = False,
     ):
@@ -112,22 +112,25 @@ class JobTimer:  # in job
             Datetime reference for scheduling the next execution datetime.
         """
         if self.__job_type == JobType.CYCLIC:
-            self.__next_exec = self.__next_exec + self.__timing
+            self.__next_exec = self.__next_exec + cast(dt.timedelta, self.__timing)
 
         elif self.__job_type == JobType.MINUTELY:
-            check_tz_aware(cast(dt.time, self.__timing), self.__next_exec)
+            self.__timing = cast(dt.time, self.__timing)
+            check_tz_aware(self.__timing, self.__next_exec)
             if self.__next_exec.tzinfo:
                 self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
             self.__next_exec = next_minutely_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.HOURLY:
-            check_tz_aware(cast(dt.time, self.__timing), self.__next_exec)
+            self.__timing = cast(dt.time, self.__timing)
+            check_tz_aware(self.__timing, self.__next_exec)
             if self.__next_exec.tzinfo:
                 self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
             self.__next_exec = next_hourly_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.DAILY:
-            check_tz_aware(cast(dt.time, self.__timing), self.__next_exec)
+            self.__timing = cast(dt.time, self.__timing)
+            check_tz_aware(self.__timing, self.__next_exec)
             if self.__next_exec.tzinfo:
                 self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
             self.__next_exec = next_daily_occurrence(self.__next_exec, self.__timing)
@@ -139,7 +142,8 @@ class JobTimer:  # in job
                     self.__next_exec, self.__timing
                 )
             else:
-                check_tz_aware(cast(dt.time, self.__timing[1]), self.__next_exec)
+                self.__timing = cast(tuple[Weekday, dt.time], self.__timing)
+                check_tz_aware(self.__timing[1], self.__next_exec)
                 if self.__timing[1].tzinfo:
                     self.__next_exec = self.__next_exec.astimezone(
                         self.__timing[1].tzinfo
@@ -293,7 +297,21 @@ class Job(AbstractJob):  # in job
             )
         )
 
-    def _str(self) -> tuple:
+    def _str(
+        self,
+    ) -> tuple[
+        str,
+        str,
+        str,
+        dt.datetime,
+        str,
+        Optional[str],
+        dt.timedelta,
+        str,
+        int,
+        Union[float, int],
+        float,
+    ]:
         """Return the objects relevant for readable string representation."""
         dt_timedelta = self.timedelta(dt.datetime.now(self.__tzinfo))
         return (
@@ -449,7 +467,7 @@ class Job(AbstractJob):  # in job
         return self.__tzinfo
 
     @property
-    def tzinfo(self) -> Optional[dt.timezone]:
+    def tzinfo(self) -> Optional[dt.tzinfo]:
         r"""
         Get the timezone of the `Job`\ s next execution.
 
