@@ -149,7 +149,7 @@ class Scheduler:  # in core
             row = job._str()
             job_table += fstring.format(
                 row[0],
-                str_cutoff(row[1], c_width[1], False),
+                str_cutoff(row[1] + row[2], c_width[1], False),
                 row[4],
                 str_cutoff(row[5], c_width[3], False),
                 str_cutoff(row[7], c_width[4], True),
