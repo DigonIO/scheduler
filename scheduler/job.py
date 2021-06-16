@@ -183,15 +183,12 @@ class JobTimer:  # in job
 
 
 def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
-    if job_type not in JobType and job_type is not dt.datetime:
-        raise SchedulerError(f"Invalid type for JobType: {job_type}")
     mapping = {
         JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
         JobType.MINUTELY: {"type": TimingTypeDaily, "err": MINUTELY_TYPE_ERROR_MSG},
         JobType.HOURLY: {"type": TimingTypeDaily, "err": HOURLY_TYPE_ERROR_MSG},
         JobType.DAILY: {"type": TimingTypeDaily, "err": DAILY_TYPE_ERROR_MSG},
         JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
-        dt.datetime: {"type": dt.datetime, "err": None},
     }
 
     try:
