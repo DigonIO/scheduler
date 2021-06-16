@@ -63,59 +63,6 @@ def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
     return wkdy_dest - wkdy_src
 
 
-def next_weekday_occurrence(now: dt.datetime, weekday: Weekday) -> dt.datetime:
-    """
-    Estimate the next occurency of a given `Weekday`.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    weekday : Weekday
-        Desired `Weekday`.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` of a desired `Weekday`.
-    """
-    days = days_to_weekday(now.weekday(), weekday.value)
-    delta = dt.timedelta(days=days)
-    target = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    return target + delta
-
-
-def next_weekday_time_occurrence(
-    now: dt.datetime, weekday: Weekday, target_time: dt.time
-) -> dt.datetime:
-    """
-    Estimate the next occurency of a given weekday and time.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    weekday : Weekday
-        Desired `Weekday`.
-    target_time : datetime.time
-        Desired time.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` object with the desired `Weekday` and time.
-    """
-    days = days_to_weekday(now.weekday(), weekday.value)
-    delta = dt.timedelta(days=days)
-    target = now.replace(
-        hour=target_time.hour,
-        minute=target_time.minute,
-        second=target_time.second,
-        microsecond=target_time.microsecond,
-    )
-    return target + delta
-
-
 def next_daily_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
     """
     Estimate the next daily occurency of a given time.
@@ -192,6 +139,64 @@ def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datet
     if (target - now).total_seconds() <= 0:
         target = target + dt.timedelta(minutes=1)
     return target
+
+
+def next_weekday_occurrence(now: dt.datetime, weekday: Weekday) -> dt.datetime:
+    """
+    Estimate the next occurency of a given `Weekday`.
+
+    Parameters
+    ----------
+    now : datetime.datetime
+        `datetime.datetime` object of today
+    weekday : Weekday
+        Desired `Weekday`.
+
+    Returns
+    -------
+    datetime.datetime
+        Next `datetime.datetime` of a desired `Weekday`.
+    """
+    days = days_to_weekday(now.weekday(), weekday.value)
+    delta = dt.timedelta(days=days)
+    target = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    return target + delta
+
+
+def next_weekday_time_occurrence(
+    now: dt.datetime, weekday: Weekday, target_time: dt.time
+) -> dt.datetime:
+    """
+    Estimate the next occurency of a given weekday and time.
+
+    Parameters
+    ----------
+    now : datetime.datetime
+        `datetime.datetime` object of today
+    weekday : Weekday
+        Desired `Weekday`.
+    target_time : datetime.time
+        Desired time.
+
+    Returns
+    -------
+    datetime.datetime
+        Next `datetime.datetime` object with the desired `Weekday` and time.
+    """
+    days = days_to_weekday(now.weekday(), weekday.value)
+    if days == 7:
+        candidate = next_daily_occurrence(now, target_time)
+        if candidate.date() == now.date():
+            return candidate
+
+    delta = dt.timedelta(days=days)
+    target = now.replace(
+        hour=target_time.hour,
+        minute=target_time.minute,
+        second=target_time.second,
+        microsecond=target_time.microsecond,
+    )
+    return target + delta
 
 
 class AbstractJob(ABC):
