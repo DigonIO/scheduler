@@ -129,7 +129,7 @@ class Scheduler:  # in core
         c_align = ("<", "<", "<", "<", ">", ">", ">")
         c_width = (8, 16, 19, 12, 9, 13, 6)
         c_name = (
-            "job type",
+            "type",
             "function",
             "due at",
             "timezone",

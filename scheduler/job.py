@@ -322,7 +322,9 @@ class Job(AbstractJob):  # in job
             str(self.datetime).split(".")[0],
             self.datetime.tzname(),
             dt_timedelta,
-            str(dt_timedelta).split(",")[0].split(".")[0],
+            str(dt_timedelta)
+            .split(",")[0]
+            .split(".")[0],  # TODO fix representation, rounding is misleading
             self.attemps,
             float("inf") if self.max_attemps == 0 else self.max_attemps,
             self.weight,
@@ -406,6 +408,30 @@ class Job(AbstractJob):  # in job
             Max execution attemps.
         """
         return self.__max_attempts
+
+    @property
+    def type(self) -> JobType:
+        """
+        Return the `JobType` of the `Job` instance.
+
+        Returns
+        -------
+        JobType
+            `JobType` of the `Job`.
+        """
+        return self.__type
+
+    @property
+    def weight(self) -> float:
+        """
+        Return the weight of the `Job` instance.
+
+        Returns
+        -------
+        float
+            Job weight.
+        """
+        return self.__weight
 
     @property
     def weight(self) -> float:

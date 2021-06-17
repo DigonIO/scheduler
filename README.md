@@ -56,44 +56,25 @@ import time
 import datetime as dt
 from scheduler import Scheduler, Weekday
 
-def foo(msg = "bar"):
+def foo():
+    print("foo")
+
+def bar(msg = "bar"):
     print(msg)
 
 sch = Scheduler()
 
-sch.schedule(foo, dt.timedelta(minutes=10))  # every 10 minutes
-sch.schedule(foo, dt.time(hour=16, minute=45))  # every day at 16:45
-sch.schedule(foo, Weekday.MONDAY)  # every monday at 00:00
+sch.cyclic(dt.timedelta(minutes=10), foo)
 
-# every monday at 16:45
-sch.schedule(
-    foo,
-    (Weekday.MONDAY, dt.time(hour=16, minute=45)),
-)
+sch.minutely(dt.time(second=15), bar)
+sch.hourly(dt.time(minute=30, second=15), foo)
+sch.daily(dt.time(hour=16, minute=30), bar)
+sch.weekly(Weekday.MONDAY, foo)
+sch.weekly((Weekday.MONDAY, dt.time(hour=16, minute=30)), bar)
 
-# every friday at 00:00, every 10 minutes and every monday at 16:45
-sch.schedule(
-    foo,
-    [
-        Weekday.FRIDAY,
-        dt.timedelta(minutes=10),
-        (Weekday.MONDAY, dt.time(hour=16, minute=45)),
-    ],
-)
-```
-
-Besides cyclic `Job`s, oneshot `Job`s can also be easily created:
-
-```py
-sch.once(foo, dt.datetime(year=2021, month=2, day=11))  # at given datetime
-sch.once(foo, dt.timedelta(minutes=10))  # in 10 minutes
-```
-
-`Scheduler` has support for calling scheduled functions with parameters:
-
-```py
-sch.once(foo, dt.timedelta(seconds=10000), params={"msg": "fizz"})
-sch.schedule(foo, dt.timedelta(minutes=1), params={"msg": "buzz"})
+sch.once(dt.timedelta(minutes=10), foo)
+sch.once(Weekday.MONDAY, bar)
+sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
 ```
 
 A human readable overview of the scheduled jobs can be created by a simple `print` statement:
@@ -103,19 +84,19 @@ print(sch)
 ```
 
 ```text
-max_exec=inf, timezone=None, #jobs=9, weight_function=linear_weight_function
+max_exec=inf, timezone=None, weight_function=linear_weight_function, #jobs=9
 
-function               due at        timezone        due in      attempts weight
----------------- ------------------- ------------ --------- ------------- ------
-foo              2021-02-11 00:00:00 None         -122 days           0/1      1
-foo              2021-06-12 23:30:01 None           0:00:59         0/inf      1
-foo              2021-06-12 23:39:01 None           0:09:59         0/inf      1
-foo              2021-06-12 23:39:01 None           0:09:59         0/inf      1
-foo              2021-06-12 23:39:01 None           0:09:59           0/1      1
-foo              2021-06-13 02:15:41 None           2:46:39           0/1      1
-foo              2021-06-13 16:45:00 None          17:15:58         0/inf      1
-foo              2021-06-14 00:00:00 None             1 day         0/inf      1
-foo              2021-06-14 16:45:00 None             1 day         0/inf      1
+type     function         due at                 due in      attempts weight
+-------- ---------------- ------------------- --------- ------------- ------
+MINUTELY bar(..)          2021-06-18 00:37:15   0:00:14         0/inf      1
+CYCLIC   foo()            2021-06-18 00:46:58   0:09:58         0/inf      1
+ONCE     foo()            2021-06-18 00:46:59   0:09:58           0/1      1
+HOURLY   foo()            2021-06-18 01:30:15   0:53:14         0/inf      1
+DAILY    bar(..)          2021-06-18 16:30:00  15:52:59         0/inf      1
+WEEKLY   foo()            2021-06-21 00:00:00    2 days         0/inf      1
+ONCE     bar(..)          2021-06-21 00:00:00    2 days           0/1      1
+WEEKLY   bar(..)          2021-06-21 16:30:00    3 days         0/inf      1
+ONCE     foo()            2022-02-15 00:45:00  242 days           0/1      1
 ```
 
 Executing pending `Job`s periodically can be achieved with a simple loop:

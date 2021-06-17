@@ -10,6 +10,7 @@
 
     examples
     api_reference
+    faq
 
 
 .. mdinclude:: ../README.md
