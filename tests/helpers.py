@@ -159,6 +159,32 @@ samples_days_utc = [
 ]
 
 
+samples_weeks = [
+    T_2021_5_26__3_55,  # scheduler creation WEDNESDAY
+    T_2021_5_26__3_55,  # job creation WEDNESDAY
+    T_2021_5_26__3_55 + dt.timedelta(weeks=1, days=1),  # t1 THURSDAY
+    T_2021_5_26__3_55 + dt.timedelta(weeks=1, days=2),  # t2 FRIDAY
+    T_2021_5_26__3_55 + dt.timedelta(weeks=1, days=2, minutes=5),  # t3 FRIDAY
+    T_2021_5_26__3_55 + dt.timedelta(weeks=2, days=1),  # t4 THURSDAY
+    T_2021_5_26__3_55 + dt.timedelta(weeks=2, days=2),  # t5 FRIDAY
+    T_2021_5_26__3_55 + dt.timedelta(weeks=3, days=1),  # t6 THURSDAY
+    T_2021_5_26__3_55 + dt.timedelta(weeks=3, days=2),  # t7 FRIDAY
+    T_2021_5_26__3_55 + dt.timedelta(weeks=3, days=3),  # t8 SATURDAY
+]
+
+samples_weeks_utc = [
+    T_2021_5_26__3_55_utc,  # scheduler creation WEDNESDAY
+    T_2021_5_26__3_55_utc,  # job creation WEDNESDAY
+    T_2021_5_26__3_55_utc + dt.timedelta(weeks=1, days=1),  # t1 THURSDAY
+    T_2021_5_26__3_55_utc + dt.timedelta(weeks=1, days=2),  # t2 FRIDAY
+    T_2021_5_26__3_55_utc + dt.timedelta(weeks=1, days=2, minutes=5),  # t3 FRIDAY
+    T_2021_5_26__3_55_utc + dt.timedelta(weeks=2, days=1),  # t4 THURSDAY
+    T_2021_5_26__3_55_utc + dt.timedelta(weeks=2, days=2),  # t5 FRIDAY
+    T_2021_5_26__3_55_utc + dt.timedelta(weeks=3, days=1),  # t6 THURSDAY
+    T_2021_5_26__3_55_utc + dt.timedelta(weeks=3, days=2),  # t7 FRIDAY
+    T_2021_5_26__3_55_utc + dt.timedelta(weeks=3, days=3),  # t8 SATURDAY
+]
+
 samples_job_creation = [
     T_2021_5_26__3_55,
     T_2021_5_26__3_55,
