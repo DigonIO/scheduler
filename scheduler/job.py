@@ -207,6 +207,10 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
 
 # Maybe rename offset to start(_at), for preparing a stop(_at)
 class Job(AbstractJob):  # in job
+    """
+    `Job` class bundling time and callback function methods.
+    """
+
     def __init__(
         self,
         job_type: JobType,

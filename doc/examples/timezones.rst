@@ -1,5 +1,5 @@
-How to use time zones
-^^^^^^^^^^^^^^^^^^^^^
+Time Zones
+==========
 
 With the time zone support of the `datetime` library,
 `scheduler` is also able to observe time zones. The following

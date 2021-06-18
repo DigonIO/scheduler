@@ -1,5 +1,5 @@
 """
-Implementation of a `Job` as callback function represention.
+`Scheduler` implementation for `Job` based callback function execution.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
@@ -52,7 +52,7 @@ class Scheduler:  # in core
     r"""
     Implementation of a `Scheduler` for callback functions.
 
-    This implementation enables the planning of `Job`\ s depending on time
+    This implementation enables the planning of :class:`~scheduler.job.Job`\ s depending on time
     cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
 
     Notes
