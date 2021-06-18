@@ -26,6 +26,11 @@ WEEKLY_TYPE_ERROR_MSG = (
     + "where `DAY = Weekday | tuple[Weekday, dt.time]`"
 )
 
+ONCE_TYPE_ERROR_MSG = (
+    "Wrong input for Once! Select one of the following input types:\n"
+    + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
+)
+
 _TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
 TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
 
@@ -54,6 +59,20 @@ samples = [
     T_2021_5_26__3_55 + dt.timedelta(days=9, minutes=7),  # t7
     T_2021_5_26__3_55 + dt.timedelta(days=10, minutes=7),  # t8
 ]
+
+samples_utc = [
+    T_2021_5_26__3_55_utc,  # scheduler init
+    T_2021_5_26__3_55_utc,  # job creation
+    T_2021_5_26__3_55_utc + dt.timedelta(seconds=5),  # t1
+    T_2021_5_26__3_55_utc + dt.timedelta(seconds=8),  # t2
+    T_2021_5_26__3_55_utc + dt.timedelta(seconds=11),  # t3
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=1, minutes=3),  # t4
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=2, minutes=2),  # t5
+    T_2021_5_26__3_55_utc + dt.timedelta(days=1, minutes=2),  # t6
+    T_2021_5_26__3_55_utc + dt.timedelta(days=9, minutes=7),  # t7
+    T_2021_5_26__3_55_utc + dt.timedelta(days=10, minutes=7),  # t8
+]
+
 
 samples_once_datetime = [
     T_2021_5_26__3_55,  # scheduler init
