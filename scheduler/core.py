@@ -247,8 +247,9 @@ class Scheduler:  # in core
             Number of executed `Job`\ s.
         """
         ref_dt = dt.datetime.now(tz=self.__tzinfo)
-        n_jobs = len(self.__jobs)
-        for job in self.__jobs:
+        jobs = self.jobs
+        n_jobs = len(jobs)
+        for job in jobs:
             self.__exec_job(job, ref_dt)
         return n_jobs
 

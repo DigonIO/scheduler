@@ -438,18 +438,6 @@ class Job(AbstractJob):  # in job
         return self.__weight
 
     @property
-    def weight(self) -> float:
-        """
-        Return the weight of the job instance.
-
-        Returns
-        -------
-        float
-            Job weight.
-        """
-        return self.__weight
-
-    @property
     def datetime(self) -> dt.datetime:
         """
         Give the `datetime.datetime` object for the planed execution.

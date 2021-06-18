@@ -10,6 +10,9 @@ from helpers import (
     utc,
     T_2021_5_26__3_55,
     T_2021_5_26__3_55_utc,
+    patch_datetime_now,
+    samples_minutes_utc,
+    samples_weeks_utc,
     foo,
 )
 
@@ -28,6 +31,7 @@ def test_misc_properties():
     assert job.weight == 1
     assert job.max_attemps == 0
     assert job.attemps == 0
+    assert job.type == JobType.CYCLIC
 
 
 @pytest.mark.parametrize(
@@ -70,3 +74,54 @@ def test_job__lt__(
         tzinfo=tzinfo,
     )
     assert (job_1 < job_2) == result
+
+
+@pytest.mark.parametrize(
+    "job_type, timing, base, offset, tzinfo, patch_datetime_now",
+    (
+        [
+            JobType.CYCLIC,
+            dt.timedelta(minutes=2),
+            T_2021_5_26__3_55_utc,
+            dt.timedelta(minutes=2, seconds=8),
+            utc,
+            samples_minutes_utc,
+        ],
+        [
+            JobType.CYCLIC,
+            dt.timedelta(weeks=2),
+            T_2021_5_26__3_55_utc,
+            dt.timedelta(minutes=2, seconds=8),
+            utc,
+            samples_minutes_utc,
+        ],
+        [
+            JobType.WEEKLY,
+            Weekday.SUNDAY,
+            T_2021_5_26__3_55_utc,
+            dt.timedelta(minutes=2, seconds=8),
+            utc,
+            samples_weeks_utc,
+        ],
+    ),
+    indirect=["patch_datetime_now"],
+)
+def test_start_with_no_delay(
+    job_type,
+    timing,
+    base,
+    offset,
+    tzinfo,
+    patch_datetime_now,
+):
+    job = Job(
+        job_type=job_type,
+        timing=timing,
+        handle=lambda: None,
+        start=base + offset,
+        delay=False,
+        tzinfo=tzinfo,
+    )
+
+    assert job.datetime == base + offset
+    assert job.timedelta() == offset

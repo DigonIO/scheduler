@@ -11,11 +11,8 @@ from helpers import (
     T_2021_5_26__3_55,
     T_2021_5_26__3_55_utc,
     TZ_ERROR_MSG,
+    foo,
 )
-
-
-def foo():
-    pass
 
 
 def weight_function_dummy(
@@ -63,3 +60,47 @@ def test_sch_init(max_exec, tzinfo, weight_function, jobs, err):
         Scheduler(
             max_exec=max_exec, tzinfo=tzinfo, weight_function=weight_function, jobs=jobs
         )
+
+
+@pytest.mark.parametrize(
+    "n_jobs",
+    [
+        0,
+        1,
+        2,
+        3,
+        10,
+    ],
+)
+def test_exec_all_jobs_and_jobs(n_jobs):
+    sch = Scheduler()
+
+    assert len(sch.jobs) == 0
+    for _ in range(n_jobs):
+        sch.once(dt.datetime.now(), foo)
+    assert len(sch.jobs) == n_jobs
+
+    exec_job_count = sch.exec_all_jobs()
+    assert exec_job_count == n_jobs
+    assert len(sch.jobs) == 0
+
+
+@pytest.mark.parametrize(
+    "n_jobs",
+    [
+        0,
+        1,
+        2,
+        3,
+        10,
+    ],
+)
+def test_delete_jobs(n_jobs):
+    sch = Scheduler()
+
+    assert len(sch.jobs) == 0
+    for _ in range(n_jobs):
+        sch.once(dt.datetime.now(), foo)
+    assert len(sch.jobs) == n_jobs
+    sch.delete_jobs()
+    assert len(sch.jobs) == 0
