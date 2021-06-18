@@ -57,7 +57,10 @@ pydoctest_3_9_5:
   stage: testing
   image: "python:3.9.5"
   script:
-    - pytest --doctest-modules doc/examples.rst
+    - pytest --doctest-modules doc/examples/general_job_scheduling.rst
+    - pytest --doctest-modules doc/examples/metrics.rst
+    - pytest --doctest-modules doc/examples/timezones.rst
+    - pytest --doctest-modules doc/examples/weights.rst
 
 #### release ####
 pypi:

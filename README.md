@@ -11,8 +11,6 @@
 
 A simple in-process python scheduler library, designed to be integrated seamlessly with the `datetime` standard library. Due to the support of `datetime` objects, `scheduler` is able to work with time zones. This implementation enables the planning of `Job` s depending on time cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
 
----
-
 ## Features
 
 + Easy and user friendly in-process `Job` scheduling [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#general-job-scheduling)
@@ -42,8 +40,6 @@ git clone https://gitlab.com/DigonIO/scheduler.git
 cd scheduler
 pip install .
 ```
-
----
 
 ## Example: *How to schedule Jobs*
 
@@ -77,7 +73,7 @@ sch.once(Weekday.MONDAY, bar)
 sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
 ```
 
-A human readable overview of the scheduled jobs can be created by a simple `print` statement:
+A human readable overview of the scheduled jobs can be created with a simple `print` statement:
 
 ```py
 print(sch)
@@ -103,11 +99,9 @@ Executing pending `Job`s periodically can be achieved with a simple loop:
 
 ```py
 while True:
-    sch.exec_jobs()
+    sch.exec_pending_jobs()
     time.sleep(1)
 ```
-
----
 
 ## Documentation
 
@@ -143,8 +137,6 @@ pytest --doctest-modules doc/examples.rst
   + Comparison to [APScheduler](https://github.com/agronholm/apscheduler) and [schedule](https://github.com/dbader/schedule)
   + where to get help
   + FAQ
-
----
 
 ## License
 
