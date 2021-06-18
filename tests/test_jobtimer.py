@@ -6,8 +6,17 @@ from scheduler import SchedulerError
 from scheduler.job import JobTimer, JobType, sane_timing_types
 from scheduler.util import Weekday
 
-T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
-utc = dt.timezone.utc
+from helpers import (
+    utc,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55_utc,
+    CYCLIC_TYPE_ERROR_MSG,
+    MINUTELY_TYPE_ERROR_MSG,
+    HOURLY_TYPE_ERROR_MSG,
+    DAILY_TYPE_ERROR_MSG,
+    WEEKLY_TYPE_ERROR_MSG,
+    foo,
+)
 
 
 @pytest.mark.parametrize(
@@ -94,24 +103,6 @@ def test_skip(delta_m, offset_m, res_delta_m):
 
     jet.calc_next_exec(T_2021_5_26__3_55 + offset)
     assert jet.datetime == T_2021_5_26__3_55 + res_delta
-
-
-CYCLIC_TYPE_ERROR_MSG = (
-    "Wrong input for Cyclic! Select one of the following input types:\n"
-    + "datetime.timedelta | list[datetime.timedelta]"
-)
-_DAILY_TYPE_ERROR_MSG = (
-    "Wrong input for {0}! Select one of the following input types:\n"
-    + "datetime.time | list[datetime.time]"
-)
-MINUTELY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Minutely")
-HOURLY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Hourly")
-DAILY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Daily")
-WEEKLY_TYPE_ERROR_MSG = (
-    "Wrong input for Weekly! Select one of the following input types:\n"
-    + "DAY | list[DAY]\n"
-    + "where `DAY = Weekday | tuple[Weekday, dt.time]`"
-)
 
 
 @pytest.mark.parametrize(

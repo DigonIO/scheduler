@@ -6,12 +6,12 @@ from scheduler import Scheduler, SchedulerError
 from scheduler.job import Job, JobType
 from scheduler.util import Weekday, AbstractJob
 
-utc = dt.timezone.utc
-T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
-T_2021_5_26__3_55_utc = dt.datetime(2021, 5, 26, 3, 55, tzinfo=utc)
-
-_TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
-TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
+from helpers import (
+    utc,
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55_utc,
+    TZ_ERROR_MSG,
+)
 
 
 def foo():

@@ -2,6 +2,10 @@ import datetime as dt
 
 import pytest
 
+from scheduler import Scheduler, SchedulerError
+from scheduler.job import Job
+from scheduler.util import Weekday
+
 from helpers import (
     utc,
     CYCLIC_TYPE_ERROR_MSG,
@@ -11,10 +15,6 @@ from helpers import (
     samples_hours_utc,
     foo,
 )
-
-from scheduler import Scheduler, SchedulerError
-from scheduler.job import Job
-from scheduler.util import Weekday
 
 
 @pytest.mark.parametrize(

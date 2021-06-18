@@ -2,7 +2,6 @@ import datetime as dt
 
 import pytest
 
-# TODO remove static date from tests and store in this file
 # TODO review the samples and see which ones are no longer needed,
 # need to be adjusted or new ones are needed
 

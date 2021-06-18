@@ -6,11 +6,12 @@ from scheduler import SchedulerError
 from scheduler.job import Job, JobType
 from scheduler.util import Weekday
 
-T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
-utc = dt.timezone.utc
-
-_TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
-TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
+from helpers import (
+    utc,
+    T_2021_5_26__3_55,
+    _TZ_ERROR_MSG,
+    TZ_ERROR_MSG,
+)
 
 
 @pytest.mark.parametrize(
