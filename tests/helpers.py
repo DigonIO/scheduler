@@ -80,6 +80,59 @@ samples_seconds = [
     T_2021_5_26__3_55 + dt.timedelta(seconds=15.002),  # t8
 ]
 
+samples_minutes = [
+    T_2021_5_26__3_55,  # scheduler creation
+    T_2021_5_26__3_55,  # job creation
+    T_2021_5_26__3_55 + dt.timedelta(minutes=1, seconds=5),  # t1
+    T_2021_5_26__3_55 + dt.timedelta(minutes=2, seconds=8),  # t2
+    T_2021_5_26__3_55 + dt.timedelta(minutes=3, seconds=11),  # t3
+    T_2021_5_26__3_55 + dt.timedelta(minutes=4, seconds=31),  # t4
+    T_2021_5_26__3_55 + dt.timedelta(minutes=5, seconds=38.999),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(minutes=5, seconds=39),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(minutes=5, seconds=39.001),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(minutes=5, seconds=39.002),  # t8
+]
+
+samples_minutes_utc = [
+    T_2021_5_26__3_55_utc,  # scheduler creation
+    T_2021_5_26__3_55_utc,  # job creation
+    T_2021_5_26__3_55_utc + dt.timedelta(minutes=1, seconds=5),  # t1
+    T_2021_5_26__3_55_utc + dt.timedelta(minutes=2, seconds=8),  # t2
+    T_2021_5_26__3_55_utc + dt.timedelta(minutes=3, seconds=11),  # t3
+    T_2021_5_26__3_55_utc + dt.timedelta(minutes=4, seconds=31),  # t4
+    T_2021_5_26__3_55_utc + dt.timedelta(minutes=5, seconds=38.999),  # t5
+    T_2021_5_26__3_55_utc + dt.timedelta(minutes=5, seconds=39),  # t6
+    T_2021_5_26__3_55_utc + dt.timedelta(minutes=5, seconds=39.001),  # t7
+    T_2021_5_26__3_55_utc + dt.timedelta(minutes=5, seconds=39.002),  # t8
+]
+
+samples_hours = [
+    T_2021_5_26__3_55,  # scheduler creation
+    T_2021_5_26__3_55,  # job creation
+    T_2021_5_26__3_55 + dt.timedelta(hours=1, minutes=5),  # t1 05:00
+    T_2021_5_26__3_55 + dt.timedelta(hours=2, minutes=8),  # t2 06:03
+    T_2021_5_26__3_55 + dt.timedelta(hours=3, minutes=11),  # t3 07:06
+    T_2021_5_26__3_55 + dt.timedelta(hours=4, minutes=31),  # t4 08:26
+    T_2021_5_26__3_55 + dt.timedelta(hours=5, minutes=38.999),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(hours=5, minutes=39),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(hours=5, minutes=39.001),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(hours=5, minutes=39.002),  # t8
+]
+
+samples_hours_utc = [
+    T_2021_5_26__3_55_utc,  # scheduler creation
+    T_2021_5_26__3_55_utc,  # job creation
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=1, minutes=5),  # t1
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=2, minutes=8),  # t2
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=3, minutes=11),  # t3
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=4, minutes=31),  # t4
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=5, minutes=38.999),  # t5
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=5, minutes=39),  # t6
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=5, minutes=39.001),  # t7
+    T_2021_5_26__3_55_utc + dt.timedelta(hours=5, minutes=39.002),  # t8
+]
+
+
 samples_days = [
     T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
