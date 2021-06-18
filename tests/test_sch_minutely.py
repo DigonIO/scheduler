@@ -8,7 +8,7 @@ from scheduler.util import Weekday
 
 from helpers import (
     utc,
-    CYCLIC_TYPE_ERROR_MSG,
+    MINUTELY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
     patch_datetime_now,
     samples_minutes,
@@ -30,7 +30,7 @@ from helpers import (
             None,
         ],
         [dt.time(hour=2), [], samples_minutes_utc, utc, TZ_ERROR_MSG],
-        [Weekday.MONDAY, [], samples_minutes, None, CYCLIC_TYPE_ERROR_MSG],
+        [Weekday.MONDAY, [], samples_minutes, None, MINUTELY_TYPE_ERROR_MSG],
     ),
     indirect=["patch_datetime_now"],
 )
@@ -38,8 +38,9 @@ def test_minutely(timing, counts, patch_datetime_now, tzinfo, err_msg):
     sch = Scheduler(tzinfo=tzinfo)
 
     if err_msg:
-        with pytest.raises(SchedulerError) as err_msg:
+        with pytest.raises(SchedulerError) as msg:
             job = sch.minutely(timing=timing, handle=foo)
+            assert msg == err_msg
     else:
         job = sch.minutely(timing=timing, handle=foo)
         for count in counts:

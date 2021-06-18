@@ -8,7 +8,7 @@ from scheduler.util import Weekday
 
 from helpers import (
     utc,
-    CYCLIC_TYPE_ERROR_MSG,
+    DAILY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
     patch_datetime_now,
     samples_days,
@@ -42,7 +42,7 @@ from helpers import (
             None,
         ],
         [dt.time(hour=2), [], samples_days_utc, utc, TZ_ERROR_MSG],
-        [Weekday.MONDAY, [], samples_days, None, CYCLIC_TYPE_ERROR_MSG],
+        [Weekday.MONDAY, [], samples_days, None, DAILY_TYPE_ERROR_MSG],
     ),
     indirect=["patch_datetime_now"],
 )
@@ -50,8 +50,9 @@ def test_daily(timing, counts, patch_datetime_now, tzinfo, err_msg):
     sch = Scheduler(tzinfo=tzinfo)
 
     if err_msg:
-        with pytest.raises(SchedulerError) as err_msg:
+        with pytest.raises(SchedulerError) as msg:
             job = sch.daily(timing=timing, handle=foo)
+            assert msg == err_msg
     else:
         job = sch.daily(timing=timing, handle=foo)
         for count in counts:
