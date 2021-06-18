@@ -22,7 +22,7 @@ from helpers import (
         [dt.timedelta(seconds=4), [1, 2, 2, 2, 3, 3, 3], samples_seconds, None, None],
         [dt.timedelta(seconds=5), [1, 1, 2, 2, 2, 3, 3], samples_seconds, None, None],
         [dt.timedelta(seconds=5), [1, 1, 2, 2, 2, 3, 3], samples_seconds, utc, None],
-        [dt.timedelta(days=2), [0, 0, 1, 2, 3, 4, 5], samples_days, None, None],
+        [dt.timedelta(days=2), [0, 0, 1, 2, 2, 2, 2], samples_days, None, None],
         [dt.time(hour=2), [], samples_days, None, CYCLIC_TYPE_ERROR_MSG],
         [Weekday.MONDAY, [], samples_days, None, CYCLIC_TYPE_ERROR_MSG],
     ),

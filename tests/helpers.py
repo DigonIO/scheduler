@@ -135,15 +135,29 @@ samples_hours_utc = [
 samples_days = [
     T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
-    T_2021_5_26__3_55 + dt.timedelta(days=1, seconds=5),  # t1
-    T_2021_5_26__3_55 + dt.timedelta(days=1, seconds=8),  # t2
-    T_2021_5_26__3_55 + dt.timedelta(days=3, seconds=11),  # t3
-    T_2021_5_26__3_55 + dt.timedelta(days=4, seconds=11),  # t4
-    T_2021_5_26__3_55 + dt.timedelta(days=10, seconds=5.999),  # t5
-    T_2021_5_26__3_55 + dt.timedelta(days=10, seconds=6),  # t6
-    T_2021_5_26__3_55 + dt.timedelta(days=10, seconds=6.001),  # t7
-    T_2021_5_26__3_55 + dt.timedelta(days=11, seconds=6.002),  # t8
+    T_2021_5_26__3_55 + dt.timedelta(days=1, hours=5),  # t1
+    T_2021_5_26__3_55 + dt.timedelta(days=1, hours=8),  # t2
+    T_2021_5_26__3_55 + dt.timedelta(days=3, hours=11),  # t3
+    T_2021_5_26__3_55 + dt.timedelta(days=4, hours=11),  # t4
+    T_2021_5_26__3_55 + dt.timedelta(days=5, hours=14.999),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(days=5, hours=14),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(days=5, hours=14.001),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(days=5, hours=14.002),  # t8
 ]
+
+samples_days_utc = [
+    T_2021_5_26__3_55_utc,  # scheduler creation
+    T_2021_5_26__3_55_utc,  # job creation
+    T_2021_5_26__3_55_utc + dt.timedelta(days=1, hours=5),  # t1
+    T_2021_5_26__3_55_utc + dt.timedelta(days=1, hours=8),  # t2
+    T_2021_5_26__3_55_utc + dt.timedelta(days=3, hours=11),  # t3
+    T_2021_5_26__3_55_utc + dt.timedelta(days=4, hours=11),  # t4
+    T_2021_5_26__3_55_utc + dt.timedelta(days=5, hours=14.999),  # t5
+    T_2021_5_26__3_55_utc + dt.timedelta(days=5, hours=14),  # t6
+    T_2021_5_26__3_55_utc + dt.timedelta(days=5, hours=14.001),  # t7
+    T_2021_5_26__3_55_utc + dt.timedelta(days=5, hours=14.002),  # t8
+]
+
 
 samples_job_creation = [
     T_2021_5_26__3_55,
