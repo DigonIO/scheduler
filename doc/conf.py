@@ -17,19 +17,6 @@ from sphinx.locale import _
 
 sys.path.insert(0, os.path.abspath(".."))
 
-ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
-
-# build server of readthedocs don't use git-lfs, but we need it for the documentation to work
-# https://github.com/readthedocs/readthedocs.org/issues/1846#issuecomment-477184259
-if ON_RTD:
-    os.system(
-        "wget https://github.com/git-lfs/git-lfs/releases/download/v2.13.3/git-lfs-linux-amd64-v2.13.3.tar.gz"
-    )
-    os.system("tar xvfz git-lfs-linux-amd64-v2.13.3.tar.gz")
-    os.system("./git-lfs install")  # make lfs available in current repository
-    os.system("./git-lfs fetch")  # download content from remote
-    os.system("./git-lfs checkout")  # make local files to have the real content on them
-
 # -- Project information -----------------------------------------------------
 
 project = "scheduler"
