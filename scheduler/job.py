@@ -63,6 +63,8 @@ TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
 
 
 class JobType(Enum):  # in job
+    """Indicate the `JobType` of a `Job`."""
+
     CYCLIC = auto()
     MINUTELY = auto()
     HOURLY = auto()
@@ -91,6 +93,22 @@ def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
 
 
 class JobTimer:  # in job
+    """
+    The class provides the internal `datetime.datetime` calculations for `Job`.
+
+    Parameters
+    ----------
+    job_type : JobType
+        Indicator which defines which calculations has to be used.
+    timing : TimingJobTimerUnion
+        Desired execution time(s).
+    start : datetime.datetime
+        Timestamp reference from which future executions will be calculated.
+    skip_missing : bool
+        If `True` a `Job` will only schedule it's newest planned execution and
+        drop older ones.
+    """
+
     def __init__(
         self,
         job_type: JobType,
@@ -187,6 +205,21 @@ class JobTimer:  # in job
 
 
 def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
+    """
+    Determine if a given `timing` fulfill the `Type` for a specific `JobType`.
+
+    Parameters
+    ----------
+    job_type : JobType
+        `JobType` to test agains.
+    timing : TimingJobUnion
+        The `timing` object to be tested.
+
+    Raises
+    ------
+    TypeError
+        If the `timing` object has the wrong `Type` for a specific `JobType`.
+    """
     mapping = {
         JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
         JobType.MINUTELY: {"type": TimingTypeDaily, "err": MINUTELY_TYPE_ERROR_MSG},
@@ -201,14 +234,42 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
         raise SchedulerError(mapping[job_type]["err"]) from err
 
 
-# NOTE new API design
-
-# Change exec_at to timing, change JobExecTimer to JobTimer
-
-# Maybe rename offset to start(_at), for preparing a stop(_at)
 class Job(AbstractJob):  # in job
-    """
+    r"""
     `Job` class bundling time and callback function methods.
+
+    Parameters
+    ----------
+    job_type : JobType
+        Indicator which defines which calculations has to be used.
+    timing : TimingTypeWeekly
+        Desired execution time(s).
+    handle : Callable[..., Any]
+        Handle to a callback function.
+    params : dict[str, Any]
+        The payload arguments to pass to the function handle within a Job.
+    weight : float
+        Relative weight against other `Job`\ s.
+    delay : bool
+        If `False` the `Job` will executed instantly or at a given offset.
+    start : Optional[datetime.datetime]
+        Set the reference `datetime.datetime` stamp the `Job` will be
+        scheduled against. Default value is `datetime.datetime.now()`.
+    end : Optional[datetime.datetime]
+        Define a point in time after which a `Job` will be stopped and deleted.
+    max_attempts : int
+        Number of times the `Job` will be executed. 0 <=> inf
+        A `Job` with no free attempt will be deleted.
+    skip_missing : bool
+        If `True` a `Job` will only schedule it's newest planned execution and
+        drop older ones.
+    tzinfo : datetime.timezone
+        Set the timeW zone of the `Scheduler` the `Job` is scheduled in.
+
+    Returns
+    -------
+    Job
+        Instance of a scheduled `Job`.
     """
 
     def __init__(

@@ -37,16 +37,6 @@ ONCE_TYPE_ERROR_MSG = (
     + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
 )
 
-# NOTE new API design
-# advantages are easier and understandable use,
-# further you can create hourly and minutely as well as weekly jobs
-# Also it is easy to note months and years by the architecture
-# The disadvantage is that it is not possible to combine e.g. minute
-# and cyclic timings in one job.
-
-# Maybe rename offset to start(_at), for preparing a stop(_at)
-# Change exec_at to timing, change JobExecTimer to JobTimer
-
 
 class Scheduler:  # in core
     r"""
@@ -265,7 +255,7 @@ class Scheduler:  # in core
         """
         return self.__jobs.copy()
 
-    def __schedule(  # this function encapsulates the job and add the scheduler timezone
+    def __schedule(
         self,
         job_type: JobType,
         timing: TimingJobUnion,
@@ -278,6 +268,7 @@ class Scheduler:  # in core
         stop: Optional[dt.datetime],
         skip_missing: bool,
     ) -> Job:
+        """Encapsulate the `Job` and add the `Scheduler` timezone."""
         job = Job(
             job_type=job_type,
             timing=timing,
@@ -306,6 +297,41 @@ class Scheduler:  # in core
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
     ):
+        r"""
+        Schedule a cyclic `Job`.
+
+        Use a `datetime.timedelta` object or a `list` of `datetime.timedelta` objects
+        to schedule a cyclic `Job`.
+
+        Parameters
+        ----------
+        timing : TimingTypeCyclic
+            Desired execution time(s).
+        handle : Callable[..., Any]
+            Handle to a callback function.
+        params : dict[str, Any]
+            The payload arguments to pass to the function handle within a Job.
+        weight : float
+            Relative weight against other `Job`\ s.
+        delay : bool
+            If `False` the `Job` will executed instantly or at a given offset.
+        start : Optional[datetime.datetime]
+            Set the reference `datetime.datetime` stamp the `Job` will be
+            scheduled against. Default value is `datetime.datetime.now()`.
+        end : Optional[datetime.datetime]
+            Define a point in time after which a `Job` will be stopped and deleted.
+        max_attempts : int
+            Number of times the `Job` will be executed. 0 <=> inf
+            A `Job` with no free attempt will be deleted.
+        skip_missing : bool
+            If `True` a `Job` will only do it's newest planned execution and
+            drop older ones.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled `Job`.
+        """
         try:
             tg.check_type("timing", timing, TimingTypeCyclic)
         except TypeError as err:
@@ -335,6 +361,46 @@ class Scheduler:  # in core
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
     ):
+        r"""
+        Schedule a minutely `Job`.
+
+        Use a `datetime.time` object or a `list` of `datetime.time` objects
+        to schedule a `Job` every minute.
+
+        Notes
+        -----
+        If the given `datetime.time` object has entries with a greater magnitude
+        than seconds, e.g. minutes, this entries will be ignored.
+
+        Parameters
+        ----------
+        timing : TimingTypeDaily
+            Desired execution time(s).
+        handle : Callable[..., Any]
+            Handle to a callback function.
+        params : dict[str, Any]
+            The payload arguments to pass to the function handle within a Job.
+        weight : float
+            Relative weight against other `Job`\ s.
+        delay : bool
+            If `False` the `Job` will executed instantly or at a given offset.
+        start : Optional[datetime.datetime]
+            Set the reference `datetime.datetime` stamp the `Job` will be
+            scheduled against. Default value is `datetime.datetime.now()`.
+        end : Optional[datetime.datetime]
+            Define a point in time after which a `Job` will be stopped and deleted.
+        max_attempts : int
+            Number of times the `Job` will be executed. 0 <=> inf
+            A `Job` with no free attempt will be deleted.
+        skip_missing : bool
+            If `True` a `Job` will only do it's newest planned execution and
+            drop older ones.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled `Job`.
+        """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
         except TypeError as err:
@@ -364,6 +430,46 @@ class Scheduler:  # in core
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
     ):
+        r"""
+        Schedule a hourly `Job`.
+
+        Use a `datetime.time` object or a `list` of `datetime.time` objects
+        to schedule a `Job` every hour.
+
+        Notes
+        -----
+        If the given `datetime.time` object has entries of type hour,
+        this entries will be ignored.
+
+        Parameters
+        ----------
+        timing : TimingTypeDaily
+            Desired execution time(s).
+        handle : Callable[..., Any]
+            Handle to a callback function.
+        params : dict[str, Any]
+            The payload arguments to pass to the function handle within a Job.
+        weight : float
+            Relative weight against other `Job`\ s.
+        delay : bool
+            If `False` the `Job` will executed instantly or at a given offset.
+        start : Optional[datetime.datetime]
+            Set the reference `datetime.datetime` stamp the `Job` will be
+            scheduled against. Default value is `datetime.datetime.now()`.
+        end : Optional[datetime.datetime]
+            Define a point in time after which a `Job` will be stopped and deleted.
+        max_attempts : int
+            Number of times the `Job` will be executed. 0 <=> inf
+            A `Job` with no free attempt will be deleted.
+        skip_missing : bool
+            If `True` a `Job` will only do it's newest planned execution and
+            drop older ones.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled `Job`.
+        """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
         except TypeError as err:
@@ -393,6 +499,41 @@ class Scheduler:  # in core
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
     ):
+        r"""
+        Schedule a daily `Job`.
+
+        Use a `datetime.time` object or a `list` of `datetime.time` objects
+        to schedule a `Job` every day.
+
+        Parameters
+        ----------
+        timing : TimingTypeDaily
+            Desired execution time(s).
+        handle : Callable[..., Any]
+            Handle to a callback function.
+        params : dict[str, Any]
+            The payload arguments to pass to the function handle within a Job.
+        weight : float
+            Relative weight against other `Job`\ s.
+        delay : bool
+            If `False` the `Job` will executed instantly or at a given offset.
+        start : Optional[datetime.datetime]
+            Set the reference `datetime.datetime` stamp the `Job` will be
+            scheduled against. Default value is `datetime.datetime.now()`.
+        end : Optional[datetime.datetime]
+            Define a point in time after which a `Job` will be stopped and deleted.
+        max_attempts : int
+            Number of times the `Job` will be executed. 0 <=> inf
+            A `Job` with no free attempt will be deleted.
+        skip_missing : bool
+            If `True` a `Job` will only do it's newest planned execution and
+            drop older ones.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled `Job`.
+        """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
         except TypeError as err:
@@ -422,6 +563,43 @@ class Scheduler:  # in core
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
     ):
+        r"""
+        Schedule a weekly `Job`.
+
+        Use a `tuple` of a `Weekday` and a `datetime.time` object to define a weekly recuring
+        `Job`. Combine multiple desired `tuples` in a `list`. If the planed execution time
+        is `00:00` the `datetime.time` object can be ingored, just pass a `Weekday` without
+        a `tuple`.
+
+        Parameters
+        ----------
+        timing : TimingTypeWeekly
+            Desired execution time(s).
+        handle : Callable[..., Any]
+            Handle to a callback function.
+        params : dict[str, Any]
+            The payload arguments to pass to the function handle within a Job.
+        weight : float
+            Relative weight against other `Job`\ s.
+        delay : bool
+            If `False` the `Job` will executed instantly or at a given offset.
+        start : Optional[datetime.datetime]
+            Set the reference `datetime.datetime` stamp the `Job` will be
+            scheduled against. Default value is `datetime.datetime.now()`.
+        end : Optional[datetime.datetime]
+            Define a point in time after which a `Job` will be stopped and deleted.
+        max_attempts : int
+            Number of times the `Job` will be executed. 0 <=> inf
+            A `Job` with no free attempt will be deleted.
+        skip_missing : bool
+            If `True` a `Job` will only do it's newest planned execution and
+            drop older ones.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled `Job`.
+        """
         try:
             tg.check_type("timing", timing, TimingTypeWeekly)
         except TypeError as err:
@@ -446,6 +624,43 @@ class Scheduler:  # in core
         params: Optional[dict[str, Any]] = None,
         weight: float = 1,
     ):
+        r"""
+        Schedule a oneshot `Job`.
+
+        Notes
+        -----
+        Usefull if a specific `datetime.datetime` for the planed execution
+        is known.
+
+        Parameters
+        ----------
+        timing : TimingTypeWeekly
+            Desired execution time(s).
+        handle : Callable[..., Any]
+            Handle to a callback function.
+        params : dict[str, Any]
+            The payload arguments to pass to the function handle within a Job.
+        weight : float
+            Relative weight against other `Job`\ s.
+        delay : bool
+            If `False` the `Job` will executed instantly or at a given offset.
+        start : Optional[datetime.datetime]
+            Set the reference `datetime.datetime` stamp the `Job` will be
+            scheduled against. Default value is `datetime.datetime.now()`.
+        end : Optional[datetime.datetime]
+            Define a point in time after which a `Job` will be stopped and deleted.
+        max_attempts : int
+            Number of times the `Job` will be executed. 0 <=> inf
+            A `Job` with no free attempt will be deleted.
+        skip_missing : bool
+            If `True` a `Job` will only schedule it's newest planned execution and
+            drop older ones.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled `Job`.
+        """
         try:
             tg.check_type("timing", timing, TimingTypeOnce)
         except TypeError as err:
