@@ -6,15 +6,7 @@ from scheduler import Scheduler, SchedulerError
 from scheduler.job import Job
 from scheduler.util import Weekday
 
-from helpers import (
-    utc,
-    ONCE_TYPE_ERROR_MSG,
-    TZ_ERROR_MSG,
-    patch_datetime_now,
-    samples,
-    samples_utc,
-    foo,
-)
+from helpers import utc, ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, samples, samples_utc, foo
 
 
 @pytest.mark.parametrize(

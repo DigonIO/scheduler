@@ -8,7 +8,6 @@ from scheduler.util import Weekday
 
 from helpers import (
     utc,
-    T_2021_5_26__3_55,
     _TZ_ERROR_MSG,
     TZ_ERROR_MSG,
 )

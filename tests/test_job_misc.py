@@ -10,7 +10,6 @@ from helpers import (
     utc,
     T_2021_5_26__3_55,
     T_2021_5_26__3_55_UTC,
-    patch_datetime_now,
     samples_minutes_utc,
     samples_weeks_utc,
     foo,

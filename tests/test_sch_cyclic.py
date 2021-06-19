@@ -9,7 +9,6 @@ from scheduler.util import Weekday
 from helpers import (
     utc,
     CYCLIC_TYPE_ERROR_MSG,
-    patch_datetime_now,
     samples_seconds,
     samples_days,
     foo,

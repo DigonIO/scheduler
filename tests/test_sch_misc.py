@@ -6,13 +6,7 @@ from scheduler import Scheduler, SchedulerError
 from scheduler.job import Job, JobType
 from scheduler.util import Weekday, AbstractJob
 
-from helpers import (
-    utc,
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55_UTC,
-    TZ_ERROR_MSG,
-    foo,
-)
+from helpers import utc, TZ_ERROR_MSG, foo
 
 
 def weight_function_dummy(

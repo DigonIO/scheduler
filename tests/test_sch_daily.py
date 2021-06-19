@@ -10,7 +10,6 @@ from helpers import (
     utc,
     DAILY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
-    patch_datetime_now,
     samples_days,
     samples_days_utc,
     foo,

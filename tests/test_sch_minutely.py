@@ -10,7 +10,6 @@ from helpers import (
     utc,
     MINUTELY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
-    patch_datetime_now,
     samples_minutes,
     samples_minutes_utc,
     foo,

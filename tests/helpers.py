@@ -1,6 +1,5 @@
 import datetime as dt
 
-import pytest
 
 utc = dt.timezone.utc
 T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
@@ -30,18 +29,6 @@ ONCE_TYPE_ERROR_MSG = (
 
 _TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
 TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
-
-
-@pytest.fixture
-def patch_datetime_now(monkeypatch, request):
-    class DatetimePatch:
-        it = iter(request.param)
-
-        @classmethod
-        def now(cls, tz=None):
-            return next(cls.it)
-
-    monkeypatch.setattr(dt, "datetime", DatetimePatch)
 
 
 samples = [

@@ -120,6 +120,14 @@ class JobTimer:  # in job
         self.__timing = timing
         self.__next_exec = start
         self.__skip = skip_missing
+        self.__tz_sanity_check(self.__next_exec)
+
+    def __tz_sanity_check(self, exec_time):
+        if self.__job_type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
+            check_tz_aware(self.__timing, exec_time)
+        if self.__job_type == JobType.WEEKLY:
+            if not isinstance(self.__timing, Weekday):
+                check_tz_aware(self.__timing[1], exec_time)
 
     def calc_next_exec(self, ref: Optional[dt.datetime] = None) -> None:
         """Generate the next execution `datetime.datetime` stamp.
@@ -129,26 +137,26 @@ class JobTimer:  # in job
         ref : Optional[datetime.datetime]
             Datetime reference for scheduling the next execution datetime.
         """
+        if ref:
+            self.__tz_sanity_check(ref)
+
         if self.__job_type == JobType.CYCLIC:
             self.__next_exec = self.__next_exec + cast(dt.timedelta, self.__timing)
 
         elif self.__job_type == JobType.MINUTELY:
             self.__timing = cast(dt.time, self.__timing)
-            check_tz_aware(self.__timing, self.__next_exec)
             if self.__next_exec.tzinfo:
                 self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
             self.__next_exec = next_minutely_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.HOURLY:
             self.__timing = cast(dt.time, self.__timing)
-            check_tz_aware(self.__timing, self.__next_exec)
             if self.__next_exec.tzinfo:
                 self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
             self.__next_exec = next_hourly_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.DAILY:
             self.__timing = cast(dt.time, self.__timing)
-            check_tz_aware(self.__timing, self.__next_exec)
             if self.__next_exec.tzinfo:
                 self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
             self.__next_exec = next_daily_occurrence(self.__next_exec, self.__timing)
@@ -161,7 +169,6 @@ class JobTimer:  # in job
                 )
             else:
                 self.__timing = cast(tuple[Weekday, dt.time], self.__timing)
-                check_tz_aware(self.__timing[1], self.__next_exec)
                 if self.__timing[1].tzinfo:
                     self.__next_exec = self.__next_exec.astimezone(
                         self.__timing[1].tzinfo
