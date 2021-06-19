@@ -9,7 +9,7 @@ from scheduler.util import Weekday
 from helpers import (
     utc,
     T_2021_5_26__3_55,
-    T_2021_5_26__3_55_utc,
+    T_2021_5_26__3_55_UTC,
     CYCLIC_TYPE_ERROR_MSG,
     MINUTELY_TYPE_ERROR_MSG,
     HOURLY_TYPE_ERROR_MSG,

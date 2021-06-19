@@ -9,7 +9,7 @@ from scheduler.util import Weekday
 from helpers import (
     utc,
     T_2021_5_26__3_55,
-    T_2021_5_26__3_55_utc,
+    T_2021_5_26__3_55_UTC,
     patch_datetime_now,
     samples_minutes_utc,
     samples_weeks_utc,
@@ -22,7 +22,7 @@ def test_misc_properties():
         job_type=JobType.CYCLIC,
         timing=dt.timedelta(),
         handle=foo,
-        start=T_2021_5_26__3_55_utc,
+        start=T_2021_5_26__3_55_UTC,
         tzinfo=utc,
     )
 
@@ -40,14 +40,14 @@ def test_misc_properties():
         [T_2021_5_26__3_55, T_2021_5_26__3_55 + dt.timedelta(hours=1), None, True],
         [T_2021_5_26__3_55, T_2021_5_26__3_55 + dt.timedelta(hours=-1), None, False],
         [
-            T_2021_5_26__3_55_utc,
-            T_2021_5_26__3_55_utc + dt.timedelta(hours=1),
+            T_2021_5_26__3_55_UTC,
+            T_2021_5_26__3_55_UTC + dt.timedelta(hours=1),
             utc,
             True,
         ],
         [
-            T_2021_5_26__3_55_utc,
-            T_2021_5_26__3_55_utc + dt.timedelta(hours=-1),
+            T_2021_5_26__3_55_UTC,
+            T_2021_5_26__3_55_UTC + dt.timedelta(hours=-1),
             utc,
             False,
         ],
@@ -82,7 +82,7 @@ def test_job__lt__(
         [
             JobType.CYCLIC,
             dt.timedelta(minutes=2),
-            T_2021_5_26__3_55_utc,
+            T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
             samples_minutes_utc,
@@ -90,7 +90,7 @@ def test_job__lt__(
         [
             JobType.CYCLIC,
             dt.timedelta(weeks=2),
-            T_2021_5_26__3_55_utc,
+            T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
             samples_minutes_utc,
@@ -98,7 +98,7 @@ def test_job__lt__(
         [
             JobType.WEEKLY,
             Weekday.SUNDAY,
-            T_2021_5_26__3_55_utc,
+            T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
             samples_weeks_utc,

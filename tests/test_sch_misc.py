@@ -9,7 +9,7 @@ from scheduler.util import Weekday, AbstractJob
 from helpers import (
     utc,
     T_2021_5_26__3_55,
-    T_2021_5_26__3_55_utc,
+    T_2021_5_26__3_55_UTC,
     TZ_ERROR_MSG,
     foo,
 )

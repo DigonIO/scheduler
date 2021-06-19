@@ -2,12 +2,9 @@ import datetime as dt
 
 import pytest
 
-# TODO review the samples and see which ones are no longer needed,
-# need to be adjusted or new ones are needed
-
 utc = dt.timezone.utc
 T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
-T_2021_5_26__3_55_utc = dt.datetime(2021, 5, 26, 3, 55, tzinfo=utc)
+T_2021_5_26__3_55_UTC = dt.datetime(2021, 5, 26, 3, 55, tzinfo=utc)
 
 CYCLIC_TYPE_ERROR_MSG = (
     "Wrong input for Cyclic! Select one of the following input types:\n"
@@ -61,28 +58,16 @@ samples = [
 ]
 
 samples_utc = [
-    T_2021_5_26__3_55_utc,  # scheduler init
-    T_2021_5_26__3_55_utc,  # job creation
-    T_2021_5_26__3_55_utc + dt.timedelta(seconds=5),  # t1
-    T_2021_5_26__3_55_utc + dt.timedelta(seconds=8),  # t2
-    T_2021_5_26__3_55_utc + dt.timedelta(seconds=11),  # t3
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=1, minutes=3),  # t4
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=2, minutes=2),  # t5
-    T_2021_5_26__3_55_utc + dt.timedelta(days=1, minutes=2),  # t6
-    T_2021_5_26__3_55_utc + dt.timedelta(days=9, minutes=7),  # t7
-    T_2021_5_26__3_55_utc + dt.timedelta(days=10, minutes=7),  # t8
-]
-
-
-samples_once_datetime = [
-    T_2021_5_26__3_55,  # scheduler init
-    T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t1
-    T_2021_5_26__3_55 + dt.timedelta(seconds=6),  # t2
-    T_2021_5_26__3_55 + dt.timedelta(seconds=7),  # t3
-    T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t4
-    T_2021_5_26__3_55 + dt.timedelta(days=9, minutes=1),  # t5
-    T_2021_5_26__3_55 + dt.timedelta(days=9, minutes=2),  # t6
-    T_2021_5_26__3_55 + dt.timedelta(days=9, minutes=7),  # t7
+    T_2021_5_26__3_55_UTC,  # scheduler init
+    T_2021_5_26__3_55_UTC,  # job creation
+    T_2021_5_26__3_55_UTC + dt.timedelta(seconds=5),  # t1
+    T_2021_5_26__3_55_UTC + dt.timedelta(seconds=8),  # t2
+    T_2021_5_26__3_55_UTC + dt.timedelta(seconds=11),  # t3
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=1, minutes=3),  # t4
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=2, minutes=2),  # t5
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=1, minutes=2),  # t6
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=9, minutes=7),  # t7
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=10, minutes=7),  # t8
 ]
 
 samples_seconds = [
@@ -112,16 +97,16 @@ samples_minutes = [
 ]
 
 samples_minutes_utc = [
-    T_2021_5_26__3_55_utc,  # scheduler creation
-    T_2021_5_26__3_55_utc,  # job creation
-    T_2021_5_26__3_55_utc + dt.timedelta(minutes=1, seconds=5),  # t1
-    T_2021_5_26__3_55_utc + dt.timedelta(minutes=2, seconds=8),  # t2
-    T_2021_5_26__3_55_utc + dt.timedelta(minutes=3, seconds=11),  # t3
-    T_2021_5_26__3_55_utc + dt.timedelta(minutes=4, seconds=31),  # t4
-    T_2021_5_26__3_55_utc + dt.timedelta(minutes=5, seconds=38.999),  # t5
-    T_2021_5_26__3_55_utc + dt.timedelta(minutes=5, seconds=39),  # t6
-    T_2021_5_26__3_55_utc + dt.timedelta(minutes=5, seconds=39.001),  # t7
-    T_2021_5_26__3_55_utc + dt.timedelta(minutes=5, seconds=39.002),  # t8
+    T_2021_5_26__3_55_UTC,  # scheduler creation
+    T_2021_5_26__3_55_UTC,  # job creation
+    T_2021_5_26__3_55_UTC + dt.timedelta(minutes=1, seconds=5),  # t1
+    T_2021_5_26__3_55_UTC + dt.timedelta(minutes=2, seconds=8),  # t2
+    T_2021_5_26__3_55_UTC + dt.timedelta(minutes=3, seconds=11),  # t3
+    T_2021_5_26__3_55_UTC + dt.timedelta(minutes=4, seconds=31),  # t4
+    T_2021_5_26__3_55_UTC + dt.timedelta(minutes=5, seconds=38.999),  # t5
+    T_2021_5_26__3_55_UTC + dt.timedelta(minutes=5, seconds=39),  # t6
+    T_2021_5_26__3_55_UTC + dt.timedelta(minutes=5, seconds=39.001),  # t7
+    T_2021_5_26__3_55_UTC + dt.timedelta(minutes=5, seconds=39.002),  # t8
 ]
 
 samples_hours = [
@@ -138,16 +123,16 @@ samples_hours = [
 ]
 
 samples_hours_utc = [
-    T_2021_5_26__3_55_utc,  # scheduler creation
-    T_2021_5_26__3_55_utc,  # job creation
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=1, minutes=5),  # t1
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=2, minutes=8),  # t2
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=3, minutes=11),  # t3
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=4, minutes=31),  # t4
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=5, minutes=38.999),  # t5
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=5, minutes=39),  # t6
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=5, minutes=39.001),  # t7
-    T_2021_5_26__3_55_utc + dt.timedelta(hours=5, minutes=39.002),  # t8
+    T_2021_5_26__3_55_UTC,  # scheduler creation
+    T_2021_5_26__3_55_UTC,  # job creation
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=1, minutes=5),  # t1
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=2, minutes=8),  # t2
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=3, minutes=11),  # t3
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=4, minutes=31),  # t4
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=5, minutes=38.999),  # t5
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=5, minutes=39),  # t6
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=5, minutes=39.001),  # t7
+    T_2021_5_26__3_55_UTC + dt.timedelta(hours=5, minutes=39.002),  # t8
 ]
 
 
@@ -165,16 +150,16 @@ samples_days = [
 ]
 
 samples_days_utc = [
-    T_2021_5_26__3_55_utc,  # scheduler creation
-    T_2021_5_26__3_55_utc,  # job creation
-    T_2021_5_26__3_55_utc + dt.timedelta(days=1, hours=5),  # t1
-    T_2021_5_26__3_55_utc + dt.timedelta(days=1, hours=8),  # t2
-    T_2021_5_26__3_55_utc + dt.timedelta(days=3, hours=11),  # t3
-    T_2021_5_26__3_55_utc + dt.timedelta(days=4, hours=11),  # t4
-    T_2021_5_26__3_55_utc + dt.timedelta(days=5, hours=14.999),  # t5
-    T_2021_5_26__3_55_utc + dt.timedelta(days=5, hours=14),  # t6
-    T_2021_5_26__3_55_utc + dt.timedelta(days=5, hours=14.001),  # t7
-    T_2021_5_26__3_55_utc + dt.timedelta(days=5, hours=14.002),  # t8
+    T_2021_5_26__3_55_UTC,  # scheduler creation
+    T_2021_5_26__3_55_UTC,  # job creation
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=1, hours=5),  # t1
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=1, hours=8),  # t2
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=3, hours=11),  # t3
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=4, hours=11),  # t4
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=5, hours=14.999),  # t5
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=5, hours=14),  # t6
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=5, hours=14.001),  # t7
+    T_2021_5_26__3_55_UTC + dt.timedelta(days=5, hours=14.002),  # t8
 ]
 
 
@@ -192,33 +177,21 @@ samples_weeks = [
 ]
 
 samples_weeks_utc = [
-    T_2021_5_26__3_55_utc,  # scheduler creation WEDNESDAY
-    T_2021_5_26__3_55_utc,  # job creation WEDNESDAY
-    T_2021_5_26__3_55_utc + dt.timedelta(weeks=1, days=1),  # t1 THURSDAY
-    T_2021_5_26__3_55_utc + dt.timedelta(weeks=1, days=2),  # t2 FRIDAY
-    T_2021_5_26__3_55_utc + dt.timedelta(weeks=1, days=2, minutes=5),  # t3 FRIDAY
-    T_2021_5_26__3_55_utc + dt.timedelta(weeks=2, days=1),  # t4 THURSDAY
-    T_2021_5_26__3_55_utc + dt.timedelta(weeks=2, days=2),  # t5 FRIDAY
-    T_2021_5_26__3_55_utc + dt.timedelta(weeks=3, days=1),  # t6 THURSDAY
-    T_2021_5_26__3_55_utc + dt.timedelta(weeks=3, days=2),  # t7 FRIDAY
-    T_2021_5_26__3_55_utc + dt.timedelta(weeks=3, days=3),  # t8 SATURDAY
-]
-
-samples_job_creation = [
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55,
+    T_2021_5_26__3_55_UTC,  # scheduler creation WEDNESDAY
+    T_2021_5_26__3_55_UTC,  # job creation WEDNESDAY
+    T_2021_5_26__3_55_UTC + dt.timedelta(weeks=1, days=1),  # t1 THURSDAY
+    T_2021_5_26__3_55_UTC + dt.timedelta(weeks=1, days=2),  # t2 FRIDAY
+    T_2021_5_26__3_55_UTC + dt.timedelta(weeks=1, days=2, minutes=5),  # t3 FRIDAY
+    T_2021_5_26__3_55_UTC + dt.timedelta(weeks=2, days=1),  # t4 THURSDAY
+    T_2021_5_26__3_55_UTC + dt.timedelta(weeks=2, days=2),  # t5 FRIDAY
+    T_2021_5_26__3_55_UTC + dt.timedelta(weeks=3, days=1),  # t6 THURSDAY
+    T_2021_5_26__3_55_UTC + dt.timedelta(weeks=3, days=2),  # t7 FRIDAY
+    T_2021_5_26__3_55_UTC + dt.timedelta(weeks=3, days=3),  # t8 SATURDAY
 ]
 
 
-def foo(msg="foo"):
-    print(msg)
+def foo():
+    print("foo")
 
 
 def bar(msg="bar"):

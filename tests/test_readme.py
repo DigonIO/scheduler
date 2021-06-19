@@ -1,5 +1,4 @@
 import doctest
-import pytest
 
 # NOTE: We cannot test for the full table, as some Jobs depend on the time of execution
 #       e.g. a Job supposed to run on Weekday.MONDAY. The ordering between the Jobs scheduled
@@ -56,8 +55,7 @@ def test_general_readme():
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ...
-    DAILY    bar(..)          2021-06-18 16:30:00  ...         0/inf      1
-    ...
+    ONCE     foo()            ... 00:45:00  ...           0/1      1...
     <BLANKLINE>
 
     >>> sch.exec_pending_jobs()  # doctest:+SKIP
