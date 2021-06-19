@@ -37,8 +37,10 @@ def test_misc_properties():
 @pytest.mark.parametrize(
     "start_1, start_2, tzinfo, result",
     (
+        [T_2021_5_26__3_55, T_2021_5_26__3_55, None, False],
         [T_2021_5_26__3_55, T_2021_5_26__3_55 + dt.timedelta(hours=1), None, True],
         [T_2021_5_26__3_55, T_2021_5_26__3_55 + dt.timedelta(hours=-1), None, False],
+        [T_2021_5_26__3_55_UTC, T_2021_5_26__3_55_UTC, utc, False],
         [
             T_2021_5_26__3_55_UTC,
             T_2021_5_26__3_55_UTC + dt.timedelta(hours=1),
