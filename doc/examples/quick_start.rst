@@ -1,5 +1,5 @@
-General `Job` scheduling
-========================
+Quick Start
+===========
 
 The basic functions and :class:`~scheduler.job.Job` types of the scheduler module are explained below.
 First, it is shown how cyclic `Job`\ s can be created and how the desired execution
@@ -121,11 +121,3 @@ the host program. E.g.:
     >>> while True:  # doctest:+SKIP
     ...     sch.exec_pending_jobs()
     ...     time.sleep(1)
-
-Selected Scheduling Features
-----------------------------
-
-TODO:
-   * Lists for all scheduling functions except once
-   * Passing of parameters
-   * Job deletion

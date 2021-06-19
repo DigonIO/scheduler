@@ -5,7 +5,9 @@ Examples
     :maxdepth: 2
     :caption: Table of Contents
 
-    examples/general_job_scheduling
-    examples/timezones
+    examples/quick_start
+    examples/params
+    examples/list_scheduling
+    examples/job_deletion
     examples/weights
     examples/metrics

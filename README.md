@@ -123,7 +123,7 @@ coverage html
 To test the examples in the documentation run:
 
 ```bash
-pytest --doctest-modules doc/examples.rst
+pytest --doctest-modules doc/examples/*
 ```
 
 ## TODO
