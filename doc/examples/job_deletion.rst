@@ -1,4 +1,4 @@
-Job deletion
+Job Deletion
 ============
 
 There are two ways to remove :class:`~scheduler.job.Job`\ s from a scheduler.

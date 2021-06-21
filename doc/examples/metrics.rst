@@ -51,6 +51,8 @@ informations can directly be accessed and might look like similar to what is lis
 These metrics can change during the `Job`\ s lifetime. We can exemplify this
 for the :attr:`~scheduler.job.Job.attemps` attribute:
 
+.. code-block:: pycon
+
     >>> job = sch.cyclic(dt.timedelta(seconds=0.1), foo, max_attempts=2, delay=False)
     >>> print(job)  # doctest:+SKIP
     CYCLIC, foo(), at=2021-06-21 04:53:34, tz=None, in=-1 day, #0/2, w=1.000
