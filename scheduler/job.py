@@ -386,10 +386,14 @@ class Job(AbstractJob):  # in job
     ]:
         """Return the objects relevant for readable string representation."""
         dt_timedelta = self.timedelta(dt.datetime.now(self.__tzinfo))
+        if hasattr(self.handle, "__code__"):
+            f_args = "(..)" if self.handle.__code__.co_nlocals else "()"
+        else:
+            f_args = "(?)"
         return (
             self.__type.name if self.max_attemps != 1 else "ONCE",
             self.handle.__qualname__,
-            "(..)" if self.handle.__code__.co_nlocals else "()",
+            f_args,
             self.datetime,
             str(self.datetime).split(".")[0],
             self.datetime.tzname(),

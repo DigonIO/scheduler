@@ -213,15 +213,15 @@ class AbstractJob(ABC):
         """Abstract weight."""
 
 
-def linear_weight_function(
+def linear_priority_function(
     seconds: float, job: AbstractJob, max_exec: int, job_count: int
 ) -> float:
     r"""
-    Compute the default linear weights.
+    Compute the `Job`\ s default linear priority.
 
-    Linear `Job` weighting such that the effective weight increases linearly with
-    the amount of time that a `Job` is overdue. At the exact time of the desired
-    execution, the effective weight becomes the given weight of the `Job`.
+    Linear `Job` prioritization such that the priority increases linearly with
+    the amount of time that a `Job` is overdue. At the exact time of the scheduled
+    execution, the priority is equal to the `Job`\ s weight.
 
     Parameters
     ----------
@@ -238,7 +238,7 @@ def linear_weight_function(
     Returns
     -------
     float
-        The time dependant effective weight for a `Job`
+        The time dependant priority for a `Job`
     """
     _ = max_exec
     _ = job_count

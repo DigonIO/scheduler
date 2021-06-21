@@ -1,10 +1,20 @@
-Pass parameters
-===============
+Parameter Forwarding
+====================
 
-In lots of cases it's necessary to pass parameters to the scheduled callback function.
-The keyword `params` provide an easy way to set the desired parameters wrapped in a `dict`.
-To highlight this feature the following example show an :func:`~scheduler.core.Scheduler.once` call
-without and with parameters.
+It is possible to forward parameters to the the scheduled callback function via the `params` argument.
+It accepts a dictionary with strings referencing the callback function's arguments and is available
+for all scheduling functions of :class:`~scheduler.core.Scheduler`:
+
+:func:`~scheduler.core.Scheduler.once`,
+:func:`~scheduler.core.Scheduler.cyclic`,
+:func:`~scheduler.core.Scheduler.minutely`,
+:func:`~scheduler.core.Scheduler.hourly`,
+:func:`~scheduler.core.Scheduler.daily`,
+:func:`~scheduler.core.Scheduler.weekly`
+
+In the following example we schedule two :class:`~scheduler.job.Job`\ s via
+:func:`~scheduler.core.Scheduler.once`. The first `Job` exhibits the function's default behaviour.
+Whereas the second `Job` prints the modified message defined in the `params` argument.
 
 .. code-block:: pycon
 
@@ -17,12 +27,16 @@ without and with parameters.
 
     >>> sch = Scheduler()
 
-    >>> _ = sch.once(dt.timedelta(seconds=0.1), bar)
+    >>> sch.once(dt.timedelta(seconds=0.1), bar)  # doctest:+ELLIPSIS
+    scheduler.Job(...timedelta(microseconds=100000)...bar...)
+
     >>> time.sleep(0.1)
-    >>> _ = sch.exec_pending_jobs()
+    >>> n_exec = sch.exec_jobs()
     bar
 
-    >>> _ = sch.once(dt.timedelta(seconds=0.1), bar, params={"msg": "Hello World"})
+    >>> sch.once(dt.timedelta(seconds=0.1), bar, params={"msg": "Hello World"})
+    scheduler.Job(...timedelta(microseconds=100000)...bar...{'msg': 'Hello World'}...)
+
     >>> time.sleep(0.1)
-    >>> _ = sch.exec_pending_jobs()
+    >>> n_exec = sch.exec_jobs()
     Hello World

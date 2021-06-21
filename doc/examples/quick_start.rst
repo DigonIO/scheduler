@@ -1,26 +1,22 @@
 Quick Start
 ===========
 
-The basic functions and :class:`~scheduler.job.Job` types of the scheduler module are explained below.
-First, it is shown how cyclic `Job`\ s can be created and how the desired execution
-times can be selected and combined.
-Furthermore, oneshot jobs are introduced, whereby oneshot `Job`\ s explicitly
-accept a date and a time as parameters in addition to the desired execution times.
-
-Create a :class:`~scheduler.core.Scheduler` instance and the functions `foo` and `bar` to schedule:
+To get started with the basic functions and :class:`~scheduler.job.Job` types of the scheduler
+module, create a :class:`~scheduler.core.Scheduler` instance and the functions `foo` and `bar`
+to schedule:
 
 .. code-block:: pycon
 
     >>> import time
     >>> import datetime as dt
     >>> from scheduler import Scheduler, Weekday
-    ...
+
     >>> def foo():
     ...     print("foo")
-    ...
+
     >>> def bar(msg = "bar"):
     ...     print(msg)
-    ...
+
     >>> sch = Scheduler()
 
 Schedule a job that runs every 10 minutes:
@@ -91,7 +87,7 @@ A human readable overview of the scheduled jobs can be created with a simple `pr
 .. code-block:: pycon
 
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, weight_function=linear_weight_function, #jobs=9
+    max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=9
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -106,18 +102,19 @@ A human readable overview of the scheduled jobs can be created with a simple `pr
     ONCE     foo()            2022-02-15 00:45:00  242 days           0/1      1
     <BLANKLINE>
 
-Unless `Scheduler` was not given a limit on the execution count via the `max_exec` option, a call to
-the Scheduler instances :meth:`~scheduler.core.Scheduler.exec_pending_jobs` function will execute every overdue job exactly once.
+Unless `Scheduler` was given a limit on the execution count via the `max_exec` option, a call to
+the Scheduler instances :meth:`~scheduler.core.Scheduler.exec_jobs` function will execute every
+overdue job exactly once.
 
 .. code-block:: pycon
 
-    >>> sch.exec_pending_jobs()  # doctest:+SKIP
+    >>> sch.exec_jobs()  # doctest:+SKIP
 
-For cyclic execution of `Job`\ s, the :meth:`~scheduler.core.Scheduler.exec_pending_jobs` function should be embedded in a loop of
-the host program. E.g.:
+For cyclic execution of `Job`\ s, the :meth:`~scheduler.core.Scheduler.exec_jobs` function should
+be embedded in a loop of the host program:
 
 .. code-block:: pycon
 
     >>> while True:  # doctest:+SKIP
-    ...     sch.exec_pending_jobs()
+    ...     sch.exec_jobs()
     ...     time.sleep(1)

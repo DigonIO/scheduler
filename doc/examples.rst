@@ -7,7 +7,7 @@ Examples
 
     examples/quick_start
     examples/params
-    examples/list_scheduling
+    examples/job_batching
     examples/job_deletion
     examples/weights
     examples/metrics

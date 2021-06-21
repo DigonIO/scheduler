@@ -1,14 +1,32 @@
-Weights
-^^^^^^^
+.. _examples.weights:
 
-:class:`~scheduler.job.Job`\ s can be weighted among each other.
-This becomes more relevant the longer the execution of a
-:class:`~scheduler.job.Job` is compared to the cycle length of the :class:`~scheduler.core.Scheduler` is.
-It may be that the :class:`~scheduler.job.Job`\ s to be executed take longer than one
-cycle of the :class:`~scheduler.core.Scheduler`. In order to enable a constant frequency,
-the maximum number of :class:`~scheduler.job.Job`\ s to be executed can be limited.
-This is illustrated in the following example with the help of
-oneshot :class:`~scheduler.job.Job`\ s, but is also possible with normal :class:`~scheduler.job.Job`\ s:
+Job Prioritization
+==================
+
+:class:`~scheduler.job.Job`\ s can be prioritized using `weight`\ s.
+Prioritization becomes particulary relevant with increasing :class:`~scheduler.job.Job`
+execution times compared to the :class:`~scheduler.core.Scheduler`\ s cycle length.
+
+The `weight` parameter is available for all scheduling functions of
+:class:`~scheduler.core.Scheduler`:
+
+:func:`~scheduler.core.Scheduler.once`,
+:func:`~scheduler.core.Scheduler.cyclic`,
+:func:`~scheduler.core.Scheduler.minutely`,
+:func:`~scheduler.core.Scheduler.hourly`,
+:func:`~scheduler.core.Scheduler.daily`,
+:func:`~scheduler.core.Scheduler.weekly`
+
+Default behaviour
+-----------------
+
+By default, the :class:`~scheduler.core.Scheduler` will prioritize using a linear function
+(:func:`~scheduler.util.linear_priority_function`) that depends on the
+:class:`~scheduler.job.Job`\ s `weight` and time it is overdue.
+
+If several :class:`~scheduler.job.Job`\ s are scheduled for the same point in time,
+they will be executed in order of their weights, starting with the :class:`~scheduler.job.Job`
+of the highest weight:
 
 .. code-block:: pycon
 
@@ -16,23 +34,55 @@ oneshot :class:`~scheduler.job.Job`\ s, but is also possible with normal :class:
     >>> import datetime as dt
     >>> from scheduler import Scheduler
 
-    >>> timing = dt.datetime.now() + dt.timedelta(seconds=1)
-
-    >>> def print_weight(x):
-    ...     print(f"Weight: {x}")
+    >>> timing = dt.datetime.now()
 
     >>> sch = Scheduler(max_exec=3)
+
     >>> for weight in (2, 3, 1, 4):
-    ...     _ = sch.once(timing, print_weight, weight=weight, params={"x": weight})
+    ...     job = sch.once(timing, print, weight=weight, params={"end": f"{weight = }\n"})
 
-If the :class:`~scheduler.job.Job`\ s are now executed, only 3 of 4 :class:`~scheduler.job.Job`\ s are processed.
-Note that a :class:`~scheduler.job.Job` in the next cycle is now one execution behind,
-this can increase permanently depending on the situation and
-the :class:`~scheduler.job.Job` cannot finish all overdue executions.
+    >>> exec_count = sch.exec_jobs()
+    weight = 4
+    weight = 3
+    weight = 2
 
-    >>> time.sleep(1)
-    >>> print(sch.exec_pending_jobs())
-    Weight: 4
-    Weight: 3
-    Weight: 2
-    3
+    >>> print(sch)  # doctest:+SKIP
+    max_exec=3, timezone=None, priority_function=linear_priority_function, #jobs=1
+    <BLANKLINE>
+    type     function         due at                 due in      attempts weight
+    -------- ---------------- ------------------- --------- ------------- ------
+    ONCE     print(?)         2021-06-21 03:24:23    -1 day           0/1      1
+
+Note that in this example the :class:`~scheduler.job.Job` with the lowest weight was not
+executed, as the execution count per call for the :class:`~scheduler.core.Scheduler`
+has been set to ``3`` via the `max_exec` parameter.
+
+If several :class:`~scheduler.job.Job`\ s of the same weight are overdue, the
+:class:`~scheduler.job.Job`\ s are prioritized by their delay, starting with the
+:class:`~scheduler.job.Job` of the highest delay.
+
+.. code-block:: pycon
+
+    >>> import time
+    >>> import datetime as dt
+    >>> from scheduler import Scheduler
+
+    >>> timing = dt.datetime.now()
+
+    >>> sch = Scheduler(max_exec=3)
+
+    >>> for delayed_by in (2, 3, 1, 4):
+    ...     delay = dt.timedelta(seconds=delayed_by)
+    ...     job = sch.once(timing-delay, print, params={"end": f"{delayed_by = }s\n"})
+
+    >>> exec_count = sch.exec_jobs()
+    delayed_by = 4s
+    delayed_by = 3s
+    delayed_by = 2s
+
+    >>> print(sch)  # doctest:+SKIP
+    max_exec=3, timezone=None, priority_function=linear_priority_function, #jobs=1
+    <BLANKLINE>
+    type     function         due at                 due in      attempts weight
+    -------- ---------------- ------------------- --------- ------------- ------
+    ONCE     print(?)         2021-06-21 03:24:23    -1 day           0/1      1

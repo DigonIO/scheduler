@@ -50,7 +50,7 @@ def test_general_readme():
     scheduler.Job(<JobType.CYCLIC...>, datetime.timedelta(0), <function foo at 0x...>, {}, 1, 1, False, datetime.datetime(2022, 2, 15, 0, 45), None, False, None)
 
     >>> print(sch)  # doctest:+ELLIPSIS
-    max_exec=inf, timezone=None, weight_function=linear_weight_function, #jobs=9
+    max_exec=inf, timezone=None, priority_function=linear_priority_function, #jobs=9
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -58,10 +58,10 @@ def test_general_readme():
     ONCE     foo()            ... 00:45:00  ...           0/1      1...
     <BLANKLINE>
 
-    >>> sch.exec_pending_jobs()  # doctest:+SKIP
+    >>> sch.exec_jobs()  # doctest:+SKIP
 
     >>> while True:  # doctest:+SKIP
-    ...     sch.exec_pending_jobs()
+    ...     sch.exec_jobs()
     ...     time.sleep(1)
     """
     DP = doctest.DocTestParser()

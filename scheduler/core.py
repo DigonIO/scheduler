@@ -28,7 +28,7 @@ from scheduler.util import (
     SchedulerError,
     AbstractJob,
     Weekday,
-    linear_weight_function,
+    linear_priority_function,
     str_cutoff,
 )
 
@@ -57,10 +57,10 @@ class Scheduler:  # in core
     max_exec : int
         Limits the number of overdue `Job`\ s that can be executed
         by calling function `Scheduler.exec_jobs()`.
-    weight_function : Callable[[float, Job, int, int], float]
-        A function handle to compute the effective weight of a `Job` depending
+    priority_function : Callable[[float, Job, int, int], float]
+        A function handle to compute the priority of a `Job` depending
         on the time it is overdue and its respective weight. Defaults to a linear
-        weight function.
+        priority function.
     jobs : set[Job]
         A collection of job instances.
     """
@@ -69,15 +69,15 @@ class Scheduler:  # in core
         self,
         max_exec: int = 0,
         tzinfo: Optional[dt.timezone] = None,
-        weight_function: Callable[
+        priority_function: Callable[
             [float, AbstractJob, int, int],
             float,
-        ] = linear_weight_function,
+        ] = linear_priority_function,
         jobs: Optional[set[Job]] = None,
     ):
         self.__max_exec = max_exec
         self.__tzinfo = tzinfo
-        self.__weight_function = weight_function
+        self.__priority_function = priority_function
         self.__jobs: set[Job] = set() if jobs is None else jobs
         for job in self.__jobs:
             if job._tzinfo != self.__tzinfo:
@@ -93,7 +93,7 @@ class Scheduler:  # in core
                     for elem in (
                         self.__max_exec,
                         self.__tzinfo,
-                        self.__weight_function,
+                        self.__priority_function,
                         self.__jobs,
                     )
                 )
@@ -105,7 +105,7 @@ class Scheduler:  # in core
         headings = [
             f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
             f"timezone={self.__tz_str}",
-            f"weight_function={self.__weight_function.__qualname__}",
+            f"priority_function={self.__priority_function.__qualname__}",
             f"#jobs={len(self.__jobs)}",
         ]
         return headings
@@ -163,7 +163,7 @@ class Scheduler:  # in core
         """
         self.__jobs.remove(job)
 
-    def delete_jobs(self) -> None:
+    def delete_all_jobs(self) -> None:
         r"""Delete all `Job`\ s from the `Scheduler`."""
         self.__jobs = set()
 
@@ -185,40 +185,53 @@ class Scheduler:  # in core
         else:
             job._calc_next_exec(ref_dt)
 
-    def exec_pending_jobs(self) -> int:
+    def exec_jobs(self, force_exec_all: bool = False) -> int:
         r"""
-        Check the `Job`\ s that are overdue and carry them out.
+        Execute scheduled `Job`\ s.
 
-        The `Job`\ s are prioritized by calculating their effective weights dependant
-        on the `Job`'s weight and the amount of time it is overdue.
+        By default executes the `Job`\ s that are overdue.
 
-        If there is a limit to the number of `Job`\ s that can be
-        performed in one call, the effective weight is relevant.
+        `Job`\ s are executed in order of their priority :ref:`examples.weights`.
+        If the `Scheduler` instance has a limit on the job execution counts
+        per call of :func:`~scheduler.core.Scheduler.exec_jobs`, via the `max_exec`
+        argument, `Job`\ s of lower priority might not get executed when competing `Job`\ s are overdue.
+
+        Parameters
+        ----------
+        force_exec_all : bool
+            Ignore the both - the status of the `Job` timers as well as the execution limit
+            of the `Scheduler`
 
         Returns
         -------
         int
             Number of executed `Job`\ s.
         """
-        # get all jobs with overtime in seconds and weight
         ref_dt = dt.datetime.now(tz=self.__tzinfo)
 
-        effective_weight: dict[Job, float] = {}
+        if force_exec_all:
+            n_jobs = len(self.__jobs)
+            for job in self.jobs:
+                self.__exec_job(job, ref_dt)
+            return n_jobs
+
+        # get all jobs with overtime in seconds and weight
+        job_priority: dict[Job, float] = {}
         for job in self.__jobs:
             delta_seconds = job.timedelta(ref_dt).total_seconds()
-            effective_weight[job] = -self.__weight_function(
+            job_priority[job] = -self.__priority_function(
                 -delta_seconds,
                 job,
                 self.__max_exec,
                 len(self.__jobs),
             )
         # sort the overtime jobs depending their weight * overtime
-        sorted_jobs = sorted(effective_weight, key=effective_weight.get)  # type: ignore
+        sorted_jobs = sorted(job_priority, key=job_priority.get)  # type: ignore
 
         # execute the sorted overtime jobs and delete the ones with no attemps left
         exec_job_count = 0
         for idx, job in enumerate(sorted_jobs):
-            if (self.__max_exec == 0 or idx < self.__max_exec) and effective_weight[
+            if (self.__max_exec == 0 or idx < self.__max_exec) and job_priority[
                 job
             ] < 0:
                 self.__exec_job(job, ref_dt)
@@ -226,22 +239,6 @@ class Scheduler:  # in core
             else:
                 break
         return exec_job_count
-
-    def exec_all_jobs(self) -> int:
-        r"""
-        Execute all scheduled `Job`\ s independent of the planned execution time.
-
-        Returns
-        -------
-        int
-            Number of executed `Job`\ s.
-        """
-        ref_dt = dt.datetime.now(tz=self.__tzinfo)
-        jobs = self.jobs
-        n_jobs = len(jobs)
-        for job in jobs:
-            self.__exec_job(job, ref_dt)
-        return n_jobs
 
     @property
     def jobs(self) -> set[Job]:

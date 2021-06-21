@@ -55,5 +55,5 @@ def test_daily(timing, counts, patch_datetime_now, tzinfo, err_msg):
     else:
         job = sch.daily(timing=timing, handle=foo)
         for count in counts:
-            sch.exec_pending_jobs()
+            sch.exec_jobs()
             assert job.attemps == count
