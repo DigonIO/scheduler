@@ -9,6 +9,7 @@
     :caption: Table of Contents
 
     examples
+    guides
     api_reference
     faq
 
