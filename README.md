@@ -13,17 +13,17 @@ A simple in-process python scheduler library, designed to be integrated seamless
 
 ## Features
 
-1. Easy and user friendly in-process `Job` scheduling [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#general-job-scheduling)
-  1. Create recurring `Job`s by given date, time, datetime, weekday, ...
-  2. Create recurring `Job`s with a given timedelta
-  3. Oneshot `Job`s
-  4. Passing of parameters to `Job`
-2. Timezone compatibility [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
-3. `Job` prioritization with linear weighting [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
-4. Limit and track the `Job` execution count [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
-5. Lightweight
-6. High test coverage
-7. [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
+* Easy and user friendly in-process `Job` scheduling [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#general-job-scheduling)
+  * Create recurring `Job`s by given date, time, datetime, weekday, ...
+  * Create recurring `Job`s with a given timedelta
+  * Oneshot `Job`s
+  * Passing of parameters to `Job`
+* Timezone compatibility [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
+* `Job` prioritization with linear weighting [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
+* Limit and track the `Job` execution count [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
+* Lightweight
+* High test coverage
+* [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
 
 ## Installation
 

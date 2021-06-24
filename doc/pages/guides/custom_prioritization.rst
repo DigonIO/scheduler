@@ -169,7 +169,7 @@ the `Scheduler` has removed it because it had no more open attempts.
     CYCLIC   print_weight(..) ...                       ...           1/2      1
     CYCLIC   print_weight(..) ...                       ...           1/2      2
 
-To finish the remaining two `Job`\ s, the X function is called twice. 
+To finish the remaining two `Job`\ s, the :func:`~scheduler.scheduler.Scheduler.exec_jobs` function is called twice. 
 We can again see their output ``j_2`` and ``j_1`` in the correct order due to the weighting.
 The table is now empty, since no more `Job`\ s are scheduled.
 
