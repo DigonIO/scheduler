@@ -125,12 +125,13 @@ class JobTimer:  # in job
     def __tz_sanity_check(self, exec_time):
         if self.__job_type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
             check_tz_aware(self.__timing, exec_time)
-        if self.__job_type == JobType.WEEKLY:
+        elif self.__job_type == JobType.WEEKLY:
             if not isinstance(self.__timing, Weekday):
                 check_tz_aware(self.__timing[1], exec_time)
 
     def calc_next_exec(self, ref: Optional[dt.datetime] = None) -> None:
-        """Generate the next execution `datetime.datetime` stamp.
+        """
+        Generate the next execution `datetime.datetime` stamp.
 
         Parameters
         ----------
@@ -146,19 +147,19 @@ class JobTimer:  # in job
         elif self.__job_type == JobType.MINUTELY:
             self.__timing = cast(dt.time, self.__timing)
             if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
+                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
             self.__next_exec = next_minutely_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.HOURLY:
             self.__timing = cast(dt.time, self.__timing)
             if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
+                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
             self.__next_exec = next_hourly_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.DAILY:
             self.__timing = cast(dt.time, self.__timing)
             if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__next_exec.tzinfo)
+                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
             self.__next_exec = next_daily_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.WEEKLY:
