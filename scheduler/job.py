@@ -396,7 +396,7 @@ class Job(AbstractJob):  # in job
             self.handle.__qualname__,
             f_args,
             self.datetime,
-            str(self.datetime).split(".")[0],
+            str(self.datetime)[:19],
             self.datetime.tzname(),
             dt_timedelta,
             str(dt_timedelta)
