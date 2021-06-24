@@ -57,7 +57,7 @@ Then we verify the `Scheduler` by a simple `print(sch)` statement.
     >>> sch = scheduler.Scheduler(priority_function=pure_weight_prioritization, max_exec=1)
     >>> print(sch)
     max_exec=1, timezone=None, priority_function=pure_weight_prioritization, #jobs=0
-
+    <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
 
@@ -75,7 +75,7 @@ By executing a `print(sch)` statement, we can see the scheduled `Job` in the tab
     ...     )
     >>> print(sch)
     max_exec=1, timezone=None, priority_function=pure_weight_prioritization, #jobs=1
-
+    <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   print_weight(..) ...                       ...           0/2      1
@@ -90,7 +90,7 @@ In the table we can also see that the `Job` was executed once.
     >>> print(sch)
     j_1
     max_exec=1, timezone=None, priority_function=pure_weight_prioritization, #jobs=1
-
+    <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   print_weight(..) ...                       ...           1/2      1
@@ -109,7 +109,7 @@ that has twice the `weight` of the first one.
     ... )
     >>> print(sch)
     max_exec=1, timezone=None, priority_function=pure_weight_prioritization, #jobs=2
-
+    <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   print_weight(..) ...                       ...           1/2      1
@@ -125,7 +125,7 @@ Both `Job`\ s can now be executed only one more time.
     >>> print(sch)
     j_2
     max_exec=1, timezone=None, priority_function=pure_weight_prioritization, #jobs=2
-
+    <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   print_weight(..) ...                       ...           1/2      1
@@ -145,7 +145,7 @@ A last `Job` is introduced with a `weight` of ``3``, but this one can be execute
     ... )
     >>> sprint(sch)
     max_exec=1, timezone=None, priority_function=pure_weight_prioritization, #jobs=3
-
+    <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   print_weight(..) ...                       ...           1/2      1
@@ -163,7 +163,7 @@ the `Scheduler` has removed it because it had no more open attempts.
     >>> print(sch)
     j_3
     max_exec=1, timezone=None, priority_function=pure_weight_prioritization, #jobs=2
-
+    <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   print_weight(..) ...                       ...           1/2      1
@@ -181,7 +181,7 @@ The table is now empty, since no more `Job`\ s are scheduled.
     j_2
     j_1
     max_exec=1, timezone=None, priority_function=pure_weight_prioritization, #jobs=0
-
+    <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
 
