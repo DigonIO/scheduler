@@ -30,6 +30,7 @@ ONCE_TYPE_ERROR_MSG = (
 _TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
 TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
 
+START_STOP_ERROR = "Start argument must be smaller than the stop argument."
 
 samples = [
     T_2021_5_26__3_55,  # scheduler init

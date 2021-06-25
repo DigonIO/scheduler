@@ -10,6 +10,7 @@ from helpers import (
     utc,
     _TZ_ERROR_MSG,
     TZ_ERROR_MSG,
+    START_STOP_ERROR,
 )
 
 
@@ -30,8 +31,8 @@ from helpers import (
         [
             JobType.DAILY,
             dt.time(tzinfo=utc),
-            None,
             dt.datetime.now(utc),
+            None,
             utc,
             None,
         ],
@@ -66,6 +67,14 @@ from helpers import (
             dt.datetime.now(utc),
             None,
             _TZ_ERROR_MSG.format("stop"),
+        ],
+        [
+            JobType.WEEKLY,
+            Weekday.MONDAY,
+            dt.datetime.now(utc),
+            dt.datetime.now(utc) - dt.timedelta(hours=1),
+            utc,
+            START_STOP_ERROR,
         ],
     ),
 )

@@ -180,10 +180,14 @@ class Scheduler:  # in core
 
         """
         job._exec()
-        if not job._has_attempts_remaining:
+
+        # has to be calucalted bevor checking the attemps
+        # because the next planned execution has to be evaluated
+        # to compare it against the stop argument
+        job._calc_next_exec(ref_dt)
+
+        if not job.has_attempts_remaining:
             self.delete_job(job)
-        else:
-            job._calc_next_exec(ref_dt)
 
     def exec_jobs(self, force_exec_all: bool = False) -> int:
         r"""
@@ -279,7 +283,8 @@ class Scheduler:  # in core
             skip_missing=skip_missing,
             tzinfo=self.__tzinfo,
         )
-        self.__jobs.add(job)
+        if job.has_attempts_remaining:
+            self.__jobs.add(job)
         return job
 
     def cyclic(

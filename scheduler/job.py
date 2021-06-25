@@ -61,6 +61,8 @@ WEEKLY_TYPE_ERROR_MSG = (
 _TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
 TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
 
+START_STOP_ERROR = "Start argument must be smaller than the stop argument."
+
 
 class JobType(Enum):  # in job
     """Indicate the `JobType` of a `Job`."""
@@ -303,9 +305,13 @@ class Job(AbstractJob):  # in job
         self.__weight = weight
         self.__delay = delay
         self.__start: dt.datetime
-        self.__stop: Optional[dt.datetime] = None
         self.__skip_missing = skip_missing
         self.__tzinfo = tzinfo
+
+        # self.__mark_delete will be set to True if the new Timer would be in future
+        # relativ to the self.__stop variable
+        self.__stop: Optional[dt.datetime] = None
+        self.__mark_delete = False
 
         self.__attempts = 0
         self.__timers: list[JobTimer]
@@ -323,6 +329,10 @@ class Job(AbstractJob):  # in job
                 raise SchedulerError(_TZ_ERROR_MSG.format("stop"))
             self.__stop = stop
 
+        if start is not None and stop is not None:
+            if start >= stop:
+                raise SchedulerError(START_STOP_ERROR)
+
         if not isinstance(timing, list):
             self.__timers = [JobTimer(job_type, timing, self.__start, skip_missing)]
         else:
@@ -335,6 +345,10 @@ class Job(AbstractJob):  # in job
 
         # calculate active JobTimer
         self.__set_pending_timer()
+
+        if stop is not None:
+            if self.__pending_timer.datetime > stop:
+                self.__mark_delete = True
 
     def _exec(self) -> None:
         """Execute the callback function."""
@@ -435,6 +449,9 @@ class Job(AbstractJob):  # in job
         """
         self.__pending_timer.calc_next_exec(ref_dt)
         self.__set_pending_timer()
+        if self.__stop is not None:
+            if ref_dt > self.__stop:
+                self.__mark_delete = True
 
     def __set_pending_timer(self) -> None:
         """Get the pending timer at the moment."""
@@ -449,16 +466,22 @@ class Job(AbstractJob):  # in job
         self.__pending_timer = sorted_timers[0]
 
     @property
-    def _has_attempts_remaining(self) -> bool:
+    def has_attempts_remaining(self) -> bool:
         """
-        Check if a `Job` executed all its execution attempts.
+        Check if a `Job` has remaining attempts.
+
+        This function will return True if the `Job` has open
+        execution counts and the stop argument is not in
+        the past relative to the reference `datetime.datetime` object.
 
         Returns
         -------
         bool
-            True if the `Job` has no free execution attempts.
+            True if the `Job` has execution attempts.
         """
-        if self.__max_attempts == 0:
+        if self.__mark_delete:
+            return False
+        elif self.__max_attempts == 0:
             return True
         return self.__attempts < self.__max_attempts
 
