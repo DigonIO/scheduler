@@ -450,7 +450,7 @@ class Job(AbstractJob):  # in job
         self.__pending_timer.calc_next_exec(ref_dt)
         self.__set_pending_timer()
         if self.__stop is not None:
-            if ref_dt > self.__stop:
+            if self.__pending_timer.datetime > self.__stop:
                 self.__mark_delete = True
 
     def __set_pending_timer(self) -> None:
@@ -472,7 +472,7 @@ class Job(AbstractJob):  # in job
 
         This function will return True if the `Job` has open
         execution counts and the stop argument is not in
-        the past relative to the reference `datetime.datetime` object.
+        the past relative to the next planed execution.
 
         Returns
         -------
