@@ -55,7 +55,7 @@ for the :attr:`~scheduler.job.Job.attemps` attribute:
 
     >>> job = sch.cyclic(dt.timedelta(seconds=0.1), foo, max_attempts=2, delay=False)
     >>> print(job)  # doctest:+SKIP
-    CYCLIC, foo(), at=2021-06-21 04:53:34, tz=None, in=-1 day, #0/2, w=1.000
+    CYCLIC, foo(), at=2021-06-21 04:53:34, tz=None, in=0:00:00, #0/2, w=1.000
 
     >>> print(job.attemps, job.max_attemps)
     0 2

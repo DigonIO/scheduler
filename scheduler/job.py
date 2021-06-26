@@ -21,6 +21,7 @@ from scheduler.util import (
     next_daily_occurrence,
     next_weekday_occurrence,
     next_weekday_time_occurrence,
+    prettify_timedelta,
 )
 
 # execution interval
@@ -265,7 +266,7 @@ class Job(AbstractJob):  # in job
     start : Optional[datetime.datetime]
         Set the reference `datetime.datetime` stamp the `Job` will be
         scheduled against. Default value is `datetime.datetime.now()`.
-    end : Optional[datetime.datetime]
+    stop : Optional[datetime.datetime]
         Define a point in time after which a `Job` will be stopped and deleted.
     max_attempts : int
         Number of times the `Job` will be executed. 0 <=> inf
@@ -413,9 +414,7 @@ class Job(AbstractJob):  # in job
             str(self.datetime)[:19],
             self.datetime.tzname(),
             dt_timedelta,
-            str(dt_timedelta)
-            .split(",")[0]
-            .split(".")[0],  # TODO fix representation, rounding is misleading
+            prettify_timedelta(dt_timedelta),
             self.attemps,
             float("inf") if self.max_attemps == 0 else self.max_attemps,
             self.weight,
@@ -481,7 +480,7 @@ class Job(AbstractJob):  # in job
         """
         if self.__mark_delete:
             return False
-        elif self.__max_attempts == 0:
+        if self.__max_attempts == 0:
             return True
         return self.__attempts < self.__max_attempts
 
@@ -587,7 +586,31 @@ class Job(AbstractJob):  # in job
 
         Returns
         -------
-        Optinal[datetime.timezone]
+        Optional[datetime.timezone]
             Timezone of the `Job`\ s next execution.
         """
         return self.datetime.tzinfo
+
+    @property
+    def start(self) -> Optional[dt.datetime]:
+        """
+        Get the timestamp at which the `JobTimer` starts.
+
+        Returns
+        -------
+        Optional[dt.datetime]
+            The start datetime stamp.
+        """
+        return self.__start
+
+    @property
+    def stop(self) -> Optional[dt.datetime]:
+        """
+        Get the timestamp after which no more executions of the `Job` should be scheduled.
+
+        Returns
+        -------
+        Optional[dt.datetime]
+            The stop datetime stamp.
+        """
+        return self.__stop

@@ -278,3 +278,25 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
             return string[:pos] + "#"
         return "#" + string[-pos:]
     return string
+
+
+def prettify_timedelta(timedelta: dt.timedelta) -> str:
+    """
+    Humanize timedelta string readibility for negative values.
+
+    Parameters
+    ----------
+    timedelta : datetime.timedelta
+        datetime instance
+
+    Returns
+    -------
+    str
+        Human readable string representation rounded to seconds
+    """
+    seconds = timedelta.total_seconds()
+    if seconds < 0:
+        res = f"-{-timedelta}"
+    else:
+        res = str(timedelta)
+    return res.split(",")[0].split(".")[0]

@@ -177,7 +177,6 @@ class Scheduler:  # in core
             Instance of a `Job` to execute.
         ref_dt : datetime:datetime
             Reference time when the `Job` will be executed.
-
         """
         job._exec()
 
@@ -198,7 +197,8 @@ class Scheduler:  # in core
         `Job`\ s are executed in order of their priority :ref:`examples.weights`.
         If the `Scheduler` instance has a limit on the job execution counts
         per call of :func:`~scheduler.core.Scheduler.exec_jobs`, via the `max_exec`
-        argument, `Job`\ s of lower priority might not get executed when competing `Job`\ s are overdue.
+        argument, `Job`\ s of lower priority might not get executed when competing `Job`\ s
+        are overdue.
 
         Parameters
         ----------
@@ -646,17 +646,6 @@ class Scheduler:  # in core
             Relative weight against other `Job`\ s.
         delay : bool
             If `False` the `Job` will executed instantly or at a given offset.
-        start : Optional[datetime.datetime]
-            Set the reference `datetime.datetime` stamp the `Job` will be
-            scheduled against. Default value is `datetime.datetime.now()`.
-        end : Optional[datetime.datetime]
-            Define a point in time after which a `Job` will be stopped and deleted.
-        max_attempts : int
-            Number of times the `Job` will be executed. 0 <=> inf
-            A `Job` with no free attempt will be deleted.
-        skip_missing : bool
-            If `True` a `Job` will only schedule it's newest planned execution and
-            drop older ones.
 
         Returns
         -------
@@ -668,7 +657,7 @@ class Scheduler:  # in core
         except TypeError as err:
             raise SchedulerError(ONCE_TYPE_ERROR_MSG) from err
         if isinstance(timing, dt.datetime):
-            return self.__schedule(
+            job = self.__schedule(
                 job_type=JobType.CYCLIC,
                 timing=dt.timedelta(),
                 handle=handle,
@@ -680,23 +669,25 @@ class Scheduler:  # in core
                 stop=None,
                 skip_missing=False,
             )
-        mapping = {
-            dt.timedelta: JobType.CYCLIC,
-            Weekday: JobType.WEEKLY,
-            tuple: JobType.WEEKLY,
-            dt.time: JobType.DAILY,
-        }
-        for timing_type, job_type in mapping.items():
-            if isinstance(timing, timing_type):
-                return self.__schedule(
-                    job_type=job_type,
-                    timing=timing,  # type: ignore
-                    handle=handle,
-                    params=params,
-                    max_attempts=1,
-                    weight=weight,
-                    delay=True,
-                    start=None,
-                    stop=None,
-                    skip_missing=False,
-                )
+        else:
+            mapping = {
+                dt.timedelta: JobType.CYCLIC,
+                Weekday: JobType.WEEKLY,
+                tuple: JobType.WEEKLY,
+                dt.time: JobType.DAILY,
+            }
+            for timing_type, job_type in mapping.items():
+                if isinstance(timing, timing_type):
+                    job = self.__schedule(
+                        job_type=job_type,
+                        timing=timing,  # type: ignore
+                        handle=handle,
+                        params=params,
+                        max_attempts=1,
+                        weight=weight,
+                        delay=True,
+                        start=None,
+                        stop=None,
+                        skip_missing=False,
+                    )
+        return job

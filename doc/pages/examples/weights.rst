@@ -51,7 +51,7 @@ of the highest weight:
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
-    ONCE     print(?)         2021-06-21 03:24:23    -1 day           0/1      1
+    ONCE     print(?)         2021-06-21 03:24:23  -0:00:00           0/1      1
 
 Note that in this example the :class:`~scheduler.job.Job` with the lowest weight was not
 executed, as the execution count per call for the :class:`~scheduler.core.Scheduler`
@@ -85,4 +85,4 @@ If several :class:`~scheduler.job.Job`\ s of the same weight are overdue, the
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
-    ONCE     print(?)         2021-06-21 03:24:23    -1 day           0/1      1
+    ONCE     print(?)         2021-06-21 03:24:23  -0:00:00           0/1      1

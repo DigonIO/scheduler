@@ -130,13 +130,11 @@ pytest --doctest-modules doc/examples/*
 
 1. Features
   1. Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
-  2. Execute a `Job` until a certain datetime stamp
   3. Thread safety and background tasks
 2. Documentation
   1. Notes on performance
   2. Comparison to [APScheduler](https://github.com/agronholm/apscheduler) and [schedule](https://github.com/dbader/schedule)
   3. where to get help
-  4. FAQ
 
 ## License
 

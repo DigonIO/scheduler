@@ -5,9 +5,9 @@ Examples
     :maxdepth: 2
     :caption: Table of Contents
 
-    examples/quick_start
-    examples/params
-    examples/job_batching
-    examples/job_deletion
-    examples/weights
-    examples/metrics
+    pages/examples/quick_start
+    pages/examples/params
+    pages/examples/job_batching
+    pages/examples/job_deletion
+    pages/examples/weights
+    pages/examples/metrics
