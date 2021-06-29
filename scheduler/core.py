@@ -78,7 +78,7 @@ class Scheduler:  # in core
         self.__max_exec = max_exec
         self.__tzinfo = tzinfo
         self.__priority_function = priority_function
-        self.__jobs: set[Job] = set() if jobs is None else jobs
+        self.__jobs: set[Job] = jobs or set()
         for job in self.__jobs:
             if job._tzinfo != self.__tzinfo:
                 raise SchedulerError(TZ_ERROR_MSG)
@@ -143,7 +143,7 @@ class Scheduler:  # in core
                 row[0],
                 str_cutoff(row[1] + row[2], c_width[1], False),
                 row[4],
-                str_cutoff("" if row[5] is None else row[5], c_width[3], False),
+                str_cutoff(row[5] or "", c_width[3], False),
                 str_cutoff(row[7], c_width[4], True),
                 str_cutoff(f"{row[8]}/{row[9]}", c_width[5], True),
                 str_cutoff(f"{row[10]}", c_width[6], True),

@@ -448,9 +448,8 @@ class Job(AbstractJob):  # in job
         """
         self.__pending_timer.calc_next_exec(ref_dt)
         self.__set_pending_timer()
-        if self.__stop is not None:
-            if self.__pending_timer.datetime > self.__stop:
-                self.__mark_delete = True
+        if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
+            self.__mark_delete = True
 
     def __set_pending_timer(self) -> None:
         """Get the pending timer at the moment."""
