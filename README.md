@@ -13,17 +13,17 @@ A simple in-process python scheduler library, designed to be integrated seamless
 
 ## Features
 
-1. Easy and user friendly in-process `Job` scheduling [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#general-job-scheduling)
-  1. Create recurring `Job`s by given date, time, datetime, weekday, ...
-  1. Create recurring `Job`s with a given timedelta
-  1. Oneshot `Job`s
-  1. Passing of parameters to `Job`
-1. Timezone compatibility [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
-1. `Job` prioritization with linear weighting [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
-1. Limit and track the `Job` execution count [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
-1. Lightweight
-1. High test coverage
-1. [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
+* Easy and user friendly in-process `Job` scheduling [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#general-job-scheduling)
+  * Create recurring `Job`s by given date, time, datetime, weekday, ...
+  * Create recurring `Job`s with a given timedelta
+  * Oneshot `Job`s
+  * Passing of parameters to `Job`
+* Timezone compatibility [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
+* `Job` prioritization with linear weighting [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
+* Limit and track the `Job` execution count [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
+* Lightweight
+* High test coverage
+* [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
 
 ## Installation
 
@@ -128,13 +128,13 @@ pytest --doctest-modules doc/pages/*/*
 
 ## TODO
 
-1. Features
-  1. Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
-  3. Thread safety and background tasks
-2. Documentation
-  1. Notes on performance
-  2. Comparison to [APScheduler](https://github.com/agronholm/apscheduler) and [schedule](https://github.com/dbader/schedule)
-  3. where to get help
+* Features
+  * Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
+  * Thread safety and background tasks
+* Documentation
+  * Notes on performance
+  * Comparison to [APScheduler](https://github.com/agronholm/apscheduler) and [schedule](https://github.com/dbader/schedule)
+  * where to get help
 
 ## License
 

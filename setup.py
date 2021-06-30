@@ -17,7 +17,7 @@ setup(
     ],
     keywords="scheduler schedule datetime date time timedelta timezone timing",
     install_requires=[
-        "typeguard",
+        "typeguard>=2.6.0",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",
