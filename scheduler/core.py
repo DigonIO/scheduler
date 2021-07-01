@@ -94,7 +94,6 @@ class Scheduler:  # in core
                         self.__max_exec,
                         self.__tzinfo,
                         self.__priority_function,
-                        self.__jobs,
                     )
                 )
             ),
