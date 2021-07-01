@@ -1,5 +1,8 @@
 import datetime as dt
 
+from scheduler.job import JobType
+from scheduler.util import Weekday
+
 
 utc = dt.timezone.utc
 T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
@@ -197,3 +200,104 @@ def foo():
 
 def bar(msg="bar"):
     print(msg)
+
+
+job_args = (
+    {
+        "job_type": JobType.CYCLIC,
+        "timing": dt.timedelta(hours=1),
+        "handle": foo,
+        "params": None,
+        "max_attempts": 1,
+        "weight": 1,
+        "delay": True,
+        "start": T_2021_5_26__3_55,
+        "stop": None,
+        "skip_missing": True,
+        "tzinfo": None,
+    },
+    {
+        "job_type": JobType.MINUTELY,
+        "timing": dt.time(second=20),
+        "handle": bar,
+        "params": {"msg": "foobar"},
+        "max_attempts": 20,
+        "weight": 0,
+        "delay": False,
+        "start": T_2021_5_26__3_55 - dt.timedelta(seconds=45),
+        "stop": T_2021_5_26__3_55 + dt.timedelta(minutes=10),
+        "skip_missing": False,
+        "tzinfo": None,
+    },
+    {
+        "job_type": JobType.DAILY,
+        "timing": dt.time(hour=7, minute=5),
+        "handle": foo,
+        "params": None,
+        "max_attempts": 7,
+        "weight": 1,
+        "delay": True,
+        "start": T_2021_5_26__3_55,
+        "stop": None,
+        "skip_missing": True,
+        "tzinfo": None,
+    },
+)
+
+job_args_utc = (
+    {
+        "job_type": JobType.CYCLIC,
+        "timing": dt.timedelta(hours=1),
+        "handle": foo,
+        "params": None,
+        "max_attempts": 0,
+        "weight": 1 / 3,
+        "delay": False,
+        "start": T_2021_5_26__3_55_UTC - dt.timedelta(microseconds=10),
+        "stop": None,
+        "skip_missing": True,
+        "tzinfo": utc,
+    },
+    {
+        "job_type": JobType.HOURLY,
+        "timing": dt.time(hour=7, minute=5, tzinfo=utc),
+        "handle": print,
+        "params": None,
+        "max_attempts": 0,
+        "weight": 20,
+        "delay": False,
+        "start": T_2021_5_26__3_55_UTC,
+        "stop": T_2021_5_26__3_55_UTC + dt.timedelta(hours=20),
+        "skip_missing": False,
+        "tzinfo": utc,
+    },
+    {
+        "job_type": JobType.WEEKLY,
+        "timing": Weekday.MONDAY,
+        "handle": bar,
+        "params": None,
+        "max_attempts": 0,
+        "weight": 1,
+        "delay": False,
+        "start": T_2021_5_26__3_55_UTC - dt.timedelta(days=1),
+        "stop": None,
+        "skip_missing": True,
+        "tzinfo": utc,
+    },
+    {
+        "job_type": JobType.WEEKLY,
+        "timing": [
+            Weekday.WEDNESDAY,
+            (Weekday.TUESDAY, dt.time(23, 45, 59, tzinfo=utc)),
+        ],
+        "handle": print,
+        "params": {"end": "FOO\n"},
+        "max_attempts": 1,
+        "weight": 1,
+        "delay": True,
+        "start": T_2021_5_26__3_55_UTC + dt.timedelta(days=7),
+        "stop": T_2021_5_26__3_55_UTC + dt.timedelta(days=60),
+        "skip_missing": False,
+        "tzinfo": utc,
+    },
+)
