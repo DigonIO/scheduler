@@ -38,8 +38,8 @@ Additionally we implement a usfull function that we can pass to the `Job`\ s.
     >>> from scheduler import Scheduler, Weekday
     >>> sch = Scheduler(tzinfo=tz_utc)
 
-    >>> def usefull():
-    ...     print("Very usefull function.")
+    >>> def useful():
+    ...     print("Very useful function.")
 
 First, we would like to plan our very useful function in the time zone of New York once.
 For this purpose, scheduling via :func:`~scheduler.core.Scheduler.once` is suitable,
@@ -48,21 +48,21 @@ taking into consideration passing the time zone `tz_new_york` to the function
 
 .. code-block:: pycon
 
-    >>> _ = sch.once(dt.datetime.now(tz_new_york), usefull)
+    >>> _ = sch.once(dt.datetime.now(tz_new_york), useful)
 
 The next time we need the functionality of our useful function in the time zone
 of Wuppertal. We plan a daily execution at ``11:45``, this time the timezone is `tz_wuppertal`.
 
 .. code-block:: pycon
 
-    >>> _ = sch.daily(dt.time(hour=11, minute=45, tzinfo=tz_wuppertal), usefull)
+    >>> _ = sch.daily(dt.time(hour=11, minute=45, tzinfo=tz_wuppertal), useful)
 
 Lastly, we plan to use our so useful functions in Sydney with the time zone `tz_sydney`.
 We would like to run the functions every Monday at ``10:00``.
 
 .. code-block:: pycon
 
-    >>> _ = sch.weekly((Weekday.MONDAY, dt.time(hour=10, tzinfo=tz_sydney)), usefull)
+    >>> _ = sch.weekly((Weekday.MONDAY, dt.time(hour=10, tzinfo=tz_sydney)), useful)
 
 To see if the time zones were taken over correctly we verify this with a simple `print(sch)` statement.
 If a time zone is passed to the `Scheduler` the table automatically gets the column `timezone`.
@@ -70,11 +70,12 @@ In this column the time zones of the single `Job`\ s are displayed.
 
 .. code-block:: pycon
 
-    >>> print(sch)  # doctest:+ELLIPSIS
+    >>> print(sch)  # doctest:+SKIP
     max_exec=inf, timezone=UTC, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
     type     function         due at              timezone        due in      attempts weight
     -------- ---------------- ------------------- ------------ --------- ------------- ------
-    ONCE     usefull()        ...                 UTC-05:00          ...           0/1      1
-    DAILY    usefull()        ...                 UTC+02:00          ...         0/inf      1
-    WEEKLY   usefull()        ...                 UTC+10:00          ...         0/inf      1
+    ONCE     useful()         2021-07-01 11:49:49 UTC-05:00     -0:00:00           0/1      1
+    DAILY    useful()         2021-07-02 11:45:00 UTC+02:00     16:55:10         0/inf      1
+    WEEKLY   useful()         2021-07-05 10:00:00 UTC+10:00       3 days         0/inf      1
+    <BLANKLINE>
