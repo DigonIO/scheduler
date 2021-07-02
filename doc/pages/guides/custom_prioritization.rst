@@ -153,10 +153,12 @@ available in :mod:`~scheduler.util` as :meth:`~scheduler.util.Prioritization.ran
         time: float, job: scheduler.util.AbstractJob, max_exec: int, job_count: int
     ) -> float:
         """
-        Simple uniform random priority generator.
+        Generate random priority values from weigths.
+
+        .. warning:: Not suitable for security relevant purposes.
 
         The priority generator will return 1 if the random number
-        is lower then the Job's weight, otherwise it will return 0.
+        is lower then the `Job`'s weight, otherwise it will return 0.
         """
         _ = time
         _ = max_exec

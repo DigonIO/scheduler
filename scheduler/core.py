@@ -259,7 +259,7 @@ class Scheduler:
         self,
         job_type: JobType,
         timing: TimingJobUnion,
-        handle: Callable[..., Any],
+        handle: Callable[..., None],
         params: Optional[dict[str, Any]],
         max_attempts: int,
         weight: float,
@@ -289,7 +289,7 @@ class Scheduler:
     def cyclic(
         self,
         timing: TimingTypeCyclic,
-        handle: Callable[..., Any],
+        handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -308,7 +308,7 @@ class Scheduler:
         ----------
         timing : TimingTypeCyclic
             Desired execution time(s).
-        handle : Callable[..., Any]
+        handle : Callable[..., None]
             Handle to a callback function.
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a Job.
@@ -353,7 +353,7 @@ class Scheduler:
     def minutely(
         self,
         timing: TimingTypeDaily,
-        handle: Callable[..., Any],
+        handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -377,7 +377,7 @@ class Scheduler:
         ----------
         timing : TimingTypeDaily
             Desired execution time(s).
-        handle : Callable[..., Any]
+        handle : Callable[..., None]
             Handle to a callback function.
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a Job.
@@ -422,7 +422,7 @@ class Scheduler:
     def hourly(
         self,
         timing: TimingTypeDaily,
-        handle: Callable[..., Any],
+        handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -446,7 +446,7 @@ class Scheduler:
         ----------
         timing : TimingTypeDaily
             Desired execution time(s).
-        handle : Callable[..., Any]
+        handle : Callable[..., None]
             Handle to a callback function.
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a Job.
@@ -491,7 +491,7 @@ class Scheduler:
     def daily(
         self,
         timing: TimingTypeDaily,
-        handle: Callable[..., Any],
+        handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -510,7 +510,7 @@ class Scheduler:
         ----------
         timing : TimingTypeDaily
             Desired execution time(s).
-        handle : Callable[..., Any]
+        handle : Callable[..., None]
             Handle to a callback function.
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a Job.
@@ -555,7 +555,7 @@ class Scheduler:
     def weekly(
         self,
         timing: TimingTypeWeekly,
-        handle: Callable[..., Any],
+        handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -576,7 +576,7 @@ class Scheduler:
         ----------
         timing : TimingTypeWeekly
             Desired execution time(s).
-        handle : Callable[..., Any]
+        handle : Callable[..., None]
             Handle to a callback function.
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a Job.
@@ -621,7 +621,7 @@ class Scheduler:
     def once(
         self,
         timing: TimingTypeOnce,
-        handle: Callable[..., Any],
+        handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         weight: float = 1,
     ):
@@ -637,7 +637,7 @@ class Scheduler:
         ----------
         timing : TimingTypeWeekly
             Desired execution time(s).
-        handle : Callable[..., Any]
+        handle : Callable[..., None]
             Handle to a callback function.
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a Job.

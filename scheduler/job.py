@@ -255,7 +255,7 @@ class Job(AbstractJob):  # in job
         Indicator which defines which calculations has to be used.
     timing : TimingTypeWeekly
         Desired execution time(s).
-    handle : Callable[..., Any]
+    handle : Callable[..., None]
         Handle to a callback function.
     params : dict[str, Any]
         The payload arguments to pass to the function handle within a Job.
@@ -287,7 +287,7 @@ class Job(AbstractJob):  # in job
         self,
         job_type: JobType,
         timing: TimingJobUnion,
-        handle: Callable[..., Any],
+        handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         weight: float = 1,
@@ -426,7 +426,7 @@ class Job(AbstractJob):  # in job
         )
 
     @property
-    def handle(self) -> Callable[..., Any]:
+    def handle(self) -> Callable[..., None]:
         """
         Get the callback function handle.
 

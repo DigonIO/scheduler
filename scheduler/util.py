@@ -4,10 +4,11 @@ Collection of useful utility objects.
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 from __future__ import annotations
+
 import datetime as dt
-from enum import Enum
-from abc import ABC, abstractproperty
 import random
+from abc import ABC, abstractproperty
+from enum import Enum
 
 
 class SchedulerError(Exception):
@@ -216,7 +217,10 @@ class AbstractJob(ABC):
 
 class Prioritization:
     """
-    Collection of prioritization functions of ``Callable[[float, Job, int, int], float]`` type.
+    Collection of prioritization functions.
+
+    For compatibility with the `Scheduler`, the prioritization functions have to be of type
+    ``Callable[[float, Job, int, int], float]``.
     """
 
     @staticmethod
@@ -307,7 +311,9 @@ class Prioritization:
         time: float, job: AbstractJob, max_exec: int, job_count: int
     ) -> float:  # pragma: no cover
         """
-        Simple uniform random priority generator.
+        Generate random priority values from weigths.
+
+        .. warning:: Not suitable for security relevant purposes.
 
         The priority generator will return 1 if the random number
         is lower then the `Job`'s weight, otherwise it will return 0.
@@ -315,7 +321,7 @@ class Prioritization:
         _ = time
         _ = max_exec
         _ = job_count
-        if random.random() < job.weight:
+        if random.random() < job.weight:  # nosec
             return 1
         return 0
 
