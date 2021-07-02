@@ -1,7 +1,7 @@
 # scheduler
 
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
-[![license](https://img.shields.io/pypi/l/imgreg)](https://gitlab.com/DigonIO/imgreg/-/blob/master/LICENSE)
+[![license](https://img.shields.io/pypi/l/scheduler)](https://gitlab.com/DigonIO/scheduler/-/blob/master/LICENSE)
 [![pipeline status](https://gitlab.com/DigonIO/scheduler/badges/master/pipeline.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![coverage report](https://gitlab.com/DigonIO/scheduler/badges/master/coverage.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![Documentation Status](https://readthedocs.org/projects/python-scheduler/badge/?version=latest)](https://python-scheduler.readthedocs.io/en/latest/?badge=latest)
@@ -9,23 +9,31 @@
 
 ---
 
-A simple in-process python scheduler library, designed to be integrated seamlessly with the `datetime` standard library. Due to the support of `datetime` objects, `scheduler` is able to work with time zones. This implementation enables the planning of `Job` s depending on time cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
-
----
+A simple in-process python scheduler library, designed to be integrated seamlessly with the `datetime` standard library. Due to the support of `datetime` objects, `scheduler` is able to work with time zones. This implementation enables the planning of `Job`s depending on time cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
 
 ## Features
 
-+ Easy and user friendly in-process `Job` scheduling
-  + Create recurring `Job`s by given date, time, weekday, ...
-  + Create recurring `Job`s with a given timedelta
-  + Oneshot `Job`s
-+ `Job` prioritization with linear weighting
-+ `datetime` compatibility
-+ Timezone compatibility
-+ Lightweight
-+ Limit and track the `Job` execution count
-+ High test coverage
-+ [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
+* Easy and user friendly in-process `Job` scheduling
+[(Quick Start)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/quick_start.html)
+  * Create recurring `Job`s by given date, time, datetime, weekday, ...
+  * Create recurring `Job`s with a given timedelta
+  * Oneshot `Job`s
+  * Passing of parameters to `Job`
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/params.html)
+* Time zone compatibility
+  [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/time_zones.html)
+* `Job` prioritization
+  * Default linear prioritization
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
+  * User definable prioritization functions
+    [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/custom_prioritization.html)
+* `Job` batching
+  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/job_batching.html)
+* `Job` metadata
+  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/metrics.html)
+* Lightweight
+* High test coverage
+* [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
 
 ## Installation
 
@@ -38,16 +46,16 @@ pip install git+https://gitlab.com/DigonIO/scheduler.git
 Alternatively clone the [repository](https://gitlab.com/DigonIO/scheduler) and install with:
 
 ```bash
-git clone REPLACE_ME
+git clone https://gitlab.com/DigonIO/scheduler.git
 cd scheduler
 pip install .
 ```
 
----
-
 ## Example: *How to schedule Jobs*
 
-Some basics are presented here. For advanced scheduling examples please visit the online [documentation](https://python-scheduler.readthedocs.io/en/latest/index.html). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
+The following example shows how the `Scheduler` is instantiated and how basic `Job`s are created.
+For advanced scheduling examples please visit the online
+[documentation](https://python-scheduler.readthedocs.io/en/latest/examples.html).
 
 [//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
 
@@ -56,47 +64,50 @@ import time
 import datetime as dt
 from scheduler import Scheduler, Weekday
 
-def foo(msg = "bar"):
+def foo():
+    print("foo")
+
+def bar(msg = "bar"):
     print(msg)
 
 sch = Scheduler()
 
-sch.schedule(foo, dt.timedelta(minutes=10))  # every 10 minutes
-sch.schedule(foo, dt.time(hour=16, minute=45))  # every day at 16:45
-sch.schedule(foo, Weekday.MONDAY)  # every monday at 00:00
+sch.cyclic(dt.timedelta(minutes=10), foo)
 
-# every monday at 16:45
-sch.schedule(
-    foo,
-    (Weekday.MONDAY, dt.time(hour=16, minute=45)),
-)
+sch.minutely(dt.time(second=15), bar)
+sch.hourly(dt.time(minute=30, second=15), foo)
+sch.daily(dt.time(hour=16, minute=30), bar)
+sch.weekly(Weekday.MONDAY, foo)
+sch.weekly((Weekday.MONDAY, dt.time(hour=16, minute=30)), bar)
 
-# every friday at 00:00, every 10 minutes and every monday at 16:45
-sch.schedule(
-    foo,
-    [
-        Weekday.FRIDAY,
-        dt.timedelta(minutes=10),
-        (Weekday.MONDAY, dt.time(hour=16, minute=45)),
-    ],
-)
+sch.once(dt.timedelta(minutes=10), foo)
+sch.once(Weekday.MONDAY, bar)
+sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
 ```
 
-Besides cyclic `Job`s, oneshot `Job`s can also be easily created:
+A human readable overview of the scheduled jobs can be created with a simple `print` statement:
 
 ```py
-sch.once(foo, dt.datetime(year=2021, month=2, day=11))  # at given datetime
-sch.once(foo, dt.timedelta(minutes=10))  # in 10 minutes
+print(sch)
 ```
 
-Pass parameters to the function handle `foo`:
+```text
+max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=9
 
-```py
-sch.once(foo, dt.timedelta(seconds=10000), params={"msg": "fizz"})
-sch.schedule(foo, dt.timedelta(minutes=1), params={"msg": "buzz"})
+type     function         due at                 due in      attempts weight
+-------- ---------------- ------------------- --------- ------------- ------
+MINUTELY bar(..)          2021-06-18 00:37:15   0:00:14         0/inf      1
+CYCLIC   foo()            2021-06-18 00:46:58   0:09:58         0/inf      1
+ONCE     foo()            2021-06-18 00:46:59   0:09:58           0/1      1
+HOURLY   foo()            2021-06-18 01:30:15   0:53:14         0/inf      1
+DAILY    bar(..)          2021-06-18 16:30:00  15:52:59         0/inf      1
+WEEKLY   foo()            2021-06-21 00:00:00    2 days         0/inf      1
+ONCE     bar(..)          2021-06-21 00:00:00    2 days           0/1      1
+WEEKLY   bar(..)          2021-06-21 16:30:00    3 days         0/inf      1
+ONCE     foo()            2022-02-15 00:45:00  242 days           0/1      1
 ```
 
-Create a loop in the host program to execute pending `Job`s:
+Executing pending `Job`s periodically can be achieved with a simple loop:
 
 ```py
 while True:
@@ -104,11 +115,12 @@ while True:
     time.sleep(1)
 ```
 
----
+## Documentation
 
-## Build the documentation
-
-The API documentation can either be viewed [online](https://python-scheduler.readthedocs.io/en/latest/index.html) or be generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) formatting. To build, run:
+The API documentation can either be viewed
+[online](https://python-scheduler.readthedocs.io/en/latest/index.html)
+or generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)
+formatting. To build, run:
 
 ```bash
 sphinx-build -b html doc/ doc/_build/html
@@ -116,7 +128,9 @@ sphinx-build -b html doc/ doc/_build/html
 
 ## Testing
 
-Testing is done using [pytest](https://pypi.org/project/pytest/). Using [pytest-cov](https://pypi.org/project/pytest-cov/) and [coverage](https://pypi.org/project/coverage/) a report for the tests can be generated with:
+Testing is done using [pytest](https://pypi.org/project/pytest/). Using
+[pytest-cov](https://pypi.org/project/pytest-cov/) and
+[coverage](https://pypi.org/project/coverage/) a report for the tests can be generated with:
 
 ```bash
 pytest --cov=scheduler/ tests/
@@ -126,27 +140,9 @@ coverage html
 To test the examples in the documentation run:
 
 ```bash
-pytest --doctest-modules doc/examples.rst
+pytest --doctest-modules doc/pages/*/*
 ```
-
-## TODO
-
-+ Features
-  + Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
-  + Add `__repr__` methods to `Job` and `Scheduler`
-  + Execute all scheduled `Job`s
-  + Delete all scheduled `Job`s
-  + Optional `Job` flag: Discard missed executions befor the last pending execution
-  + Execute a `Job` until a certain datetime stamp
-  + Thread safety and background tasks
-+ Documentation
-  + Notes on performance
-  + Comparison to [APScheduler](https://github.com/agronholm/apscheduler) and [schedule](https://github.com/dbader/schedule)
-  + where to get help
-  + FAQ
-
----
 
 ## License
 
-This software is published under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.en.html).
+This software is published under the [LGPLv3 license](https://www.gnu.org/licenses/lgpl-3.0.en.html).

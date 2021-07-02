@@ -3,7 +3,11 @@ Collection of useful utility objects.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
+from __future__ import annotations
+
 import datetime as dt
+import random
+from abc import ABC, abstractproperty
 from enum import Enum
 
 
@@ -61,31 +65,9 @@ def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
     return wkdy_dest - wkdy_src
 
 
-def next_weekday_occurrence(now: dt.datetime, weekday: Weekday) -> dt.datetime:
+def next_daily_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
     """
-    Estimate the next occurency of a given `Weekday`.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    weekday : Weekday
-        Desired `Weekday`.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` of a desired `Weekday`.
-    """
-    days = days_to_weekday(now.weekday(), weekday.value)
-    delta = dt.timedelta(days=days)
-    target = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    return target + delta
-
-
-def next_time_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
-    """
-    Estimate the next occurency of a given time.
+    Estimate the next daily occurency of a given time.
 
     Parameters
     ----------
@@ -110,6 +92,79 @@ def next_time_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
     return target
 
 
+def next_hourly_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
+    """
+    Estimate the next hourly occurency of a given time.
+
+    Parameters
+    ----------
+    now : datetime.datetime
+        `datetime.datetime` object of today
+    target_time : datetime.time
+        Desired time.
+
+    Returns
+    -------
+    datetime.datetime
+        Next `datetime.datetime` object with the desired time.
+    """
+    target = now.replace(
+        minute=target_time.minute,
+        second=target_time.second,
+        microsecond=target_time.microsecond,
+    )
+    if (target - now).total_seconds() <= 0:
+        target = target + dt.timedelta(hours=1)
+    return target
+
+
+def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
+    """
+    Estimate the next weekly occurency of a given time.
+
+    Parameters
+    ----------
+    now : datetime.datetime
+        `datetime.datetime` object of today
+    target_time : datetime.time
+        Desired time.
+
+    Returns
+    -------
+    datetime.datetime
+        Next `datetime.datetime` object with the desired time.
+    """
+    target = now.replace(
+        second=target_time.second,
+        microsecond=target_time.microsecond,
+    )
+    if (target - now).total_seconds() <= 0:
+        target = target + dt.timedelta(minutes=1)
+    return target
+
+
+def next_weekday_occurrence(now: dt.datetime, weekday: Weekday) -> dt.datetime:
+    """
+    Estimate the next occurency of a given `Weekday`.
+
+    Parameters
+    ----------
+    now : datetime.datetime
+        `datetime.datetime` object of today
+    weekday : Weekday
+        Desired `Weekday`.
+
+    Returns
+    -------
+    datetime.datetime
+        Next `datetime.datetime` of a desired `Weekday`.
+    """
+    days = days_to_weekday(now.weekday(), weekday.value)
+    delta = dt.timedelta(days=days)
+    target = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    return target + delta
+
+
 def next_weekday_time_occurrence(
     now: dt.datetime, weekday: Weekday, target_time: dt.time
 ) -> dt.datetime:
@@ -131,6 +186,11 @@ def next_weekday_time_occurrence(
         Next `datetime.datetime` object with the desired `Weekday` and time.
     """
     days = days_to_weekday(now.weekday(), weekday.value)
+    if days == 7:
+        candidate = next_daily_occurrence(now, target_time)
+        if candidate.date() == now.date():
+            return candidate
+
     delta = dt.timedelta(days=days)
     target = now.replace(
         hour=target_time.hour,
@@ -141,30 +201,180 @@ def next_weekday_time_occurrence(
     return target + delta
 
 
-class Job:
-    """Forward declaration."""
-
-
-def linear_weight_function(seconds: float, job: Job, **kwargs) -> float:
+class AbstractJob(ABC):
     """
-    Compute the default linear weights.
+    Abstract definition of the `Job` class.
 
-    Linear `Job` weighting such that the effective weight increases linearly with
-    the amount of time that a `Job` is overdue. At the exact time of the desired
-    execution, the effective weight becomes the given weight of the `Job`.
+    Notes
+    -----
+    Needed to provide linting and typing in the `scheduler.util.py` module.
+    """
+
+    @abstractproperty
+    def weight(self) -> float:
+        """Abstract weight."""
+
+
+class Prioritization:
+    """
+    Collection of prioritization functions.
+
+    For compatibility with the `Scheduler`, the prioritization functions have to be of type
+    ``Callable[[float, Job, int, int], float]``.
+    """
+
+    @staticmethod
+    def constant_weight_prioritization(
+        time_delta: float, job: AbstractJob, max_exec: int, job_count: int
+    ) -> float:  # pragma: no cover
+        r"""
+        Interprete the :class:`~scheduler.job.Job`'s weight as its priority.
+
+        Return the :class:`~scheduler.job.Job`'s weight for overdue `Job`\ s, otherwise
+        return zero:
+
+        .. math::
+            \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
+            0 & :\ \mathtt{time\_delta}<0\\
+            \mathtt{weight} & :\ \mathtt{time\_delta}\geq0
+            \end{cases}
+
+        Parameters
+        ----------
+        time_delta : float
+            The time in seconds that a :class:`~scheduler.job.Job` is overdue.
+        job : Job
+            The :class:`~scheduler.job.Job` instance
+        max_exec : int
+            Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
+            by calling function `Scheduler.exec_jobs()`.
+        job_count : int
+            Number of scheduled :class:`~scheduler.job.Job`\ s
+
+        Returns
+        -------
+        float
+            The weight of a :class:`~scheduler.job.Job` as priority.
+        """
+        _ = max_exec
+        _ = job_count
+        if time_delta < 0:
+            return 0
+        return job.weight
+
+    @staticmethod
+    def linear_priority_function(
+        time_delta: float, job: AbstractJob, max_exec: int, job_count: int
+    ) -> float:
+        r"""
+        Compute the :class:`~scheduler.job.Job`\ s default linear priority.
+
+        Linear :class:`~scheduler.job.Job` prioritization such that the priority increases
+        linearly with the amount of time that a :class:`~scheduler.job.Job` is overdue.
+        At the exact time of the scheduled execution, the priority is equal to the
+        :class:`~scheduler.job.Job`\ s weight.
+
+        The function is defined as
+
+        .. math::
+            \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
+            0 & :\ \mathtt{time\_delta}<0\\
+            {\left(\mathtt{time\_delta}+1\right)}\cdot\mathtt{weight} & :\ \mathtt{time\_delta}\geq0
+            \end{cases}
+
+        Parameters
+        ----------
+        time_delta : float
+            The time in seconds that a :class:`~scheduler.job.Job` is overdue.
+        job : Job
+            The :class:`~scheduler.job.Job` instance
+        max_exec : int
+            Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
+            by calling function `Scheduler.exec_jobs()`.
+        job_count : int
+            Number of scheduled :class:`~scheduler.job.Job`\ s
+
+        Returns
+        -------
+        float
+            The time dependant priority for a :class:`~scheduler.job.Job`
+        """
+        _ = max_exec
+        _ = job_count
+
+        if time_delta < 0:
+            return 0
+        return (time_delta + 1) * job.weight
+
+    @staticmethod
+    def random_priority_function(
+        time: float, job: AbstractJob, max_exec: int, job_count: int
+    ) -> float:  # pragma: no cover
+        """
+        Generate random priority values from weigths.
+
+        .. warning:: Not suitable for security relevant purposes.
+
+        The priority generator will return 1 if the random number
+        is lower then the `Job`'s weight, otherwise it will return 0.
+        """
+        _ = time
+        _ = max_exec
+        _ = job_count
+        if random.random() < job.weight:  # nosec
+            return 1
+        return 0
+
+
+def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
+    """
+    Abbreviate a string to a given length.
+
+    The resulting string will carry an indicator if it's abbreviated,
+    like ``stri#``.
 
     Parameters
     ----------
-    seconds : float
-        The time in seconds that a `Job` is overdue.
-    job : Job
-        The `Job` instance
+    string : str
+        String which is to be cut.
+    max_length : int
+        Max resulting string length.
+    cut_tail : bool
+        `False` for string abbreviation from the front, else `True`.
 
     Returns
     -------
-    float
-        The time dependant effective weight for a `Job`
+    str
+        Resulting string
     """
+    if max_length < 1:
+        raise ValueError("max_length < 1 not allowed")
+
+    if len(string) > max_length:
+        pos = max_length - 1
+        if cut_tail:
+            return string[:pos] + "#"
+        return "#" + string[-pos:]
+    return string
+
+
+def prettify_timedelta(timedelta: dt.timedelta) -> str:
+    """
+    Humanize timedelta string readibility for negative values.
+
+    Parameters
+    ----------
+    timedelta : datetime.timedelta
+        datetime instance
+
+    Returns
+    -------
+    str
+        Human readable string representation rounded to seconds
+    """
+    seconds = timedelta.total_seconds()
     if seconds < 0:
-        return 0
-    return (seconds + 1) * job.weight
+        res = f"-{-timedelta}"
+    else:
+        res = str(timedelta)
+    return res.split(",")[0].split(".")[0]

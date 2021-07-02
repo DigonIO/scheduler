@@ -5,32 +5,39 @@ before_script:
   - pip install -e .
 
 stages:
-  - linting
+  - analysis
   - documentation
   - testing
   - release
 
-#### linting ####
+#### analysis ####
 pylint_3_9_5:
-  stage: linting
+  stage: analysis
   image: "python:3.9.5"
   script:
     - pylint scheduler
   allow_failure: true
 
 mypy_3_9_5:
-  stage: linting
+  stage: analysis
   image: "python:3.9.5"
   script:
     - mypy scheduler
   allow_failure: true
 
 pydocstyle_3_9_5:
-  stage: linting
+  stage: analysis
   image: "python:3.9.5"
   script:
     - pydocstyle scheduler
   allow_failure: true
+
+bandit_3_9_5:
+  stage: analysis
+  image: "python:3.9.5"
+  script:
+    - bandit -r scheduler
+  allow_failure: false
 
 #### documentation ####
 doc_3_9_5:
@@ -50,7 +57,7 @@ pydoctest_3_9_5:
   stage: testing
   image: "python:3.9.5"
   script:
-    - pytest --doctest-modules doc/examples.rst
+    - pytest --doctest-modules doc/pages/*/*.rst
 
 #### release ####
 pypi:

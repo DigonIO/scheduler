@@ -17,19 +17,6 @@ from sphinx.locale import _
 
 sys.path.insert(0, os.path.abspath(".."))
 
-ON_RTD = os.environ.get("READTHEDOCS", None) == "True"
-
-# build server of readthedocs don't use git-lfs, but we need it for the documentation to work
-# https://github.com/readthedocs/readthedocs.org/issues/1846#issuecomment-477184259
-if ON_RTD:
-    os.system(
-        "wget https://github.com/git-lfs/git-lfs/releases/download/v2.13.3/git-lfs-linux-amd64-v2.13.3.tar.gz"
-    )
-    os.system("tar xvfz git-lfs-linux-amd64-v2.13.3.tar.gz")
-    os.system("./git-lfs install")  # make lfs available in current repository
-    os.system("./git-lfs fetch")  # download content from remote
-    os.system("./git-lfs checkout")  # make local files to have the real content on them
-
 # -- Project information -----------------------------------------------------
 
 project = "scheduler"
@@ -37,7 +24,7 @@ copyright = "2021, Jendrik A. Potyka, Fabian A. Preiss"
 author = "Jendrik A. Potyka, Fabian A. Preiss"
 
 # The full version, including alpha/beta/rc tags
-release = "0.3.0"
+release = "0.4.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -49,12 +36,15 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.imgconverter",
     "sphinx.ext.coverage",
+    "sphinx.ext.imgmath",
     "sphinx.ext.viewcode",
     "numpydoc",
     "m2r2",
 ]
 
+imgmath_image_format = "svg"
 # Add any paths that contain templates here, relative to this directory.
 numpydoc_show_class_members = False
 templates_path = ["_templates"]
@@ -82,8 +72,6 @@ html_theme_path = [
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
-# html_static_path = ['_static']
-# htmlhelp_basename = "pygmshdoc"
 
 latex_elements = {
     "preamble": r"\usepackage[columns=1]{idxlayout}\makeindex",
