@@ -49,7 +49,7 @@ informations can directly be accessed and might look like similar to what is lis
     job.timedelta() = 0:09:59.999948
 
 These metrics can change during the `Job`\ s lifetime. We can exemplify this
-for the :attr:`~scheduler.job.Job.attemps` attribute:
+for the :attr:`~scheduler.job.Job.attempts` attribute:
 
 .. code-block:: pycon
 
@@ -57,19 +57,19 @@ for the :attr:`~scheduler.job.Job.attemps` attribute:
     >>> print(job)  # doctest:+SKIP
     CYCLIC, foo(), at=2021-06-21 04:53:34, tz=None, in=0:00:00, #0/2, w=1.000
 
-    >>> print(job.attemps, job.max_attemps)
+    >>> print(job.attempts, job.max_attempts)
     0 2
 
     >>> time.sleep(0.1)
     >>> exec_count = sch.exec_jobs()
     foo
 
-    >>> print(job.attemps, job.max_attemps)
+    >>> print(job.attempts, job.max_attempts)
     1 2
 
     >>> time.sleep(0.1)
     >>> exec_count = sch.exec_jobs()
     foo
 
-    >>> print(job.attemps, job.max_attemps)
+    >>> print(job.attempts, job.max_attempts)
     2 2

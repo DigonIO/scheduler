@@ -407,7 +407,7 @@ class Job(AbstractJob):  # in job
         else:
             f_args = "(?)"
         return (
-            self.__type.name if self.max_attemps != 1 else "ONCE",
+            self.__type.name if self.max_attempts != 1 else "ONCE",
             self.handle.__qualname__,
             f_args,
             self.datetime,
@@ -415,8 +415,8 @@ class Job(AbstractJob):  # in job
             self.datetime.tzname(),
             dt_timedelta,
             prettify_timedelta(dt_timedelta),
-            self.attemps,
-            float("inf") if self.max_attemps == 0 else self.max_attemps,
+            self.attempts,
+            float("inf") if self.max_attempts == 0 else self.max_attempts,
             self.weight,
         )
 
@@ -484,26 +484,26 @@ class Job(AbstractJob):  # in job
         return self.__attempts < self.__max_attempts
 
     @property
-    def attemps(self) -> int:
+    def attempts(self) -> int:
         """
         Get the number of executions for a `Job`.
 
         Returns
         -------
         int
-            Execution attemps.
+            Execution attempts.
         """
         return self.__attempts
 
     @property
-    def max_attemps(self) -> int:
+    def max_attempts(self) -> int:
         """
         Get the execution limit for a `Job`.
 
         Returns
         -------
         int
-            Max execution attemps.
+            Max execution attempts.
         """
         return self.__max_attempts
 

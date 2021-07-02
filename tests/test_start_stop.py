@@ -87,4 +87,4 @@ def test_start_stop(timing, counts, patch_datetime_now, start, stop, err_msg):
 
         for count in counts:
             sch.exec_jobs()
-            assert job.attemps == count
+            assert job.attempts == count

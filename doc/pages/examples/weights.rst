@@ -17,6 +17,8 @@ The `weight` parameter is available for all scheduling functions of
 :func:`~scheduler.core.Scheduler.daily`,
 :func:`~scheduler.core.Scheduler.weekly`
 
+.. _examples.weights.default_behaviour:
+
 Default behaviour
 -----------------
 
@@ -34,12 +36,11 @@ of the highest weight:
     >>> import datetime as dt
     >>> from scheduler import Scheduler
 
-    >>> timing = dt.datetime.now()
-
+    >>> now = dt.datetime.now()
     >>> sch = Scheduler(max_exec=3)
 
     >>> for weight in (2, 3, 1, 4):
-    ...     job = sch.once(timing, print, weight=weight, params={"end": f"{weight = }\n"})
+    ...     job = sch.once(now, print, weight=weight, params={"end": f"{weight = }\n"})
 
     >>> exec_count = sch.exec_jobs()
     weight = 4
@@ -67,13 +68,12 @@ If several :class:`~scheduler.job.Job`\ s of the same weight are overdue, the
     >>> import datetime as dt
     >>> from scheduler import Scheduler
 
-    >>> timing = dt.datetime.now()
-
+    >>> now = dt.datetime.now()
     >>> sch = Scheduler(max_exec=3)
 
     >>> for delayed_by in (2, 3, 1, 4):
-    ...     delay = dt.timedelta(seconds=delayed_by)
-    ...     job = sch.once(timing-delay, print, params={"end": f"{delayed_by = }s\n"})
+    ...     exec_time = now - dt.timedelta(seconds=delayed_by)
+    ...     job = sch.once(exec_time, print, params={"end": f"{delayed_by = }s\n"})
 
     >>> exec_count = sch.exec_jobs()
     delayed_by = 4s

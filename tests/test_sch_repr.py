@@ -19,28 +19,26 @@ patch_samples = [T_2021_5_26__3_55] * 7
 patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11
 
 sch_repr = (
-    "scheduler.Scheduler(0, None, <function linear_priority_function at 0x",
+    "scheduler.Scheduler(0, None, <function Prioritization.linear_priority_function at 0x",
     ">, jobs={",
     "})",
 )
 sch_repr_utc = (
-    "scheduler.Scheduler(0, datetime.timezone.utc, <function linear_priority_function at 0x",
+    "scheduler.Scheduler(0, datetime.timezone.utc, <function Prioritization.linear_priority_function at 0x",
     ">, jobs={",
     "})",
 )
 
 
 @pytest.mark.parametrize(
-    "patch_datetime_now, job_kwargs, tzinfo, j_results, s_results, rem_len",
+    "patch_datetime_now, job_kwargs, tzinfo, j_results, s_results",
     [
-        (patch_samples, job_args, None, job_reprs, sch_repr, 295),
-        (patch_samples_utc, job_args_utc, utc, job_reprs_utc, sch_repr_utc, 205),
+        (patch_samples, job_args, None, job_reprs, sch_repr),
+        (patch_samples_utc, job_args_utc, utc, job_reprs_utc, sch_repr_utc),
     ],
     indirect=["patch_datetime_now"],
 )
-def test_sch_repr(
-    patch_datetime_now, job_kwargs, tzinfo, j_results, s_results, rem_len
-):
+def test_sch_repr(patch_datetime_now, job_kwargs, tzinfo, j_results, s_results):
     jobs = [Job(**kwargs) for kwargs in job_kwargs]
     sch = Scheduler(tzinfo=tzinfo, jobs=jobs)
     rep = repr(sch)

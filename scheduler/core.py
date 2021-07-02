@@ -28,7 +28,7 @@ from scheduler.util import (
     SchedulerError,
     AbstractJob,
     Weekday,
-    linear_priority_function,
+    Prioritization,
     str_cutoff,
 )
 
@@ -38,7 +38,7 @@ ONCE_TYPE_ERROR_MSG = (
 )
 
 
-class Scheduler:  # in core
+class Scheduler:
     r"""
     Implementation of a `Scheduler` for callback functions.
 
@@ -72,7 +72,7 @@ class Scheduler:  # in core
         priority_function: Callable[
             [float, AbstractJob, int, int],
             float,
-        ] = linear_priority_function,
+        ] = Prioritization.linear_priority_function,
         jobs: Optional[set[Job]] = None,
     ):
         self.__max_exec = max_exec
@@ -104,7 +104,7 @@ class Scheduler:  # in core
         headings = [
             f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
             f"timezone={self.__tz_str}",
-            f"priority_function={self.__priority_function.__qualname__}",
+            f"priority_function={self.__priority_function.__name__}",
             f"#jobs={len(self.__jobs)}",
         ]
         return headings
@@ -179,7 +179,7 @@ class Scheduler:  # in core
         """
         job._exec()
 
-        # has to be calucalted bevor checking the attemps
+        # has to be calculated before checking the attempts
         # because the next planned execution has to be evaluated
         # to compare it against the stop argument
         job._calc_next_exec(ref_dt)
@@ -231,7 +231,7 @@ class Scheduler:  # in core
         # sort the overtime jobs depending their weight * overtime
         sorted_jobs = sorted(job_priority, key=job_priority.get)  # type: ignore
 
-        # execute the sorted overtime jobs and delete the ones with no attemps left
+        # execute the sorted overtime jobs and delete the ones with no attempts left
         exec_job_count = 0
         for idx, job in enumerate(sorted_jobs):
             if (self.__max_exec == 0 or idx < self.__max_exec) and job_priority[

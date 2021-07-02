@@ -36,12 +36,15 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
+    "sphinx.ext.imgconverter",
     "sphinx.ext.coverage",
+    "sphinx.ext.imgmath",
     "sphinx.ext.viewcode",
     "numpydoc",
     "m2r2",
 ]
 
+imgmath_image_format = "svg"
 # Add any paths that contain templates here, relative to this directory.
 numpydoc_show_class_members = False
 templates_path = ["_templates"]

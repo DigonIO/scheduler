@@ -1,72 +1,63 @@
 Time Zones
 ==========
 
-In this guide we will deal with the functionality of time zones.
-The `scheduler` library has a time zone support which is based on the functions of the
-standard `datetime` library.
+The `scheduler` library supports timezones via the standard `datetime` library.
 
-In the `datetime` library there is an important rule
-when you want to work with time zones,
-you can not work with offset-naive and offset-aware `datetime` objects at the same time.
-As a result, as soon as a :class:`~scheduler.core.Scheduler` is initialized with a time zone,
-the following `datetime` objects must always be provided with a time zone:
-:class:`datetime.datetime`,
-:class:`datetime.time`.
-However, if you use the :class:`datetime.timedelta` or :class:`~scheduler.util.Weekday` objects
-no time zone can be specified and the time zone of the `Scheduler`
-will be used automatically.
+.. warning:: **Mixing of offset-naive and offset-aware** `datetime.time` **and**
+    `datetime.datetime` **objects is not supported.**
 
-If you consider this restriction, it provides the possibility to schedule `Job`\ s in different
-time zones of the world and independent from each other.
-To demonstrate this feature, let's first create the time zones of a few known cities and the time zone UTC.
+    If a :class:`~scheduler.core.Scheduler` is initialized with a timezone, all `datetime.time`, `datetime.datetime` and
+    :class:`~scheduler.job.Job` objects require timezones.
+    Vice versa a :class:`~scheduler.core.Scheduler` without timezone informations does not support
+    `datetime` or :class:`~scheduler.job.Job` objects with timezones.
+
+For demonstration purposes, we will create a :class:`~scheduler.core.Scheduler` with
+:class:`~scheduler.job.Job`\ s defined in different time zones of the world.
+
+First create the time zones of a few known cities and a useful function to schedule.
 
 .. code-block:: pycon
 
     >>> import datetime as dt
 
+    >>> def useful():
+    ...     print("Very useful function.")
+
     >>> tz_new_york = dt.timezone(dt.timedelta(hours=-5))
     >>> tz_wuppertal = dt.timezone(dt.timedelta(hours=2))
     >>> tz_sydney = dt.timezone(dt.timedelta(hours=10))
-    >>> tz_utc = dt.timezone.utc
 
-Now we import the `Scheduler` and pass it the UTC time zone as its reference time zone.
-The also imported `Weekday` will be needed in a moment.
-Additionally we implement a usfull function that we can pass to the `Job`\ s.
+Next initialize a :class:`~scheduler.core.Scheduler` with UTC as its reference time zone:
 
 .. code-block:: pycon
 
     >>> from scheduler import Scheduler, Weekday
-    >>> sch = Scheduler(tzinfo=tz_utc)
 
-    >>> def useful():
-    ...     print("Very useful function.")
+    >>> sch = Scheduler(tzinfo=dt.timezone.utc)
 
-First, we would like to plan our very useful function in the time zone of New York once.
-For this purpose, scheduling via :func:`~scheduler.core.Scheduler.once` is suitable,
-taking into consideration passing the time zone `tz_new_york` to the function
-:func:`datetime.datetime.now`:
+Schedule our useful function :func:`~scheduler.core.Scheduler.once` for the current point
+in time but using New York local time with:
 
 .. code-block:: pycon
 
-    >>> _ = sch.once(dt.datetime.now(tz_new_york), useful)
+    >>> job_ny = sch.once(dt.datetime.now(tz_new_york), useful)
 
-The next time we need the functionality of our useful function in the time zone
-of Wuppertal. We plan a daily execution at ``11:45``, this time the timezone is `tz_wuppertal`.
-
-.. code-block:: pycon
-
-    >>> _ = sch.daily(dt.time(hour=11, minute=45, tzinfo=tz_wuppertal), useful)
-
-Lastly, we plan to use our so useful functions in Sydney with the time zone `tz_sydney`.
-We would like to run the functions every Monday at ``10:00``.
+A daily job running at ``11:45`` local time of Wuppertal can be scheduled with:
 
 .. code-block:: pycon
 
-    >>> _ = sch.weekly((Weekday.MONDAY, dt.time(hour=10, tzinfo=tz_sydney)), useful)
+    >>> job_wu = sch.daily(dt.time(hour=11, minute=45, tzinfo=tz_wuppertal), useful)
 
-To see if the time zones were taken over correctly we verify this with a simple `print(sch)` statement.
-If a time zone is passed to the `Scheduler` the table automatically gets the column `timezone`.
-In this column the time zones of the single `Job`\ s are displayed.
+Lastly create a job running every Monday at ``10:00`` local time of Sydney as follows:
+
+.. code-block:: pycon
+
+    >>> job_sy = sch.weekly((Weekday.MONDAY, dt.time(hour=10, tzinfo=tz_sydney)), useful)
+
+A simple `print(sch)` statement can be used for an overview of the scheduled
+:class:`~scheduler.job.Job`\ s. As this :class:`~scheduler.core.Scheduler` instance is timezone
+aware, the table contains a `timezone` column. Verify if the :class:`~scheduler.job.Job`\ s are
+scheduled as expected.
 
 .. code-block:: pycon
 

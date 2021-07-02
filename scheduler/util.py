@@ -7,6 +7,7 @@ from __future__ import annotations
 import datetime as dt
 from enum import Enum
 from abc import ABC, abstractproperty
+import random
 
 
 class SchedulerError(Exception):
@@ -213,39 +214,110 @@ class AbstractJob(ABC):
         """Abstract weight."""
 
 
-def linear_priority_function(
-    seconds: float, job: AbstractJob, max_exec: int, job_count: int
-) -> float:
-    r"""
-    Compute the `Job`\ s default linear priority.
-
-    Linear `Job` prioritization such that the priority increases linearly with
-    the amount of time that a `Job` is overdue. At the exact time of the scheduled
-    execution, the priority is equal to the `Job`\ s weight.
-
-    Parameters
-    ----------
-    seconds : float
-        The time in seconds that a `Job` is overdue.
-    job : Job
-        The `Job` instance
-    _max_exec : int
-        Limits the number of overdue `Job`\ s that can be executed
-        by calling function `Scheduler.exec_jobs()`.
-    _job_count : int
-        Number of scheduled `Job`\ s
-
-    Returns
-    -------
-    float
-        The time dependant priority for a `Job`
+class Prioritization:
     """
-    _ = max_exec
-    _ = job_count
+    Collection of prioritization functions of ``Callable[[float, Job, int, int], float]`` type.
+    """
 
-    if seconds < 0:
+    @staticmethod
+    def constant_weight_prioritization(
+        time_delta: float, job: AbstractJob, max_exec: int, job_count: int
+    ) -> float:  # pragma: no cover
+        r"""
+        Interprete the :class:`~scheduler.job.Job`'s weight as its priority.
+
+        Return the :class:`~scheduler.job.Job`'s weight for overdue `Job`\ s, otherwise
+        return zero:
+
+        .. math::
+            \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
+            0 & :\ \mathtt{time\_delta}<0\\
+            \mathtt{weight} & :\ \mathtt{time\_delta}\geq0
+            \end{cases}
+
+        Parameters
+        ----------
+        time_delta : float
+            The time in seconds that a :class:`~scheduler.job.Job` is overdue.
+        job : Job
+            The :class:`~scheduler.job.Job` instance
+        max_exec : int
+            Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
+            by calling function `Scheduler.exec_jobs()`.
+        job_count : int
+            Number of scheduled :class:`~scheduler.job.Job`\ s
+
+        Returns
+        -------
+        float
+            The weight of a :class:`~scheduler.job.Job` as priority.
+        """
+        _ = max_exec
+        _ = job_count
+        if time_delta < 0:
+            return 0
+        return job.weight
+
+    @staticmethod
+    def linear_priority_function(
+        time_delta: float, job: AbstractJob, max_exec: int, job_count: int
+    ) -> float:
+        r"""
+        Compute the :class:`~scheduler.job.Job`\ s default linear priority.
+
+        Linear :class:`~scheduler.job.Job` prioritization such that the priority increases
+        linearly with the amount of time that a :class:`~scheduler.job.Job` is overdue.
+        At the exact time of the scheduled execution, the priority is equal to the
+        :class:`~scheduler.job.Job`\ s weight.
+
+        The function is defined as
+
+        .. math::
+            \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
+            0 & :\ \mathtt{time\_delta}<0\\
+            {\left(\mathtt{time\_delta}+1\right)}\cdot\mathtt{weight} & :\ \mathtt{time\_delta}\geq0
+            \end{cases}
+
+        Parameters
+        ----------
+        time_delta : float
+            The time in seconds that a :class:`~scheduler.job.Job` is overdue.
+        job : Job
+            The :class:`~scheduler.job.Job` instance
+        max_exec : int
+            Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
+            by calling function `Scheduler.exec_jobs()`.
+        job_count : int
+            Number of scheduled :class:`~scheduler.job.Job`\ s
+
+        Returns
+        -------
+        float
+            The time dependant priority for a :class:`~scheduler.job.Job`
+        """
+        _ = max_exec
+        _ = job_count
+
+        if time_delta < 0:
+            return 0
+        return (time_delta + 1) * job.weight
+
+    @staticmethod
+    def random_priority_function(
+        time: float, job: AbstractJob, max_exec: int, job_count: int
+    ) -> float:  # pragma: no cover
+        """
+        Simple uniform random priority generator.
+
+        The priority generator will return 1 if the random number
+        is lower then the `Job`'s weight, otherwise it will return 0.
+        """
+        _ = time
+        _ = max_exec
+        _ = job_count
+        if random.random() < job.weight:
+            return 1
         return 0
-    return (seconds + 1) * job.weight
 
 
 def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:

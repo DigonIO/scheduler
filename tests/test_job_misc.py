@@ -28,8 +28,8 @@ def test_misc_properties():
     assert job.handle == foo
     assert job.tzinfo == utc
     assert job.weight == 1
-    assert job.max_attemps == 0
-    assert job.attemps == 0
+    assert job.max_attempts == 0
+    assert job.attempts == 0
     assert job.type == JobType.CYCLIC
 
 
