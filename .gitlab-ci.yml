@@ -57,7 +57,7 @@ pydoctest_3_9_5:
   stage: testing
   image: "python:3.9.5"
   script:
-    - pytest --doctest-modules doc/examples/*.rst
+    - pytest --doctest-modules doc/pages/*/*.rst
 
 #### release ####
 pypi:
