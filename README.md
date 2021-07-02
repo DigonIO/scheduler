@@ -9,18 +9,28 @@
 
 ---
 
-A simple in-process python scheduler library, designed to be integrated seamlessly with the `datetime` standard library. Due to the support of `datetime` objects, `scheduler` is able to work with time zones. This implementation enables the planning of `Job` s depending on time cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
+A simple in-process python scheduler library, designed to be integrated seamlessly with the `datetime` standard library. Due to the support of `datetime` objects, `scheduler` is able to work with time zones. This implementation enables the planning of `Job`s depending on time cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
 
 ## Features
 
-* Easy and user friendly in-process `Job` scheduling [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#general-job-scheduling)
+* Easy and user friendly in-process `Job` scheduling
+[(Quick Start)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/quick_start.html)
   * Create recurring `Job`s by given date, time, datetime, weekday, ...
   * Create recurring `Job`s with a given timedelta
   * Oneshot `Job`s
   * Passing of parameters to `Job`
-* Timezone compatibility [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
-* `Job` prioritization with linear weighting [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
-* Limit and track the `Job` execution count [(example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#how-to-use-time-zones)
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/params.html)
+* Time zone compatibility
+  [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/time_zones.html)
+* `Job` prioritization
+  * Default linear prioritization
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
+  * User definable prioritization functions
+    [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/custom_prioritization.html)
+* `Job` batching
+  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/job_batching.html)
+* `Job` metadata
+  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/metrics.html)
 * Lightweight
 * High test coverage
 * [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
@@ -43,7 +53,9 @@ pip install .
 
 ## Example: *How to schedule Jobs*
 
-Some basics are presented here. For advanced scheduling examples please visit the online [documentation](https://python-scheduler.readthedocs.io/en/latest/examples.html). The following example shows how the `Scheduler` is instantiated and how cyclic `Job`s are created:
+The following example shows how the `Scheduler` is instantiated and how basic `Job`s are created.
+For advanced scheduling examples please visit the online
+[documentation](https://python-scheduler.readthedocs.io/en/latest/examples.html).
 
 [//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
 
@@ -105,7 +117,10 @@ while True:
 
 ## Documentation
 
-The API documentation can either be viewed [online](https://python-scheduler.readthedocs.io/en/latest/index.html) or be generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) formatting. To build, run:
+The API documentation can either be viewed
+[online](https://python-scheduler.readthedocs.io/en/latest/index.html)
+or generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)
+formatting. To build, run:
 
 ```bash
 sphinx-build -b html doc/ doc/_build/html
@@ -113,7 +128,9 @@ sphinx-build -b html doc/ doc/_build/html
 
 ## Testing
 
-Testing is done using [pytest](https://pypi.org/project/pytest/). Using [pytest-cov](https://pypi.org/project/pytest-cov/) and [coverage](https://pypi.org/project/coverage/) a report for the tests can be generated with:
+Testing is done using [pytest](https://pypi.org/project/pytest/). Using
+[pytest-cov](https://pypi.org/project/pytest-cov/) and
+[coverage](https://pypi.org/project/coverage/) a report for the tests can be generated with:
 
 ```bash
 pytest --cov=scheduler/ tests/
@@ -125,16 +142,6 @@ To test the examples in the documentation run:
 ```bash
 pytest --doctest-modules doc/pages/*/*
 ```
-
-## TODO
-
-* Features
-  * Support of monthly recurring `Job`s (e.g. every second Monday in June and October)
-  * Thread safety and background tasks
-* Documentation
-  * Notes on performance
-  * Comparison to [APScheduler](https://github.com/agronholm/apscheduler) and [schedule](https://github.com/dbader/schedule)
-  * where to get help
 
 ## License
 

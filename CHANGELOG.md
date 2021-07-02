@@ -13,12 +13,16 @@
 + `Job`s can be passed to `Scheduler.__init__`
 + `Job` exposes property `tzinfo`
 + `Job`s support a `start` and `stop` datetime
++ Improved Exception handling
++ Extensive documentation rework
 
 ### API changes
 
 + completely overhauled `Scheduler` API
-+ `Job.has_attempts` is now `Job._has_attempts_remaining` as it has no meaningful use for the end user.
-+ `Scheduler._add_job` removed
+
+### Bugfixes
+
++ Fixed infinite recursion in `JobTimer` of `calc_next_exec`
 
 ### Misc
 
