@@ -61,6 +61,54 @@ samples_utc = [
     T_2021_5_26__3_55_UTC + dt.timedelta(days=10, minutes=7),  # t8
 ]
 
+sample_seconds_interference = [
+    T_2021_5_26__3_55,  # scheduler init
+    T_2021_5_26__3_55,  # job creation
+    T_2021_5_26__3_55 + dt.timedelta(seconds=4),  # t1
+    T_2021_5_26__3_55 + dt.timedelta(seconds=4.1),  # t2
+    T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t3
+    T_2021_5_26__3_55 + dt.timedelta(seconds=5.1),  # t4
+    T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(seconds=8.1),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(seconds=10),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(seconds=10.1),  # t8
+    T_2021_5_26__3_55 + dt.timedelta(seconds=12),  # t9
+    T_2021_5_26__3_55 + dt.timedelta(seconds=12.1),  # t10
+    T_2021_5_26__3_55 + dt.timedelta(seconds=15),  # t11
+    T_2021_5_26__3_55 + dt.timedelta(seconds=15.1),  # t12
+    T_2021_5_26__3_55 + dt.timedelta(seconds=16),  # t13
+    T_2021_5_26__3_55 + dt.timedelta(seconds=16.1),  # t14
+    T_2021_5_26__3_55 + dt.timedelta(seconds=20),  # t15
+    T_2021_5_26__3_55 + dt.timedelta(seconds=20.1),  # t16
+    T_2021_5_26__3_55 + dt.timedelta(seconds=24),  # t17
+    T_2021_5_26__3_55 + dt.timedelta(seconds=24.1),  # t18
+    T_2021_5_26__3_55 + dt.timedelta(seconds=25.1),  # t19
+    T_2021_5_26__3_55 + dt.timedelta(seconds=25.1),  # t20
+]
+
+sample_seconds_interference_lag = [
+    T_2021_5_26__3_55,  # scheduler init
+    T_2021_5_26__3_55,  # job creation
+    T_2021_5_26__3_55 + dt.timedelta(seconds=4),  # t1
+    T_2021_5_26__3_55 + dt.timedelta(seconds=4.1),  # t2
+    T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t3
+    T_2021_5_26__3_55 + dt.timedelta(seconds=5.1),  # t4
+    T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(seconds=8.1),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(seconds=13),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(seconds=13.1),  # t8
+    T_2021_5_26__3_55 + dt.timedelta(seconds=15),  # t11
+    T_2021_5_26__3_55 + dt.timedelta(seconds=15.1),  # t12
+    T_2021_5_26__3_55 + dt.timedelta(seconds=16),  # t13
+    T_2021_5_26__3_55 + dt.timedelta(seconds=16.1),  # t14
+    T_2021_5_26__3_55 + dt.timedelta(seconds=20),  # t15
+    T_2021_5_26__3_55 + dt.timedelta(seconds=20.1),  # t16
+    T_2021_5_26__3_55 + dt.timedelta(seconds=24),  # t17
+    T_2021_5_26__3_55 + dt.timedelta(seconds=24.1),  # t18
+    T_2021_5_26__3_55 + dt.timedelta(seconds=25.1),  # t19
+    T_2021_5_26__3_55 + dt.timedelta(seconds=25.1),  # t20
+]
+
 samples_seconds = [
     T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
