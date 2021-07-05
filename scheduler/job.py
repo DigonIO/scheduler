@@ -41,7 +41,6 @@ TimingTypeOnce = Union[
     dt.datetime, dt.timedelta, Weekday, dt.time, tuple[Weekday, dt.time]
 ]
 
-
 CYCLIC_TYPE_ERROR_MSG = (
     "Wrong input for Cyclic! Expected input type:\n" + "datetime.timedelta"
 )
@@ -72,6 +71,15 @@ class JobType(Enum):  # in job
     HOURLY = auto()
     DAILY = auto()
     WEEKLY = auto()
+
+
+JOB_TIMING_TYPE_MAPPING = {
+    JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
+    JobType.MINUTELY: {"type": TimingTypeDaily, "err": MINUTELY_TYPE_ERROR_MSG},
+    JobType.HOURLY: {"type": TimingTypeDaily, "err": HOURLY_TYPE_ERROR_MSG},
+    JobType.DAILY: {"type": TimingTypeDaily, "err": DAILY_TYPE_ERROR_MSG},
+    JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
+}
 
 
 def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
@@ -147,24 +155,18 @@ class JobTimer:  # in job
             self.__next_exec = self.__next_exec + cast(dt.timedelta, self.__timing)
 
         elif self.__job_type == JobType.MINUTELY:
-            self.__timing = cast(dt.time, self.__timing)
-            if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
+            self.__cast_time_transform_tz()
             self.__next_exec = next_minutely_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.HOURLY:
-            self.__timing = cast(dt.time, self.__timing)
-            if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
+            self.__cast_time_transform_tz()
             self.__next_exec = next_hourly_occurrence(self.__next_exec, self.__timing)
 
         elif self.__job_type == JobType.DAILY:
-            self.__timing = cast(dt.time, self.__timing)
-            if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
+            self.__cast_time_transform_tz()
             self.__next_exec = next_daily_occurrence(self.__next_exec, self.__timing)
 
-        elif self.__job_type == JobType.WEEKLY:
+        else:  # self.__job_type == JobType.WEEKLY:
             # check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
             if isinstance(self.__timing, Weekday):
                 self.__next_exec = next_weekday_occurrence(
@@ -213,6 +215,12 @@ class JobTimer:  # in job
         """
         return self.__next_exec - dt_stamp
 
+    def __cast_time_transform_tz(self):
+        """Cast __timing for known types, and overwrite reference timezone with timingtimezone ."""
+        self.__timing = cast(dt.time, self.__timing)
+        if self.__next_exec.tzinfo:
+            self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
+
 
 def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
     """
@@ -230,18 +238,11 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
     TypeError
         If the `timing` object has the wrong `Type` for a specific `JobType`.
     """
-    mapping = {
-        JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
-        JobType.MINUTELY: {"type": TimingTypeDaily, "err": MINUTELY_TYPE_ERROR_MSG},
-        JobType.HOURLY: {"type": TimingTypeDaily, "err": HOURLY_TYPE_ERROR_MSG},
-        JobType.DAILY: {"type": TimingTypeDaily, "err": DAILY_TYPE_ERROR_MSG},
-        JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
-    }
 
     try:
-        tg.check_type("timing", timing, mapping[job_type]["type"])
+        tg.check_type("timing", timing, JOB_TIMING_TYPE_MAPPING[job_type]["type"])
     except TypeError as err:
-        raise SchedulerError(mapping[job_type]["err"]) from err
+        raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
 
 class Job(AbstractJob):  # in job
