@@ -9,8 +9,7 @@ T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
 T_2021_5_26__3_55_UTC = dt.datetime(2021, 5, 26, 3, 55, tzinfo=utc)
 
 CYCLIC_TYPE_ERROR_MSG = (
-    "Wrong input for Cyclic! Select one of the following input type:\n"
-    + "datetime.timedelta"
+    "Wrong input for Cyclic! Expected input type:\n" + "datetime.timedelta"
 )
 _DAILY_TYPE_ERROR_MSG = (
     "Wrong input for {0}! Select one of the following input types:\n"

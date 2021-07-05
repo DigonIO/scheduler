@@ -43,8 +43,7 @@ TimingTypeOnce = Union[
 
 
 CYCLIC_TYPE_ERROR_MSG = (
-    "Wrong input for Cyclic! Select one of the following input type:\n"
-    + "datetime.timedelta"
+    "Wrong input for Cyclic! Expected input type:\n" + "datetime.timedelta"
 )
 _DAILY_TYPE_ERROR_MSG = (
     "Wrong input for {0}! Select one of the following input types:\n"
