@@ -1,5 +1,4 @@
 import datetime as dt
-import time
 
 import pytest
 import pdb
@@ -8,15 +7,9 @@ import pdb
 from scheduler import Scheduler
 from scheduler.job import Job, JobType
 
-from helpers import (
-    samples_days,
-    samples_seconds,
-    sample_seconds_interference,
-    sample_seconds_interference_lag,
-)
+from helpers import samples_days
 
 
-@pytest.mark.skip()
 @pytest.mark.parametrize(
     "patch_datetime_now, counts, job",
     [
@@ -48,6 +41,9 @@ from helpers import (
 )
 def test_sch_skip_missing_batch(patch_datetime_now, counts, job):
     sch = Scheduler(jobs={job})
-    for count in counts:
+    attempts = []
+    for _ in counts:
         sch.exec_jobs()
-        assert job.attempts == count
+        attempts.append(job.attempts)
+
+    assert attempts == counts

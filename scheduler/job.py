@@ -446,7 +446,12 @@ class Job(AbstractJob):  # in job
         ref_dt : datetime.datetime
             Reference time stamp to which the `Job` caluclates it's next execution.
         """
-        self.__pending_timer.calc_next_exec(ref_dt)
+        if self.__skip_missing:
+            for timer in self.__timers:
+                if (timer.datetime - ref_dt).total_seconds() <= 0:
+                    timer.calc_next_exec(ref_dt)
+        else:
+            self.__pending_timer.calc_next_exec(ref_dt)
         self.__set_pending_timer()
         if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
             self.__mark_delete = True
