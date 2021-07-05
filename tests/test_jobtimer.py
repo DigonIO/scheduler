@@ -107,7 +107,7 @@ def test_skip(delta_m, offset_m, res_delta_m):
     "job_type, timing, err",
     (
         [JobType.CYCLIC, dt.timedelta(), None],
-        [JobType.CYCLIC, [dt.timedelta(), dt.timedelta()], None],
+        [JobType.CYCLIC, [dt.timedelta(), dt.timedelta()], CYCLIC_TYPE_ERROR_MSG],
         [JobType.WEEKLY, Weekday.MONDAY, None],
         [JobType.DAILY, dt.time(), None],
         [JobType.DAILY, [dt.time(), dt.time()], None],

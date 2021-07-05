@@ -25,7 +25,7 @@ from scheduler.util import (
 )
 
 # execution interval
-TimingTypeCyclic = Union[dt.timedelta, list[dt.timedelta]]
+TimingTypeCyclic = dt.timedelta
 # time on the clock
 TimingTypeDaily = Union[dt.time, list[dt.time]]
 
@@ -43,8 +43,8 @@ TimingTypeOnce = Union[
 
 
 CYCLIC_TYPE_ERROR_MSG = (
-    "Wrong input for Cyclic! Select one of the following input types:\n"
-    + "datetime.timedelta | list[datetime.timedelta]"
+    "Wrong input for Cyclic! Select one of the following input type:\n"
+    + "datetime.timedelta"
 )
 _DAILY_TYPE_ERROR_MSG = (
     "Wrong input for {0}! Select one of the following input types:\n"
