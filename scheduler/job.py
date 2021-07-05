@@ -81,6 +81,12 @@ JOB_TIMING_TYPE_MAPPING = {
     JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
 }
 
+JOB_NEXT_DAYLIKE_MAPPING = {
+    JobType.MINUTELY: next_minutely_occurrence,
+    JobType.HOURLY: next_hourly_occurrence,
+    JobType.DAILY: next_daily_occurrence,
+}
+
 
 def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
     """
@@ -152,22 +158,13 @@ class JobTimer:  # in job
             self.__tz_sanity_check(ref)
 
         if self.__job_type == JobType.CYCLIC:
+            if self.__skip and ref is not None:
+                self.__next_exec = ref
             self.__next_exec = self.__next_exec + cast(dt.timedelta, self.__timing)
+            return
 
-        elif self.__job_type == JobType.MINUTELY:
-            self.__cast_time_transform_tz()
-            self.__next_exec = next_minutely_occurrence(self.__next_exec, self.__timing)
-
-        elif self.__job_type == JobType.HOURLY:
-            self.__cast_time_transform_tz()
-            self.__next_exec = next_hourly_occurrence(self.__next_exec, self.__timing)
-
-        elif self.__job_type == JobType.DAILY:
-            self.__cast_time_transform_tz()
-            self.__next_exec = next_daily_occurrence(self.__next_exec, self.__timing)
-
-        else:  # self.__job_type == JobType.WEEKLY:
-            # check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
+        if self.__job_type == JobType.WEEKLY:
+            #  check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
             if isinstance(self.__timing, Weekday):
                 self.__next_exec = next_weekday_occurrence(
                     self.__next_exec, self.__timing
@@ -181,6 +178,14 @@ class JobTimer:  # in job
                 self.__next_exec = next_weekday_time_occurrence(
                     self.__next_exec, *self.__timing
                 )
+
+        else:  # self.__job_type in JOB_NEXT_DAYLIKE_MAPPING:
+            self.__timing = cast(dt.time, self.__timing)
+            if self.__next_exec.tzinfo:
+                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
+            self.__next_exec = JOB_NEXT_DAYLIKE_MAPPING[self.__job_type](
+                self.__next_exec, self.__timing
+            )
 
         if self.__skip and ref is not None and self.__next_exec < ref:
             self.__next_exec = ref
@@ -214,12 +219,6 @@ class JobTimer:  # in job
             `timedelta` to the execution.
         """
         return self.__next_exec - dt_stamp
-
-    def __cast_time_transform_tz(self):
-        """Cast __timing for known types, and overwrite reference timezone with timingtimezone ."""
-        self.__timing = cast(dt.time, self.__timing)
-        if self.__next_exec.tzinfo:
-            self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
 
 
 def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:

@@ -7,7 +7,7 @@ import pdb
 from scheduler import Scheduler
 from scheduler.job import Job, JobType
 
-from helpers import samples_days
+from helpers import samples_days, sample_seconds_interference_lag
 
 
 @pytest.mark.parametrize(
@@ -36,10 +36,32 @@ from helpers import samples_days
                 skip_missing=False,
             ),
         ),
+        (
+            sample_seconds_interference_lag,
+            [0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 6, 6],
+            Job(
+                JobType.CYCLIC,
+                dt.timedelta(seconds=4),
+                print,
+                start=sample_seconds_interference_lag[0],
+                skip_missing=False,
+            ),
+        ),
+        (
+            sample_seconds_interference_lag,
+            [0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5, 5],
+            Job(
+                JobType.CYCLIC,
+                dt.timedelta(seconds=4),
+                print,
+                start=sample_seconds_interference_lag[0],
+                skip_missing=True,
+            ),
+        ),
     ],
     indirect=["patch_datetime_now"],
 )
-def test_sch_skip_missing_batch(patch_datetime_now, counts, job):
+def test_sch_skip_missing(patch_datetime_now, counts, job):
     sch = Scheduler(jobs={job})
     attempts = []
     for _ in counts:
