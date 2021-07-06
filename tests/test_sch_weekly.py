@@ -3,17 +3,33 @@ import datetime as dt
 import pytest
 
 from scheduler import Scheduler, SchedulerError
-from scheduler.job import Job
 from scheduler.util import Weekday
 
 from helpers import (
     utc,
     WEEKLY_TYPE_ERROR_MSG,
+    DUPLICATE_EFFECTIVE_TIME,
     TZ_ERROR_MSG,
     samples_weeks,
     samples_weeks_utc,
     foo,
 )
+
+MONDAY_23_UTC = (Weekday.MONDAY, dt.time(hour=23, tzinfo=dt.timezone.utc))
+MONDAY_23_UTC_AS_SUNDAY = (
+    Weekday.SUNDAY,
+    dt.time(
+        hour=23,
+        minute=30,
+        tzinfo=dt.timezone(-dt.timedelta(hours=23, minutes=30)),
+    ),
+)
+MONDAY_23_UTC_AS_TUESDAY = (
+    Weekday.TUESDAY,
+    dt.time(hour=1, tzinfo=dt.timezone(dt.timedelta(hours=2))),
+)
+FRIDAY_4 = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=None))
+FRIDAY_4_UTC = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc))
 
 
 @pytest.mark.parametrize(
@@ -27,10 +43,10 @@ from helpers import (
             None,
         ],
         [
-            (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc)),
+            FRIDAY_4_UTC,
             [1, 1, 2, 2, 2, 3, 3, 4],
             samples_weeks_utc,
-            None,
+            utc,
             None,
         ],
         [
@@ -41,6 +57,34 @@ from helpers import (
             None,
         ],
         [
+            [Weekday.WEDNESDAY, Weekday.WEDNESDAY],
+            [],
+            samples_weeks_utc,
+            None,
+            DUPLICATE_EFFECTIVE_TIME,
+        ],
+        [
+            [MONDAY_23_UTC_AS_SUNDAY, MONDAY_23_UTC],
+            [],
+            samples_weeks_utc,
+            None,
+            DUPLICATE_EFFECTIVE_TIME,
+        ],
+        [
+            [MONDAY_23_UTC, MONDAY_23_UTC_AS_TUESDAY],
+            [],
+            samples_weeks_utc,
+            None,
+            DUPLICATE_EFFECTIVE_TIME,
+        ],
+        [
+            [MONDAY_23_UTC_AS_SUNDAY, MONDAY_23_UTC_AS_TUESDAY],
+            [],
+            samples_weeks_utc,
+            None,
+            DUPLICATE_EFFECTIVE_TIME,
+        ],
+        [
             [Weekday.WEDNESDAY, Weekday.SUNDAY],
             [1, 2, 2, 3, 4, 5, 6, 6],
             samples_weeks_utc,
@@ -48,10 +92,7 @@ from helpers import (
             None,
         ],
         [
-            [
-                (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc)),
-                (Weekday.FRIDAY, dt.time(hour=4, tzinfo=None)),
-            ],
+            [FRIDAY_4_UTC, FRIDAY_4],
             [],
             samples_weeks_utc,
             utc,

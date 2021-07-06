@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture
 def patch_datetime_now(monkeypatch, request):
-    class DatetimePatch:
+    class DatetimePatch(dt.datetime):
         it = iter(request.param)
 
         @classmethod

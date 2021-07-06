@@ -64,7 +64,7 @@ from helpers import (
             samples_seconds,
             None,
             dt.datetime(2021, 5, 26, 3, 54),
-            None,
+            START_STOP_ERROR,
         ],
     ),
     indirect=["patch_datetime_now"],
