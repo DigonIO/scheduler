@@ -134,15 +134,16 @@ resembling more of a load balancer than a classical scheduler.
 The following function implementation interpretes the `weight` of a :class:`~scheduler.job.Job`
 as a probability for it's execution using the `uniformly distributed`_ random number
 generator `random.random()`. With `random.random()` generating values in the interval
-``[0,1)``, the :class:`~scheduler.job.Job`'s `weight`\ s of ``0``, ``0.3`` and ``1`` would be interpreted as a probabilities
-of ``0%``, ``30%`` and ``100%``.
+``[0,1)``, the :class:`~scheduler.job.Job`'s `weight`\ s of ``0``, ``0.3`` and ``1``
+would be interpreted as a probabilities of ``0%``, ``30%`` and ``100%``.
 
 .. warning:: In contrast to a regular scheduler the following example completely disregards
     the time element.
 
 The :class:`~scheduler.core.Scheduler` expects a prioritization function of the signature
 ``Callable[[float, Job, int, int], float]``. The custom prioritization function is
-available in :mod:`~scheduler.util` as :meth:`~scheduler.util.Prioritization.random_priority_function`.
+available in :mod:`~scheduler.util` as
+:meth:`~scheduler.util.Prioritization.random_priority_function`.
 
 .. code-block:: python
 
@@ -217,7 +218,7 @@ with the :class:`~scheduler.core.Scheduler`.
     >>> for _ in range(total_counts):
     ...     exec_count = sch.exec_jobs()
 
-Utilizing the `Job.attempts` property we can observe the number of executions. For
+Utilizing the :meth:`~scheduler.job.Job.attempts` property we can observe the number of executions. For
 direct comparision with the target probabilities we normalize the results by the total counts.
 If everything is behaving correctly we would expect the results to approach the target
 probabilities with for increasing total counts.
@@ -238,7 +239,7 @@ probabilities with for increasing total counts.
      90  90.5
     100 100.0
 
-The results in this experiment conform to what one would expect for a `uniformly distributed`_
-random variable.
+The results in this experiment conform to what one would expect using an underlying
+`uniformly distributed`_ random variable.
 
 .. _uniformly distributed: https://en.wikipedia.org/wiki/Continuous_uniform_distribution

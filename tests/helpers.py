@@ -9,8 +9,7 @@ T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
 T_2021_5_26__3_55_UTC = dt.datetime(2021, 5, 26, 3, 55, tzinfo=utc)
 
 CYCLIC_TYPE_ERROR_MSG = (
-    "Wrong input for Cyclic! Select one of the following input types:\n"
-    + "datetime.timedelta | list[datetime.timedelta]"
+    "Wrong input for Cyclic! Expected input type:\n" + "datetime.timedelta"
 )
 _DAILY_TYPE_ERROR_MSG = (
     "Wrong input for {0}! Select one of the following input types:\n"
@@ -29,6 +28,8 @@ ONCE_TYPE_ERROR_MSG = (
     "Wrong input for Once! Select one of the following input types:\n"
     + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
 )
+
+DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
 
 _TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
 TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
@@ -61,6 +62,54 @@ samples_utc = [
     T_2021_5_26__3_55_UTC + dt.timedelta(days=10, minutes=7),  # t8
 ]
 
+sample_seconds_interference = [
+    T_2021_5_26__3_55,  # scheduler init
+    T_2021_5_26__3_55,  # job creation
+    T_2021_5_26__3_55 + dt.timedelta(seconds=4),  # t1
+    T_2021_5_26__3_55 + dt.timedelta(seconds=4.1),  # t2
+    T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t3
+    T_2021_5_26__3_55 + dt.timedelta(seconds=5.1),  # t4
+    T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(seconds=8.1),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(seconds=10),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(seconds=10.1),  # t8
+    T_2021_5_26__3_55 + dt.timedelta(seconds=12),  # t9
+    T_2021_5_26__3_55 + dt.timedelta(seconds=12.1),  # t10
+    T_2021_5_26__3_55 + dt.timedelta(seconds=15),  # t11
+    T_2021_5_26__3_55 + dt.timedelta(seconds=15.1),  # t12
+    T_2021_5_26__3_55 + dt.timedelta(seconds=16),  # t13
+    T_2021_5_26__3_55 + dt.timedelta(seconds=16.1),  # t14
+    T_2021_5_26__3_55 + dt.timedelta(seconds=20),  # t15
+    T_2021_5_26__3_55 + dt.timedelta(seconds=20.1),  # t16
+    T_2021_5_26__3_55 + dt.timedelta(seconds=24),  # t17
+    T_2021_5_26__3_55 + dt.timedelta(seconds=24.1),  # t18
+    T_2021_5_26__3_55 + dt.timedelta(seconds=25.1),  # t19
+    T_2021_5_26__3_55 + dt.timedelta(seconds=25.1),  # t20
+]
+
+sample_seconds_interference_lag = [
+    T_2021_5_26__3_55,  # scheduler init
+    T_2021_5_26__3_55,  # job creation
+    T_2021_5_26__3_55 + dt.timedelta(seconds=4),  # t1
+    T_2021_5_26__3_55 + dt.timedelta(seconds=4.1),  # t2
+    T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t3
+    T_2021_5_26__3_55 + dt.timedelta(seconds=5.1),  # t4
+    T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(seconds=8.1),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(seconds=13),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(seconds=13.1),  # t8
+    T_2021_5_26__3_55 + dt.timedelta(seconds=15),  # t11
+    T_2021_5_26__3_55 + dt.timedelta(seconds=15.1),  # t12
+    T_2021_5_26__3_55 + dt.timedelta(seconds=16),  # t13
+    T_2021_5_26__3_55 + dt.timedelta(seconds=16.1),  # t14
+    T_2021_5_26__3_55 + dt.timedelta(seconds=20),  # t15
+    T_2021_5_26__3_55 + dt.timedelta(seconds=20.1),  # t16
+    T_2021_5_26__3_55 + dt.timedelta(seconds=24),  # t17
+    T_2021_5_26__3_55 + dt.timedelta(seconds=24.1),  # t18
+    T_2021_5_26__3_55 + dt.timedelta(seconds=25.1),  # t19
+    T_2021_5_26__3_55 + dt.timedelta(seconds=25.1),  # t20
+]
+
 samples_seconds = [
     T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
@@ -85,6 +134,20 @@ samples_seconds_utc = [
     T_2021_5_26__3_55_UTC + dt.timedelta(seconds=15),  # t6
     T_2021_5_26__3_55_UTC + dt.timedelta(seconds=15.001),  # t7
     T_2021_5_26__3_55_UTC + dt.timedelta(seconds=15.002),  # t8
+]
+
+samples_half_minutes = [
+    T_2021_5_26__3_55,  # scheduler creation
+    T_2021_5_26__3_55,  # job creation
+    T_2021_5_26__3_55 + dt.timedelta(minutes=0, seconds=5),  # t1
+    T_2021_5_26__3_55 + dt.timedelta(minutes=0, seconds=10),  # t2
+    T_2021_5_26__3_55 + dt.timedelta(minutes=0, seconds=30),  # t3
+    T_2021_5_26__3_55 + dt.timedelta(minutes=1, seconds=10),  # t4
+    T_2021_5_26__3_55 + dt.timedelta(minutes=1, seconds=40),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(minutes=2, seconds=0),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(minutes=2, seconds=20),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(minutes=2, seconds=40),  # t8
+    T_2021_5_26__3_55 + dt.timedelta(minutes=3, seconds=5),  # t9
 ]
 
 samples_minutes = [
@@ -330,7 +393,7 @@ job_reprs_utc = (
     ],
     [
         (
-            "scheduler.Job(<JobType.HOURLY: 3>, datetime.time(7, 5, tzinfo=datetime.timezone.utc),"
+            "scheduler.Job(<JobType.HOURLY: 3>, datetime.time(0, 5, tzinfo=datetime.timezone.utc),"
             " <built-in function print>, {}, 0, 20, False, datetime.datetime(2021, 5, 26, 3, 55,"
             " tzinfo=datetime.timezone.utc), datetime.datetime(2021, 5, 26, 23, 55, "
             "tzinfo=datetime.timezone.utc), False, datetime.timezone.utc)"

@@ -3,7 +3,6 @@ import datetime as dt
 import pytest
 
 from scheduler import Scheduler, SchedulerError
-from scheduler.job import Job
 from scheduler.util import Weekday
 
 from helpers import (

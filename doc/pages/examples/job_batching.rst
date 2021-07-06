@@ -1,14 +1,16 @@
 Job Batching
 ============
 
-It is possible to bundle a :class:`~scheduler.job.Job` with more than one timer (:class:`~scheduler.job.JobTimer`). Except for
-:func:`~scheduler.core.Scheduler.once`, all of :class:`~scheduler.core.Scheduler`'s the scheduling functions
-(:func:`~scheduler.core.Scheduler.cyclic`,
+It is possible to bundle a :class:`~scheduler.job.Job` with more than one
+:class:`~scheduler.job.JobTimer`. Except for :func:`~scheduler.core.Scheduler.once`
+and :func:`~scheduler.core.Scheduler.cyclic`, :class:`~scheduler.core.Scheduler` supports
+passing of the `timing` argument via a `list` for the `scheduling` functions:
+
 :func:`~scheduler.core.Scheduler.minutely`,
 :func:`~scheduler.core.Scheduler.hourly`,
 :func:`~scheduler.core.Scheduler.daily`,
-:func:`~scheduler.core.Scheduler.weekly`) support passing of
-the `timing` argument via a `list`.
+:func:`~scheduler.core.Scheduler.weekly`
+
 
 For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one `Job` as follows:
 
@@ -42,3 +44,8 @@ In consequence, this `Scheduler` instance only contains a single `Job` instance 
 In the given example, the job will be scheduled three times a day. Note that each call to
 :meth:`~scheduler.core.Scheduler.exec_jobs` will only call the function handle
 of the `Job` once, even if several timers are overdue.
+
+.. warning:: When bundling multiple times in a single :class:`~scheduler.job.Job`, they
+    are required to be distinct within the given context. Note that mixing of timezones
+    can lead to indistinguishable times. If indistinguishable times are used, a
+    :exc:`~scheduler.util.SchedulerError` will be raised.

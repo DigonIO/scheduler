@@ -13,6 +13,7 @@ from typing import Callable, Optional, Union, Any, cast
 import typeguard as tg
 
 from scheduler.util import (
+    TZ_ERROR_MSG,
     AbstractJob,
     SchedulerError,
     Weekday,
@@ -22,10 +23,12 @@ from scheduler.util import (
     next_weekday_occurrence,
     next_weekday_time_occurrence,
     prettify_timedelta,
+    are_times_unique,
+    are_weekday_times_unique,
 )
 
 # execution interval
-TimingTypeCyclic = Union[dt.timedelta, list[dt.timedelta]]
+TimingTypeCyclic = dt.timedelta
 # time on the clock
 TimingTypeDaily = Union[dt.time, list[dt.time]]
 
@@ -41,10 +44,10 @@ TimingTypeOnce = Union[
     dt.datetime, dt.timedelta, Weekday, dt.time, tuple[Weekday, dt.time]
 ]
 
+DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
 
 CYCLIC_TYPE_ERROR_MSG = (
-    "Wrong input for Cyclic! Select one of the following input types:\n"
-    + "datetime.timedelta | list[datetime.timedelta]"
+    "Wrong input for Cyclic! Expected input type:\n" + "datetime.timedelta"
 )
 _DAILY_TYPE_ERROR_MSG = (
     "Wrong input for {0}! Select one of the following input types:\n"
@@ -59,8 +62,8 @@ WEEKLY_TYPE_ERROR_MSG = (
     + "where `DAY = Weekday | tuple[Weekday, dt.time]`"
 )
 
-_TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."
-TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
+
+_TZ_ERROR_MSG = TZ_ERROR_MSG[:-1] + " for {0}."
 
 START_STOP_ERROR = "Start argument must be smaller than the stop argument."
 
@@ -75,27 +78,22 @@ class JobType(Enum):  # in job
     WEEKLY = auto()
 
 
-def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
-    """
-    Raise if both arguments have incompatible timezone informations.
+JOB_TIMING_TYPE_MAPPING = {
+    JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
+    JobType.MINUTELY: {"type": TimingTypeDaily, "err": MINUTELY_TYPE_ERROR_MSG},
+    JobType.HOURLY: {"type": TimingTypeDaily, "err": HOURLY_TYPE_ERROR_MSG},
+    JobType.DAILY: {"type": TimingTypeDaily, "err": DAILY_TYPE_ERROR_MSG},
+    JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
+}
 
-    Parameters
-    ----------
-    exec_at : datetime.time
-        A time object
-    exec_dt : datetime.datetime
-        A datetime object
-
-    Raises
-    ------
-    SchedulerError
-        If one argument has a timezone and the other doesn't
-    """
-    if bool(exec_at.tzinfo) ^ bool(exec_dt.tzinfo):
-        raise SchedulerError(TZ_ERROR_MSG)
+JOB_NEXT_DAYLIKE_MAPPING = {
+    JobType.MINUTELY: next_minutely_occurrence,
+    JobType.HOURLY: next_hourly_occurrence,
+    JobType.DAILY: next_daily_occurrence,
+}
 
 
-class JobTimer:  # in job
+class JobTimer:
     """
     The class provides the internal `datetime.datetime` calculations for `Job`.
 
@@ -123,14 +121,6 @@ class JobTimer:  # in job
         self.__timing = timing
         self.__next_exec = start
         self.__skip = skip_missing
-        self.__tz_sanity_check(self.__next_exec)
-
-    def __tz_sanity_check(self, exec_time):
-        if self.__job_type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
-            check_tz_aware(self.__timing, exec_time)
-        elif self.__job_type == JobType.WEEKLY:
-            if not isinstance(self.__timing, Weekday):
-                check_tz_aware(self.__timing[1], exec_time)
 
     def calc_next_exec(self, ref: Optional[dt.datetime] = None) -> None:
         """
@@ -141,32 +131,14 @@ class JobTimer:  # in job
         ref : Optional[datetime.datetime]
             Datetime reference for scheduling the next execution datetime.
         """
-        if ref:
-            self.__tz_sanity_check(ref)
-
         if self.__job_type == JobType.CYCLIC:
+            if self.__skip and ref is not None:
+                self.__next_exec = ref
             self.__next_exec = self.__next_exec + cast(dt.timedelta, self.__timing)
+            return
 
-        elif self.__job_type == JobType.MINUTELY:
-            self.__timing = cast(dt.time, self.__timing)
-            if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
-            self.__next_exec = next_minutely_occurrence(self.__next_exec, self.__timing)
-
-        elif self.__job_type == JobType.HOURLY:
-            self.__timing = cast(dt.time, self.__timing)
-            if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
-            self.__next_exec = next_hourly_occurrence(self.__next_exec, self.__timing)
-
-        elif self.__job_type == JobType.DAILY:
-            self.__timing = cast(dt.time, self.__timing)
-            if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
-            self.__next_exec = next_daily_occurrence(self.__next_exec, self.__timing)
-
-        elif self.__job_type == JobType.WEEKLY:
-            # check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
+        if self.__job_type == JobType.WEEKLY:
+            #  check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
             if isinstance(self.__timing, Weekday):
                 self.__next_exec = next_weekday_occurrence(
                     self.__next_exec, self.__timing
@@ -180,6 +152,14 @@ class JobTimer:  # in job
                 self.__next_exec = next_weekday_time_occurrence(
                     self.__next_exec, *self.__timing
                 )
+
+        else:  # self.__job_type in JOB_NEXT_DAYLIKE_MAPPING:
+            self.__timing = cast(dt.time, self.__timing)
+            if self.__next_exec.tzinfo:
+                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
+            self.__next_exec = JOB_NEXT_DAYLIKE_MAPPING[self.__job_type](
+                self.__next_exec, self.__timing
+            )
 
         if self.__skip and ref is not None and self.__next_exec < ref:
             self.__next_exec = ref
@@ -231,18 +211,10 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
     TypeError
         If the `timing` object has the wrong `Type` for a specific `JobType`.
     """
-    mapping = {
-        JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
-        JobType.MINUTELY: {"type": TimingTypeDaily, "err": MINUTELY_TYPE_ERROR_MSG},
-        JobType.HOURLY: {"type": TimingTypeDaily, "err": HOURLY_TYPE_ERROR_MSG},
-        JobType.DAILY: {"type": TimingTypeDaily, "err": DAILY_TYPE_ERROR_MSG},
-        JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
-    }
-
     try:
-        tg.check_type("timing", timing, mapping[job_type]["type"])
+        tg.check_type("timing", timing, JOB_TIMING_TYPE_MAPPING[job_type]["type"])
     except TypeError as err:
-        raise SchedulerError(mapping[job_type]["err"]) from err
+        raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
 
 class Job(AbstractJob):  # in job
@@ -305,51 +277,128 @@ class Job(AbstractJob):  # in job
         self.__max_attempts = max_attempts
         self.__weight = weight
         self.__delay = delay
-        self.__start: dt.datetime
+        self.__start = start
+        self.__stop = stop
         self.__skip_missing = skip_missing
         self.__tzinfo = tzinfo
 
         # self.__mark_delete will be set to True if the new Timer would be in future
         # relativ to the self.__stop variable
-        self.__stop: Optional[dt.datetime] = None
         self.__mark_delete = False
-
         self.__attempts = 0
         self.__timers: list[JobTimer]
         self.__pending_timer: JobTimer
 
-        if start:
-            if bool(start.tzinfo) ^ bool(self.__tzinfo):
+        expanded_timing = self.__standardize_timing_format()
+        self.__check_allowed_timezone_info(expanded_timing)
+        self.__check_duplicate_effective_timings(expanded_timing)
+
+        # create JobTimers
+        self.__init_job_timers()
+
+        if self.__stop is not None:
+            if self.__pending_timer.datetime > self.__stop:
+                self.__mark_delete = True
+
+    def __standardize_timing_format(self) -> Optional[list[tuple[Weekday, dt.time]]]:
+        if isinstance(self.__timing, list):
+            if self.__type is JobType.MINUTELY:
+                self.__timing = [
+                    time.replace(hour=0, minute=0)
+                    for time in cast(list[dt.time], self.__timing)
+                ]
+            elif self.__type is JobType.HOURLY:
+                self.__timing = [
+                    time.replace(hour=0) for time in cast(list[dt.time], self.__timing)
+                ]
+            elif self.__type is JobType.WEEKLY:
+                return [
+                    ele
+                    if isinstance(ele, tuple)
+                    else (ele, dt.time(tzinfo=self.__tzinfo))
+                    for ele in cast(list[_TimingTypeDay], self.__timing)
+                ]
+        else:
+            if self.__type is JobType.MINUTELY:
+                self.__timing = cast(dt.time, self.__timing).replace(hour=0, minute=0)
+            elif self.__type is JobType.HOURLY:
+                self.__timing = cast(dt.time, self.__timing).replace(hour=0)
+        return None
+
+    def __check_allowed_timezone_info(
+        self, expanded_timing: Optional[list[tuple[Weekday, dt.time]]]
+    ):
+        if isinstance(self.__timing, list):
+            if self.__type is JobType.WEEKLY:
+                for _, time in cast(list[tuple[Weekday, dt.time]], expanded_timing):
+                    if bool(time.tzinfo) ^ bool(self.__tzinfo):
+                        raise SchedulerError(TZ_ERROR_MSG)
+            elif self.__type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
+                for time in cast(list[dt.time], self.__timing):
+                    if bool(time.tzinfo) ^ bool(self.__tzinfo):
+                        raise SchedulerError(TZ_ERROR_MSG)
+        else:
+            if self.__type is JobType.WEEKLY and isinstance(self.__timing, tuple):
+                if bool(self.__timing[1].tzinfo) ^ bool(self.__tzinfo):
+                    raise SchedulerError(TZ_ERROR_MSG)
+            elif self.__type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
+                if bool(cast(dt.time, self.__timing).tzinfo) ^ bool(self.__tzinfo):
+                    raise SchedulerError(TZ_ERROR_MSG)
+
+        if self.__start:
+            if bool(self.__start.tzinfo) ^ bool(self.__tzinfo):
                 raise SchedulerError(_TZ_ERROR_MSG.format("start"))
-            self.__start = start
         else:
             self.__start = dt.datetime.now(self.__tzinfo)
 
-        if stop:
-            if bool(stop.tzinfo) ^ bool(self.__tzinfo):
+        if self.__stop:
+            if bool(self.__stop.tzinfo) ^ bool(self.__tzinfo):
                 raise SchedulerError(_TZ_ERROR_MSG.format("stop"))
-            self.__stop = stop
 
-        if start is not None and stop is not None:
-            if start >= stop:
+        if self.__stop is not None:
+            if self.__start >= self.__stop:
                 raise SchedulerError(START_STOP_ERROR)
 
-        if not isinstance(timing, list):
-            self.__timers = [JobTimer(job_type, timing, self.__start, skip_missing)]
+    def __check_duplicate_effective_timings(
+        self, expanded_timing: Optional[list[tuple[Weekday, dt.time]]]
+    ):
+        if not isinstance(self.__timing, list):
+            return
+        if self.__type is JobType.WEEKLY:
+            if not are_weekday_times_unique(
+                cast(list[tuple[Weekday, dt.time]], expanded_timing), self.__tzinfo
+            ):
+                raise SchedulerError(DUPLICATE_EFFECTIVE_TIME)
+        elif self.__type in (
+            JobType.MINUTELY,
+            JobType.HOURLY,
+            JobType.DAILY,
+        ):
+            if not are_times_unique(cast(list[dt.time], self.__timing)):
+                raise SchedulerError(DUPLICATE_EFFECTIVE_TIME)
+
+    def __init_job_timers(self):
+        if isinstance(self.__timing, list):
+            self.__timers = [
+                JobTimer(self.__type, tim, self.__start, self.__skip_missing)
+                for tim in self.__timing
+            ]
         else:
             self.__timers = [
-                JobTimer(job_type, tim, self.__start, skip_missing) for tim in timing
+                JobTimer(
+                    self.__type,
+                    cast(TimingJobTimerUnion, self.__timing),
+                    self.__start,
+                    self.__skip_missing,
+                )
             ]
+
         # generate first dt_stamps for each JobTimer
         for timer in self.__timers:
             timer.calc_next_exec()
 
         # calculate active JobTimer
         self.__set_pending_timer()
-
-        if stop is not None:
-            if self.__pending_timer.datetime > stop:
-                self.__mark_delete = True
 
     def _exec(self) -> None:
         """Execute the callback function."""
@@ -446,7 +495,12 @@ class Job(AbstractJob):  # in job
         ref_dt : datetime.datetime
             Reference time stamp to which the `Job` caluclates it's next execution.
         """
-        self.__pending_timer.calc_next_exec(ref_dt)
+        if self.__skip_missing:
+            for timer in self.__timers:
+                if (timer.datetime - ref_dt).total_seconds() <= 0:
+                    timer.calc_next_exec(ref_dt)
+        else:
+            self.__pending_timer.calc_next_exec(ref_dt)
         self.__set_pending_timer()
         if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
             self.__mark_delete = True
@@ -542,7 +596,7 @@ class Job(AbstractJob):  # in job
             Execution `datetime.datetime` stamp.
         """
         if not self.__delay and self.__attempts == 0:
-            return self.__start
+            return cast(dt.datetime, self.__start)
         return self.__pending_timer.datetime
 
     def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
@@ -563,7 +617,7 @@ class Job(AbstractJob):  # in job
         if dt_stamp is None:
             dt_stamp = dt.datetime.now(self.__tzinfo)
         if not self.__delay and self.__attempts == 0:
-            return self.__start - dt_stamp
+            return cast(dt.datetime, self.__start) - dt_stamp
         return self.__pending_timer.timedelta(dt_stamp)
 
     @property

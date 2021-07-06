@@ -9,6 +9,9 @@ import datetime as dt
 import random
 from abc import ABC, abstractproperty
 from enum import Enum
+from typing import Optional
+
+TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
 
 
 class SchedulerError(Exception):
@@ -61,13 +64,15 @@ def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
     if wkdy_src == wkdy_dest:
         return 7
     if wkdy_dest < wkdy_src:
-        return 7 - wkdy_src + wkdy_dest
+        return wkdy_dest - wkdy_src + 7
     return wkdy_dest - wkdy_src
 
 
 def next_daily_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
     """
     Estimate the next daily occurency of a given time.
+
+    .. warning:: Both arguments are expected to have the same timezone, no internal checks.
 
     Parameters
     ----------
@@ -96,6 +101,8 @@ def next_hourly_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetim
     """
     Estimate the next hourly occurency of a given time.
 
+    .. warning:: Both arguments are expected to have the same timezone, no internal checks.
+
     Parameters
     ----------
     now : datetime.datetime
@@ -121,6 +128,8 @@ def next_hourly_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetim
 def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
     """
     Estimate the next weekly occurency of a given time.
+
+    .. warning:: Both arguments are expected to have the same timezone, no internal checks.
 
     Parameters
     ----------
@@ -171,6 +180,9 @@ def next_weekday_time_occurrence(
     """
     Estimate the next occurency of a given weekday and time.
 
+    .. warning:: Arguments `now` and `target_time` are expected to have the same timezone,
+       no internal checks.
+
     Parameters
     ----------
     now : datetime.datetime
@@ -199,6 +211,62 @@ def next_weekday_time_occurrence(
         microsecond=target_time.microsecond,
     )
     return target + delta
+
+
+def are_times_unique(
+    timelist: list[dt.time],
+) -> bool:
+    """
+    Check if list contains distinct times.
+
+    Parameters
+    ----------
+    timelist : list[dt.time]
+        List of time objects.
+
+    Returns
+    -------
+    boolean
+        True if list entries are not equivalent with timezone offset.
+    """
+    ref = dt.datetime(year=1970, month=1, day=1)
+    collection = {
+        ref.replace(
+            hour=time.hour,
+            minute=time.minute,
+            second=time.second,
+            microsecond=time.microsecond,
+        )
+        + (time.utcoffset() or dt.timedelta())
+        for time in timelist
+    }
+    return len(collection) == len(timelist)
+
+
+def are_weekday_times_unique(
+    timelist: list[tuple[Weekday, dt.time]], timezone: Optional[dt.timezone]
+) -> bool:
+    """
+    Check if list contains distinct weekday times.
+
+    .. warning:: Both arguments are expected to be either timezone aware or not, no internal checks.
+
+    Parameters
+    ----------
+    timelist : list[tuple[Weekday, dt.time]]
+        List of tuple[Weekday, dt.time] objects.
+
+    Returns
+    -------
+    boolean
+        True if list entries are not equivalent with timezone offset.
+    """
+    ref = dt.datetime(year=1970, month=1, day=1, tzinfo=timezone)
+    collection = {
+        next_weekday_time_occurrence(ref.astimezone(time.tzinfo), day, time)
+        for day, time in timelist
+    }
+    return len(collection) == len(timelist)
 
 
 class AbstractJob(ABC):

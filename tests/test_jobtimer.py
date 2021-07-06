@@ -82,21 +82,31 @@ def test_JobTimer_calc_next_exec(job_type, timing, start, target, next_target):
 
 
 @pytest.mark.parametrize(
-    "delta_m, offset_m, res_delta_m",
+    "delta_m, offset_m, skip, res_delta_m",
     (
-        [20, 21, 41],
-        [1, 21, 22],
-        [1, 1, 1],
-        [20, 20, 20],
-        [20, 1, 20],
+        [20, 21, True, 41],
+        [1, 21, True, 22],
+        [1, 1, True, 2],
+        [20, 20, True, 40],
+        [20, 1, True, 21],
+        [20, 21, False, 20],
+        [1, 21, False, 1],
+        [1, 1, False, 1],
+        [20, 20, False, 20],
+        [20, 1, False, 20],
     ),
 )
-def test_skip(delta_m, offset_m, res_delta_m):
+def test_skip(delta_m, offset_m, skip, res_delta_m):
     delta = dt.timedelta(minutes=delta_m)
     offset = dt.timedelta(minutes=offset_m)
     res_delta = dt.timedelta(minutes=res_delta_m)
 
-    jet = JobTimer(JobType.CYCLIC, delta, T_2021_5_26__3_55, True)
+    jet = JobTimer(
+        JobType.CYCLIC,
+        timing=delta,
+        start=T_2021_5_26__3_55,
+        skip_missing=skip,
+    )
     assert jet.datetime == T_2021_5_26__3_55
 
     jet.calc_next_exec(T_2021_5_26__3_55 + offset)
@@ -107,7 +117,7 @@ def test_skip(delta_m, offset_m, res_delta_m):
     "job_type, timing, err",
     (
         [JobType.CYCLIC, dt.timedelta(), None],
-        [JobType.CYCLIC, [dt.timedelta(), dt.timedelta()], None],
+        [JobType.CYCLIC, [dt.timedelta(), dt.timedelta()], CYCLIC_TYPE_ERROR_MSG],
         [JobType.WEEKLY, Weekday.MONDAY, None],
         [JobType.DAILY, dt.time(), None],
         [JobType.DAILY, [dt.time(), dt.time()], None],

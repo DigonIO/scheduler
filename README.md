@@ -1,7 +1,7 @@
 # scheduler
 
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
-[![license](https://img.shields.io/pypi/l/scheduler)](https://gitlab.com/DigonIO/scheduler/-/blob/master/LICENSE)
+[![license](https://img.shields.io/badge/license-LGPLv3-orange)](https://gitlab.com/DigonIO/scheduler/-/blob/master/LICENSE)
 [![pipeline status](https://gitlab.com/DigonIO/scheduler/badges/master/pipeline.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![coverage report](https://gitlab.com/DigonIO/scheduler/badges/master/coverage.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![Documentation Status](https://readthedocs.org/projects/python-scheduler/badge/?version=latest)](https://python-scheduler.readthedocs.io/en/latest/?badge=latest)
@@ -9,7 +9,9 @@
 
 ---
 
-A simple in-process python scheduler library, designed to be integrated seamlessly with the `datetime` standard library. Due to the support of `datetime` objects, `scheduler` is able to work with time zones. This implementation enables the planning of `Job`s depending on time cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
+A simple in-process python scheduler library with seamless integration of the `datetime`
+standard library. Time zone support and planning of `Job`s depending on time cycles,
+fixed times, weekdays, dates, weights, offsets and execution counts.
 
 ## Features
 
@@ -24,7 +26,7 @@ A simple in-process python scheduler library, designed to be integrated seamless
   [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/time_zones.html)
 * `Job` prioritization
   * Default linear prioritization
-    [(Example)](https://python-scheduler.readthedocs.io/en/latest/examples.html#weights)
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/weights.html)
   * User definable prioritization functions
     [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/custom_prioritization.html)
 * `Job` batching
@@ -128,9 +130,9 @@ sphinx-build -b html doc/ doc/_build/html
 
 ## Testing
 
-Testing is done using [pytest](https://pypi.org/project/pytest/). Using
+Testing is done using [pytest](https://pypi.org/project/pytest/). With
 [pytest-cov](https://pypi.org/project/pytest-cov/) and
-[coverage](https://pypi.org/project/coverage/) a report for the tests can be generated with:
+[coverage](https://pypi.org/project/coverage/) a report for the test coverage can be generated:
 
 ```bash
 pytest --cov=scheduler/ tests/

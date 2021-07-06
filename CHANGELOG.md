@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.5.0
+
+### API changes
+
++ `Job` batching limited to distinct timings
++ `Job` batching limited to `minutely()`, `hourly()`, `daily()` and `weekly()`
+
+### Bugfixes
+
++ Behaviour of `skip_missing` adjusted
+
+### Misc
+
++ Improved documentation (mostly formatting)
+
 ## 0.4.0
 
 + Switched to LGPLv3 License

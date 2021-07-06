@@ -22,6 +22,13 @@ from helpers import (
         [dt.time(minute=0), [1, 2, 3, 4, 5, 6, 6], samples_hours, None, None],
         [dt.time(minute=39), [1, 2, 3, 4, 5, 5, 5], samples_hours, None, None],
         [
+            [dt.time(minute=39), dt.time(hour=1, minute=39, tzinfo=utc)],
+            [],
+            samples_hours,
+            None,
+            TZ_ERROR_MSG,
+        ],
+        [
             dt.time(minute=47, tzinfo=utc),
             [1, 2, 3, 4, 5, 5, 5],
             samples_hours_utc,
@@ -42,6 +49,8 @@ def test_hourly(timing, counts, patch_datetime_now, tzinfo, err_msg):
             assert msg == err_msg
     else:
         job = sch.hourly(timing=timing, handle=foo)
-        for count in counts:
+        attempts = []
+        for _ in counts:
             sch.exec_jobs()
-            assert job.attempts == count
+            attempts.append(job.attempts)
+        assert attempts == counts

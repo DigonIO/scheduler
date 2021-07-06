@@ -635,7 +635,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeWeekly
+        timing : TimingTypeOnce
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -643,8 +643,6 @@ class Scheduler:
             The payload arguments to pass to the function handle within a Job.
         weight : float
             Relative weight against other `Job`\ s.
-        delay : bool
-            If `False` the `Job` will executed instantly or at a given offset.
 
         Returns
         -------
