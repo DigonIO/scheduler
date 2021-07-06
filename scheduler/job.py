@@ -93,7 +93,7 @@ JOB_NEXT_DAYLIKE_MAPPING = {
 }
 
 
-class JobTimer:  # in job
+class JobTimer:
     """
     The class provides the internal `datetime.datetime` calculations for `Job`.
 
@@ -211,7 +211,6 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
     TypeError
         If the `timing` object has the wrong `Type` for a specific `JobType`.
     """
-
     try:
         tg.check_type("timing", timing, JOB_TIMING_TYPE_MAPPING[job_type]["type"])
     except TypeError as err:

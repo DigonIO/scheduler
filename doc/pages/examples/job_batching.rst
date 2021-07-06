@@ -44,3 +44,8 @@ In consequence, this `Scheduler` instance only contains a single `Job` instance 
 In the given example, the job will be scheduled three times a day. Note that each call to
 :meth:`~scheduler.core.Scheduler.exec_jobs` will only call the function handle
 of the `Job` once, even if several timers are overdue.
+
+.. warning:: When bundling multiple times in a single :class:`~scheduler.job.Job`, they
+    are required to be distinct within the given context. Note that mixing of timezones
+    can lead to indistinguishable times. If indistinguishable times are used, a
+    :exc:`~scheduler.util.SchedulerError` will be raised.
