@@ -136,6 +136,20 @@ samples_seconds_utc = [
     T_2021_5_26__3_55_UTC + dt.timedelta(seconds=15.002),  # t8
 ]
 
+samples_half_minutes = [
+    T_2021_5_26__3_55,  # scheduler creation
+    T_2021_5_26__3_55,  # job creation
+    T_2021_5_26__3_55 + dt.timedelta(minutes=0, seconds=5),  # t1
+    T_2021_5_26__3_55 + dt.timedelta(minutes=0, seconds=10),  # t2
+    T_2021_5_26__3_55 + dt.timedelta(minutes=0, seconds=30),  # t3
+    T_2021_5_26__3_55 + dt.timedelta(minutes=1, seconds=10),  # t4
+    T_2021_5_26__3_55 + dt.timedelta(minutes=1, seconds=40),  # t5
+    T_2021_5_26__3_55 + dt.timedelta(minutes=2, seconds=0),  # t6
+    T_2021_5_26__3_55 + dt.timedelta(minutes=2, seconds=20),  # t7
+    T_2021_5_26__3_55 + dt.timedelta(minutes=2, seconds=40),  # t8
+    T_2021_5_26__3_55 + dt.timedelta(minutes=3, seconds=5),  # t9
+]
+
 samples_minutes = [
     T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation

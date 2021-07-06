@@ -60,11 +60,19 @@ from helpers import (
         ],
         [
             dt.timedelta(seconds=5),
-            [0, 0, 0],
+            [],
             samples_seconds,
             None,
             dt.datetime(2021, 5, 26, 3, 54),
             START_STOP_ERROR,
+        ],
+        [
+            dt.timedelta(seconds=5),
+            [0, 0, 0],
+            samples_seconds,
+            None,
+            dt.datetime(2021, 5, 26, 3, 55, 3),
+            None,
         ],
     ),
     indirect=["patch_datetime_now"],
@@ -72,7 +80,8 @@ from helpers import (
 def test_start_stop(timing, counts, patch_datetime_now, start, stop, err_msg):
     sch = Scheduler()
 
-    _ = dt.datetime.now()
+    if start:
+        _ = dt.datetime.now()
 
     if err_msg:
         with pytest.raises(SchedulerError) as msg:
@@ -87,4 +96,4 @@ def test_start_stop(timing, counts, patch_datetime_now, start, stop, err_msg):
 
         for count in counts:
             sch.exec_jobs()
-            assert job.attempts == count
+        assert job.attempts == count
