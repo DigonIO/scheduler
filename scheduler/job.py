@@ -93,26 +93,6 @@ JOB_NEXT_DAYLIKE_MAPPING = {
 }
 
 
-def check_tz_aware(exec_at: dt.time, exec_dt: dt.datetime) -> None:
-    """
-    Raise if both arguments have incompatible timezone informations.
-
-    Parameters
-    ----------
-    exec_at : datetime.time
-        A time object
-    exec_dt : datetime.datetime
-        A datetime object
-
-    Raises
-    ------
-    SchedulerError
-        If one argument has a timezone and the other doesn't
-    """
-    if bool(exec_at.tzinfo) ^ bool(exec_dt.tzinfo):
-        raise SchedulerError(TZ_ERROR_MSG)
-
-
 class JobTimer:  # in job
     """
     The class provides the internal `datetime.datetime` calculations for `Job`.
@@ -141,14 +121,6 @@ class JobTimer:  # in job
         self.__timing = timing
         self.__next_exec = start
         self.__skip = skip_missing
-        self.__tz_sanity_check(self.__next_exec)
-
-    def __tz_sanity_check(self, exec_time):
-        if self.__job_type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
-            check_tz_aware(self.__timing, exec_time)
-        elif self.__job_type == JobType.WEEKLY:
-            if not isinstance(self.__timing, Weekday):
-                check_tz_aware(self.__timing[1], exec_time)
 
     def calc_next_exec(self, ref: Optional[dt.datetime] = None) -> None:
         """
@@ -159,9 +131,6 @@ class JobTimer:  # in job
         ref : Optional[datetime.datetime]
             Datetime reference for scheduling the next execution datetime.
         """
-        if ref:
-            self.__tz_sanity_check(ref)
-
         if self.__job_type == JobType.CYCLIC:
             if self.__skip and ref is not None:
                 self.__next_exec = ref
