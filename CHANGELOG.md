@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.1
+
+### Features
+
++ Threading support, `scheduler` is now thread safe.
++ Added `n_threads` argument to `Scheduler` for parallel `Job` execution.
+
+### Misc
+
++ Improved examples and docs.
+
 ## 0.5.0
 
 ### API changes

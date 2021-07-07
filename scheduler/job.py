@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import datetime as dt
 from enum import Enum, auto
+from threading import RLock
+
 
 from typing import Callable, Optional, Union, Any, cast
 
@@ -117,6 +119,7 @@ class JobTimer:
         start: dt.datetime,
         skip_missing: bool = False,
     ):
+        self.__lock = RLock()
         self.__job_type = job_type
         self.__timing = timing
         self.__next_exec = start
@@ -131,39 +134,40 @@ class JobTimer:
         ref : Optional[datetime.datetime]
             Datetime reference for scheduling the next execution datetime.
         """
-        if self.__job_type == JobType.CYCLIC:
-            if self.__skip and ref is not None:
-                self.__next_exec = ref
-            self.__next_exec = self.__next_exec + cast(dt.timedelta, self.__timing)
-            return
+        with self.__lock:
+            if self.__job_type == JobType.CYCLIC:
+                if self.__skip and ref is not None:
+                    self.__next_exec = ref
+                self.__next_exec = self.__next_exec + cast(dt.timedelta, self.__timing)
+                return
 
-        if self.__job_type == JobType.WEEKLY:
-            #  check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
-            if isinstance(self.__timing, Weekday):
-                self.__next_exec = next_weekday_occurrence(
+            if self.__job_type == JobType.WEEKLY:
+                #  check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
+                if isinstance(self.__timing, Weekday):
+                    self.__next_exec = next_weekday_occurrence(
+                        self.__next_exec, self.__timing
+                    )
+                else:
+                    self.__timing = cast(tuple[Weekday, dt.time], self.__timing)
+                    if self.__timing[1].tzinfo:
+                        self.__next_exec = self.__next_exec.astimezone(
+                            self.__timing[1].tzinfo
+                        )
+                    self.__next_exec = next_weekday_time_occurrence(
+                        self.__next_exec, *self.__timing
+                    )
+
+            else:  # self.__job_type in JOB_NEXT_DAYLIKE_MAPPING:
+                self.__timing = cast(dt.time, self.__timing)
+                if self.__next_exec.tzinfo:
+                    self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
+                self.__next_exec = JOB_NEXT_DAYLIKE_MAPPING[self.__job_type](
                     self.__next_exec, self.__timing
                 )
-            else:
-                self.__timing = cast(tuple[Weekday, dt.time], self.__timing)
-                if self.__timing[1].tzinfo:
-                    self.__next_exec = self.__next_exec.astimezone(
-                        self.__timing[1].tzinfo
-                    )
-                self.__next_exec = next_weekday_time_occurrence(
-                    self.__next_exec, *self.__timing
-                )
 
-        else:  # self.__job_type in JOB_NEXT_DAYLIKE_MAPPING:
-            self.__timing = cast(dt.time, self.__timing)
-            if self.__next_exec.tzinfo:
-                self.__next_exec = self.__next_exec.astimezone(self.__timing.tzinfo)
-            self.__next_exec = JOB_NEXT_DAYLIKE_MAPPING[self.__job_type](
-                self.__next_exec, self.__timing
-            )
-
-        if self.__skip and ref is not None and self.__next_exec < ref:
-            self.__next_exec = ref
-            self.calc_next_exec()
+            if self.__skip and ref is not None and self.__next_exec < ref:
+                self.__next_exec = ref
+                self.calc_next_exec()
 
     @property
     def datetime(self) -> dt.datetime:
@@ -269,6 +273,7 @@ class Job(AbstractJob):  # in job
         skip_missing: bool = False,
         tzinfo: Optional[dt.timezone] = None,
     ):
+        self.__lock = RLock()
         sane_timing_types(job_type, timing)
         self.__type = job_type
         self.__timing = timing
@@ -402,8 +407,9 @@ class Job(AbstractJob):  # in job
 
     def _exec(self) -> None:
         """Execute the callback function."""
-        self.__handle(**self.__params)
-        self.__attempts += 1
+        with self.__lock:
+            self.__handle(**self.__params)
+            self.__attempts += 1
 
     def __lt__(self, other: Job):
         dt_stamp = dt.datetime.now(self.__tzinfo)
@@ -413,26 +419,27 @@ class Job(AbstractJob):  # in job
         )
 
     def __repr__(self) -> str:
-        return "scheduler.Job({})".format(
-            ", ".join(
-                (
-                    repr(elem)
-                    for elem in (
-                        self.__type,
-                        self.__timing,
-                        self.__handle,
-                        self.__params,
-                        self.__max_attempts,
-                        self.__weight,
-                        self.__delay,
-                        self.__start,
-                        self.__stop,
-                        self.__skip_missing,
-                        self.tzinfo,
+        with self.__lock:
+            return "scheduler.Job({})".format(
+                ", ".join(
+                    (
+                        repr(elem)
+                        for elem in (
+                            self.__type,
+                            self.__timing,
+                            self.__handle,
+                            self.__params,
+                            self.__max_attempts,
+                            self.__weight,
+                            self.__delay,
+                            self.__start,
+                            self.__stop,
+                            self.__skip_missing,
+                            self.tzinfo,
+                        )
                     )
                 )
             )
-        )
 
     def _str(
         self,
@@ -450,24 +457,25 @@ class Job(AbstractJob):  # in job
         float,
     ]:
         """Return the objects relevant for readable string representation."""
-        dt_timedelta = self.timedelta(dt.datetime.now(self.__tzinfo))
-        if hasattr(self.handle, "__code__"):
-            f_args = "(..)" if self.handle.__code__.co_nlocals else "()"
-        else:
-            f_args = "(?)"
-        return (
-            self.__type.name if self.max_attempts != 1 else "ONCE",
-            self.handle.__qualname__,
-            f_args,
-            self.datetime,
-            str(self.datetime)[:19],
-            self.datetime.tzname(),
-            dt_timedelta,
-            prettify_timedelta(dt_timedelta),
-            self.attempts,
-            float("inf") if self.max_attempts == 0 else self.max_attempts,
-            self.weight,
-        )
+        with self.__lock:
+            dt_timedelta = self.timedelta(dt.datetime.now(self.__tzinfo))
+            if hasattr(self.handle, "__code__"):
+                f_args = "(..)" if self.handle.__code__.co_nlocals else "()"
+            else:
+                f_args = "(?)"
+            return (
+                self.__type.name if self.max_attempts != 1 else "ONCE",
+                self.handle.__qualname__,
+                f_args,
+                self.datetime,
+                str(self.datetime)[:19],
+                self.datetime.tzname(),
+                dt_timedelta,
+                prettify_timedelta(dt_timedelta),
+                self.attempts,
+                float("inf") if self.max_attempts == 0 else self.max_attempts,
+                self.weight,
+            )
 
     def __str__(self) -> str:
         return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}, w={10:.3f}".format(
@@ -495,27 +503,29 @@ class Job(AbstractJob):  # in job
         ref_dt : datetime.datetime
             Reference time stamp to which the `Job` caluclates it's next execution.
         """
-        if self.__skip_missing:
-            for timer in self.__timers:
-                if (timer.datetime - ref_dt).total_seconds() <= 0:
-                    timer.calc_next_exec(ref_dt)
-        else:
-            self.__pending_timer.calc_next_exec(ref_dt)
-        self.__set_pending_timer()
-        if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
-            self.__mark_delete = True
+        with self.__lock:
+            if self.__skip_missing:
+                for timer in self.__timers:
+                    if (timer.datetime - ref_dt).total_seconds() <= 0:
+                        timer.calc_next_exec(ref_dt)
+            else:
+                self.__pending_timer.calc_next_exec(ref_dt)
+            self.__set_pending_timer()
+            if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
+                self.__mark_delete = True
 
     def __set_pending_timer(self) -> None:
         """Get the pending timer at the moment."""
-        unsorted_timer_datetimes: dict[JobTimer, dt.datetime] = {}
-        for timer in self.__timers:
-            unsorted_timer_datetimes[timer] = timer.datetime
+        with self.__lock:
+            unsorted_timer_datetimes: dict[JobTimer, dt.datetime] = {}
+            for timer in self.__timers:
+                unsorted_timer_datetimes[timer] = timer.datetime
 
-        sorted_timers = sorted(
-            unsorted_timer_datetimes,
-            key=unsorted_timer_datetimes.get,  # type: ignore
-        )
-        self.__pending_timer = sorted_timers[0]
+            sorted_timers = sorted(
+                unsorted_timer_datetimes,
+                key=unsorted_timer_datetimes.get,  # type: ignore
+            )
+            self.__pending_timer = sorted_timers[0]
 
     @property
     def has_attempts_remaining(self) -> bool:
@@ -531,11 +541,12 @@ class Job(AbstractJob):  # in job
         bool
             True if the `Job` has execution attempts.
         """
-        if self.__mark_delete:
-            return False
-        if self.__max_attempts == 0:
-            return True
-        return self.__attempts < self.__max_attempts
+        with self.__lock:
+            if self.__mark_delete:
+                return False
+            if self.__max_attempts == 0:
+                return True
+            return self.__attempts < self.__max_attempts
 
     @property
     def attempts(self) -> int:
@@ -595,9 +606,10 @@ class Job(AbstractJob):  # in job
         datetime.datetime
             Execution `datetime.datetime` stamp.
         """
-        if not self.__delay and self.__attempts == 0:
-            return cast(dt.datetime, self.__start)
-        return self.__pending_timer.datetime
+        with self.__lock:
+            if not self.__delay and self.__attempts == 0:
+                return cast(dt.datetime, self.__start)
+            return self.__pending_timer.datetime
 
     def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
         """
@@ -614,11 +626,12 @@ class Job(AbstractJob):  # in job
         timedelta
             `timedelta` to the next execution.
         """
-        if dt_stamp is None:
-            dt_stamp = dt.datetime.now(self.__tzinfo)
-        if not self.__delay and self.__attempts == 0:
-            return cast(dt.datetime, self.__start) - dt_stamp
-        return self.__pending_timer.timedelta(dt_stamp)
+        with self.__lock:
+            if dt_stamp is None:
+                dt_stamp = dt.datetime.now(self.__tzinfo)
+            if not self.__delay and self.__attempts == 0:
+                return cast(dt.datetime, self.__start) - dt_stamp
+            return self.__pending_timer.timedelta(dt_stamp)
 
     @property
     def _tzinfo(self) -> Optional[dt.timezone]:

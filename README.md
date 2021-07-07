@@ -24,6 +24,7 @@ fixed times, weekdays, dates, weights, offsets and execution counts.
     [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/params.html)
 * Time zone compatibility
   [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/time_zones.html)
+* Parallel `Job` execution with `threading` [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
 * `Job` prioritization
   * Default linear prioritization
     [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/weights.html)
