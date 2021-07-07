@@ -29,19 +29,19 @@ def test_thread_safety(duration):
     thread_2 = threading.Thread(target=sch.exec_jobs)
     thread_1.daemon = True
     thread_2.daemon = True
-    start_time = time.process_time_ns()
+    start_time = time.perf_counter()
     thread_1.start()
     thread_2.start()
     thread_1.join()
     thread_2.join()
-    total_time = time.process_time_ns() - start_time
-    assert total_time * 1e9 > duration * 2
+    total_time = time.perf_counter() - start_time
+    assert total_time > duration * 2
 
 
 @pytest.mark.parametrize(
     "n_threads, max_exec, n_jobs, res_n_exec",
     [
-        (1, 0, 1, [1]),  # no threading
+        (1, 0, 2, [2]),  # no threading
         (2, 0, 10, [10]),
         (0, 0, 10, [10]),
         (3, 0, 10, [10]),
