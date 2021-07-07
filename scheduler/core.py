@@ -4,7 +4,7 @@
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import datetime as dt
-
+from threading import RLock
 from typing import Callable, Optional, Any
 
 import typeguard as tg
@@ -75,6 +75,7 @@ class Scheduler:
         ] = Prioritization.linear_priority_function,
         jobs: Optional[set[Job]] = None,
     ):
+        self.__lock = RLock()
         self.__max_exec = max_exec
         self.__tzinfo = tzinfo
         self.__priority_function = priority_function
@@ -86,70 +87,73 @@ class Scheduler:
         self.__tz_str = dt.datetime.now(tzinfo).tzname()
 
     def __repr__(self) -> str:
-        return "scheduler.Scheduler({0}, jobs={{{1}}})".format(
-            ", ".join(
-                (
-                    repr(elem)
-                    for elem in (
-                        self.__max_exec,
-                        self.__tzinfo,
-                        self.__priority_function,
+        with self.__lock:
+            return "scheduler.Scheduler({0}, jobs={{{1}}})".format(
+                ", ".join(
+                    (
+                        repr(elem)
+                        for elem in (
+                            self.__max_exec,
+                            self.__tzinfo,
+                            self.__priority_function,
+                        )
                     )
-                )
-            ),
-            ", ".join([repr(job) for job in sorted(self.jobs)]),
-        )
+                ),
+                ", ".join([repr(job) for job in sorted(self.jobs)]),
+            )
 
     def __headings(self) -> list[str]:
-        headings = [
-            f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
-            f"timezone={self.__tz_str}",
-            f"priority_function={self.__priority_function.__name__}",
-            f"#jobs={len(self.__jobs)}",
-        ]
-        return headings
+        with self.__lock:
+            headings = [
+                f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
+                f"timezone={self.__tz_str}",
+                f"priority_function={self.__priority_function.__name__}",
+                f"#jobs={len(self.__jobs)}",
+            ]
+            return headings
 
     def __str__(self) -> str:
-        # Scheduler meta heading
-        scheduler_headings = "{0}, {1}, {2}, {3}\n\n".format(*self.__headings())
+        with self.__lock:
+            # Scheduler meta heading
+            scheduler_headings = "{0}, {1}, {2}, {3}\n\n".format(*self.__headings())
 
-        # Job table (we join two of the Job._repr() fields into one)
-        # columns
-        c_align = ("<", "<", "<", "<", ">", ">", ">")
-        c_width = (8, 16, 19, 12, 9, 13, 6)
-        c_name = (
-            "type",
-            "function",
-            "due at",
-            "timezone",
-            "due in",
-            "attempts",
-            "weight",
-        )
-        form = [
-            f"{{{idx}:{align}{width}}}"
-            for idx, (align, width) in enumerate(zip(c_align, c_width))
-        ]
-        if self.__tz_str is None:
-            form = form[:3] + form[4:]
-
-        fstring = " ".join(form) + "\n"
-        job_table = fstring.format(*c_name)
-        job_table += fstring.format(*("-" * width for width in c_width))
-        for job in sorted(self.jobs):
-            row = job._str()
-            entries = (
-                row[0],
-                str_cutoff(row[1] + row[2], c_width[1], False),
-                row[4],
-                str_cutoff(row[5] or "", c_width[3], False),
-                str_cutoff(row[7], c_width[4], True),
-                str_cutoff(f"{row[8]}/{row[9]}", c_width[5], True),
-                str_cutoff(f"{row[10]}", c_width[6], True),
+            # Job table (we join two of the Job._repr() fields into one)
+            # columns
+            c_align = ("<", "<", "<", "<", ">", ">", ">")
+            c_width = (8, 16, 19, 12, 9, 13, 6)
+            c_name = (
+                "type",
+                "function",
+                "due at",
+                "timezone",
+                "due in",
+                "attempts",
+                "weight",
             )
-            job_table += fstring.format(*entries)
+            form = [
+                f"{{{idx}:{align}{width}}}"
+                for idx, (align, width) in enumerate(zip(c_align, c_width))
+            ]
+            if self.__tz_str is None:
+                form = form[:3] + form[4:]
 
-        return scheduler_headings + job_table
+            fstring = " ".join(form) + "\n"
+            job_table = fstring.format(*c_name)
+            job_table += fstring.format(*("-" * width for width in c_width))
+            for job in sorted(self.jobs):
+                row = job._str()
+                entries = (
+                    row[0],
+                    str_cutoff(row[1] + row[2], c_width[1], False),
+                    row[4],
+                    str_cutoff(row[5] or "", c_width[3], False),
+                    str_cutoff(row[7], c_width[4], True),
+                    str_cutoff(f"{row[8]}/{row[9]}", c_width[5], True),
+                    str_cutoff(f"{row[10]}", c_width[6], True),
+                )
+                job_table += fstring.format(*entries)
+
+            return scheduler_headings + job_table
 
     def delete_job(self, job: Job) -> None:
         """
@@ -160,11 +164,13 @@ class Scheduler:
         job : Job
             `Job` instance to delete.
         """
-        self.__jobs.remove(job)
+        with self.__lock:
+            self.__jobs.remove(job)
 
     def delete_all_jobs(self) -> None:
         r"""Delete all `Job`\ s from the `Scheduler`."""
-        self.__jobs = set()
+        with self.__lock:
+            self.__jobs = set()
 
     def __exec_job(self, job: Job, ref_dt: dt.datetime) -> None:
         """
@@ -177,15 +183,15 @@ class Scheduler:
         ref_dt : datetime:datetime
             Reference time when the `Job` will be executed.
         """
-        job._exec()
+        with self.__lock:
+            job._exec()
+            # has to be calculated before checking the attempts
+            # because the next planned execution has to be evaluated
+            # to compare it against the stop argument
+            job._calc_next_exec(ref_dt)
 
-        # has to be calculated before checking the attempts
-        # because the next planned execution has to be evaluated
-        # to compare it against the stop argument
-        job._calc_next_exec(ref_dt)
-
-        if not job.has_attempts_remaining:
-            self.delete_job(job)
+            if not job.has_attempts_remaining:
+                self.delete_job(job)
 
     def exec_jobs(self, force_exec_all: bool = False) -> int:
         r"""
@@ -210,38 +216,39 @@ class Scheduler:
         int
             Number of executed `Job`\ s.
         """
-        ref_dt = dt.datetime.now(tz=self.__tzinfo)
+        with self.__lock:
+            ref_dt = dt.datetime.now(tz=self.__tzinfo)
 
-        if force_exec_all:
-            n_jobs = len(self.__jobs)
-            for job in self.jobs:
-                self.__exec_job(job, ref_dt)
-            return n_jobs
+            if force_exec_all:
+                n_jobs = len(self.__jobs)
+                for job in self.jobs:
+                    self.__exec_job(job, ref_dt)
+                return n_jobs
 
-        # get all jobs with overtime in seconds and weight
-        job_priority: dict[Job, float] = {}
-        for job in self.__jobs:
-            delta_seconds = job.timedelta(ref_dt).total_seconds()
-            job_priority[job] = -self.__priority_function(
-                -delta_seconds,
-                job,
-                self.__max_exec,
-                len(self.__jobs),
-            )
-        # sort the overtime jobs depending their weight * overtime
-        sorted_jobs = sorted(job_priority, key=job_priority.get)  # type: ignore
+            # get all jobs with overtime in seconds and weight
+            job_priority: dict[Job, float] = {}
+            for job in self.__jobs:
+                delta_seconds = job.timedelta(ref_dt).total_seconds()
+                job_priority[job] = -self.__priority_function(
+                    -delta_seconds,
+                    job,
+                    self.__max_exec,
+                    len(self.__jobs),
+                )
+            # sort the overtime jobs depending their priority_function
+            sorted_jobs = sorted(job_priority, key=job_priority.get)  # type: ignore
 
-        # execute the sorted overtime jobs and delete the ones with no attempts left
-        exec_job_count = 0
-        for idx, job in enumerate(sorted_jobs):
-            if (self.__max_exec == 0 or idx < self.__max_exec) and job_priority[
-                job
-            ] < 0:
-                self.__exec_job(job, ref_dt)
-                exec_job_count += 1
-            else:
-                break
-        return exec_job_count
+            # execute the sorted overtime jobs and delete the ones with no attempts left
+            exec_job_count = 0
+            for idx, job in enumerate(sorted_jobs):
+                if (self.__max_exec == 0 or idx < self.__max_exec) and job_priority[
+                    job
+                ] < 0:
+                    self.__exec_job(job, ref_dt)
+                    exec_job_count += 1
+                else:
+                    break
+            return exec_job_count
 
     @property
     def jobs(self) -> set[Job]:
@@ -253,7 +260,8 @@ class Scheduler:
         set[Job]
             Currently scheduled `Job`\ s.
         """
-        return self.__jobs.copy()
+        with self.__lock:
+            return self.__jobs.copy()
 
     def __schedule(
         self,
@@ -283,7 +291,8 @@ class Scheduler:
             tzinfo=self.__tzinfo,
         )
         if job.has_attempts_remaining:
-            self.__jobs.add(job)
+            with self.__lock:
+                self.__jobs.add(job)
         return job
 
     def cyclic(
