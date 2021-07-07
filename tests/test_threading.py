@@ -6,6 +6,7 @@ import pytest
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.util import Weekday
+from helpers import foo
 
 
 def wrap_sleep(secs: float):
@@ -35,3 +36,27 @@ def test_thread_safety(duration):
     thread_2.join()
     total_time = time.process_time_ns() - start_time
     assert total_time * 1e9 > duration * 2
+
+
+@pytest.mark.parametrize(
+    "n_threads, max_exec, n_jobs, res_n_exec",
+    [
+        (1, 0, 1, [1]),  # no threading
+        (2, 0, 10, [10]),
+        (0, 0, 10, [10]),
+        (3, 0, 10, [10]),
+        (3, 3, 10, [3, 3, 3, 1]),
+        (3, 2, 10, [2, 2, 2, 2, 2]),
+    ],
+)
+def test_worker_count(n_threads, max_exec, n_jobs, res_n_exec):
+    sch = Scheduler(n_threads=n_threads, max_exec=max_exec)
+
+    for _ in range(n_jobs):
+        sch.once(dt.timedelta(), lambda: None)
+
+    results = []
+    for _ in range(len(res_n_exec)):
+        results.append(sch.exec_jobs())
+
+    assert results == res_n_exec

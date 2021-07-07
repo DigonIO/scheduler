@@ -4,7 +4,8 @@
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import datetime as dt
-from threading import RLock
+import threading
+import queue
 from typing import Callable, Optional, Any
 
 import typeguard as tg
@@ -63,6 +64,8 @@ class Scheduler:
         priority function.
     jobs : set[Job]
         A collection of job instances.
+    n_threads : int
+        The number of worker threads. 0 for unlimited, default 1.
     """
 
     def __init__(
@@ -74,16 +77,19 @@ class Scheduler:
             float,
         ] = Prioritization.linear_priority_function,
         jobs: Optional[set[Job]] = None,
+        n_threads: int = 1,
     ):
-        self.__lock = RLock()
+        self.__lock = threading.RLock()
         self.__max_exec = max_exec
         self.__tzinfo = tzinfo
         self.__priority_function = priority_function
+        self.__jobs_lock = threading.RLock()
         self.__jobs: set[Job] = jobs or set()
         for job in self.__jobs:
             if job._tzinfo != self.__tzinfo:
                 raise SchedulerError(TZ_ERROR_MSG)
 
+        self.__n_threads = n_threads
         self.__tz_str = dt.datetime.now(tzinfo).tzname()
 
     def __repr__(self) -> str:
@@ -103,7 +109,7 @@ class Scheduler:
             )
 
     def __headings(self) -> list[str]:
-        with self.__lock:
+        with self.__lock, self.__jobs_lock:
             headings = [
                 f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
                 f"timezone={self.__tz_str}",
@@ -164,34 +170,55 @@ class Scheduler:
         job : Job
             `Job` instance to delete.
         """
-        with self.__lock:
+        with self.__jobs_lock:
             self.__jobs.remove(job)
 
     def delete_all_jobs(self) -> None:
         r"""Delete all `Job`\ s from the `Scheduler`."""
-        with self.__lock:
+        with self.__jobs_lock:
             self.__jobs = set()
 
-    def __exec_job(self, job: Job, ref_dt: dt.datetime) -> None:
-        """
-        Execute a `Job` and handle it's deletion or new scheduling.
+    @staticmethod
+    def __exec_job_worker(que: queue.Queue[Job]):
+        running = True
+        while running:
+            try:
+                job = que.get(block=False)
+            except queue.Empty:
+                running = False
+            else:
+                job._exec()
+                que.task_done()
 
-        Parameters
-        ----------
-        job : Job
-            Instance of a `Job` to execute.
-        ref_dt : datetime:datetime
-            Reference time when the `Job` will be executed.
-        """
-        with self.__lock:
-            job._exec()
-            # has to be calculated before checking the attempts
-            # because the next planned execution has to be evaluated
-            # to compare it against the stop argument
+    def __exec_jobs(self, jobs: list[Job], ref_dt: dt.datetime) -> int:
+        n_jobs = len(jobs)
+
+        if self.__n_threads == 1:
+            for job in jobs:
+                job._exec()
+
+        else:
+            que: queue.Queue[Job] = queue.Queue()
+            for job in jobs:
+                que.put(job)
+
+            workers = []
+            for _ in range(self.__n_threads or n_jobs):
+                worker = threading.Thread(target=self.__exec_job_worker, args=(que,))
+                worker.daemon = True
+                worker.start()
+                workers.append(worker)
+
+            que.join()
+            for worker in workers:
+                worker.join()
+
+        for job in jobs:
             job._calc_next_exec(ref_dt)
-
             if not job.has_attempts_remaining:
                 self.delete_job(job)
+
+        return n_jobs
 
     def exec_jobs(self, force_exec_all: bool = False) -> int:
         r"""
@@ -216,39 +243,32 @@ class Scheduler:
         int
             Number of executed `Job`\ s.
         """
-        with self.__lock:
+        with self.__lock, self.__jobs_lock:
             ref_dt = dt.datetime.now(tz=self.__tzinfo)
 
             if force_exec_all:
-                n_jobs = len(self.__jobs)
-                for job in self.jobs:
-                    self.__exec_job(job, ref_dt)
-                return n_jobs
+                return self.__exec_jobs(list(self.__jobs), ref_dt)
 
-            # get all jobs with overtime in seconds and weight
+            #  collect the current priority for all jobs
             job_priority: dict[Job, float] = {}
             for job in self.__jobs:
                 delta_seconds = job.timedelta(ref_dt).total_seconds()
-                job_priority[job] = -self.__priority_function(
+                job_priority[job] = self.__priority_function(
                     -delta_seconds,
                     job,
                     self.__max_exec,
                     len(self.__jobs),
                 )
-            # sort the overtime jobs depending their priority_function
-            sorted_jobs = sorted(job_priority, key=job_priority.get)  # type: ignore
-
-            # execute the sorted overtime jobs and delete the ones with no attempts left
-            exec_job_count = 0
-            for idx, job in enumerate(sorted_jobs):
-                if (self.__max_exec == 0 or idx < self.__max_exec) and job_priority[
-                    job
-                ] < 0:
-                    self.__exec_job(job, ref_dt)
-                    exec_job_count += 1
-                else:
-                    break
-            return exec_job_count
+            # sort the jobs by priority
+            sorted_jobs = sorted(job_priority, key=job_priority.get, reverse=True)  # type: ignore
+            # filter jobs by max_exec and priority greater zero
+            filtered_jobs = [
+                job
+                for idx, job in enumerate(sorted_jobs)
+                if (self.__max_exec == 0 or idx < self.__max_exec)
+                and job_priority[job] > 0
+            ]
+            return self.__exec_jobs(filtered_jobs, ref_dt)
 
     @property
     def jobs(self) -> set[Job]:

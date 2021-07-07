@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.0
+
++ Added `n_threads` argument to `Scheduler` for threading
+
+### Features
+
++ Threading support
+
 ## 0.5.0
 
 ### API changes
