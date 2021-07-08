@@ -159,7 +159,7 @@ available in :mod:`~scheduler.util` as
         .. warning:: Not suitable for security relevant purposes.
 
         The priority generator will return 1 if the random number
-        is lower then the `Job`'s weight, otherwise it will return 0.
+        is lower then the :class:`~scheduler.job.Job`'s weight, otherwise it will return 0.
         """
         _ = time
         _ = max_exec

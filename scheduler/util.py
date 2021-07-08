@@ -271,7 +271,7 @@ def are_weekday_times_unique(
 
 class AbstractJob(ABC):
     """
-    Abstract definition of the `Job` class.
+    Abstract definition of the :class:`~scheduler.job.Job` class.
 
     Notes
     -----
@@ -298,7 +298,7 @@ class Prioritization:
         r"""
         Interprete the :class:`~scheduler.job.Job`'s weight as its priority.
 
-        Return the :class:`~scheduler.job.Job`'s weight for overdue `Job`\ s, otherwise
+        Return the :class:`~scheduler.job.Job`'s weight for overdue :class:`~scheduler.job.Job`\ s, otherwise
         return zero:
 
         .. math::
@@ -384,7 +384,7 @@ class Prioritization:
         .. warning:: Not suitable for security relevant purposes.
 
         The priority generator will return 1 if the random number
-        is lower then the `Job`'s weight, otherwise it will return 0.
+        is lower then the :class:`~scheduler.job.Job`'s weight, otherwise it will return 0.
         """
         _ = time
         _ = max_exec

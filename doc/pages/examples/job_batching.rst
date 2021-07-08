@@ -12,7 +12,7 @@ passing of the `timing` argument via a `list` for the `scheduling` functions:
 :func:`~scheduler.core.Scheduler.weekly`
 
 
-For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one `Job` as follows:
+For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one :class:`~scheduler.job.Job` as follows:
 
 .. code-block:: pycon
 
@@ -29,7 +29,7 @@ For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one `
     >>> sch.daily(timing=timings, handle=foo)  # doctest:+ELLIPSIS
     scheduler.Job(...DAILY..., [...time(12, 0), ...time(18, 0), ...time(0, 0)]...)
 
-In consequence, this `Scheduler` instance only contains a single `Job` instance of the `DAILY` type:
+In consequence, this `Scheduler` instance only contains a single :class:`~scheduler.job.Job` instance of the `DAILY` type:
 
 .. code-block:: pycon
 
@@ -43,7 +43,7 @@ In consequence, this `Scheduler` instance only contains a single `Job` instance 
 
 In the given example, the job will be scheduled three times a day. Note that each call to
 :meth:`~scheduler.core.Scheduler.exec_jobs` will only call the function handle
-of the `Job` once, even if several timers are overdue.
+of the :class:`~scheduler.job.Job` once, even if several timers are overdue.
 
 .. warning:: When bundling multiple times in a single :class:`~scheduler.job.Job`, they
     are required to be distinct within the given context. Note that mixing of timezones

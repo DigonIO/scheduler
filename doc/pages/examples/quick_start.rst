@@ -110,7 +110,7 @@ overdue job exactly once.
 
     >>> sch.exec_jobs()  # doctest:+SKIP
 
-For cyclic execution of `Job`\ s, the :meth:`~scheduler.core.Scheduler.exec_jobs` function should
+For cyclic execution of :class:`~scheduler.job.Job`\ s, the :meth:`~scheduler.core.Scheduler.exec_jobs` function should
 be embedded in a loop of the host program:
 
 .. code-block:: pycon

@@ -1,5 +1,5 @@
 """
-`Scheduler` implementation for `Job` based callback function execution.
+`Scheduler` implementation for :class:`~scheduler.job.Job` based callback function execution.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
@@ -56,10 +56,10 @@ class Scheduler:
     tzinfo : datetime.timezone
         Set the time zone of the `Scheduler`.
     max_exec : int
-        Limits the number of overdue `Job`\ s that can be executed
+        Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
         by calling function `Scheduler.exec_jobs()`.
     priority_function : Callable[[float, Job, int, int], float]
-        A function handle to compute the priority of a `Job` depending
+        A function handle to compute the priority of a :class:`~scheduler.job.Job` depending
         on the time it is overdue and its respective weight. Defaults to a linear
         priority function.
     jobs : set[Job]
@@ -163,18 +163,18 @@ class Scheduler:
 
     def delete_job(self, job: Job) -> None:
         """
-        Delete a `Job` from the `Scheduler`.
+        Delete a :class:`~scheduler.job.Job` from the `Scheduler`.
 
         Parameters
         ----------
         job : Job
-            `Job` instance to delete.
+            :class:`~scheduler.job.Job` instance to delete.
         """
         with self.__jobs_lock:
             self.__jobs.remove(job)
 
     def delete_all_jobs(self) -> None:
-        r"""Delete all `Job`\ s from the `Scheduler`."""
+        r"""Delete all :class:`~scheduler.job.Job`\ s from the `Scheduler`."""
         with self.__jobs_lock:
             self.__jobs = set()
 
@@ -222,26 +222,26 @@ class Scheduler:
 
     def exec_jobs(self, force_exec_all: bool = False) -> int:
         r"""
-        Execute scheduled `Job`\ s.
+        Execute scheduled :class:`~scheduler.job.Job`\ s.
 
-        By default executes the `Job`\ s that are overdue.
+        By default executes the :class:`~scheduler.job.Job`\ s that are overdue.
 
-        `Job`\ s are executed in order of their priority :ref:`examples.weights`.
+        :class:`~scheduler.job.Job`\ s are executed in order of their priority :ref:`examples.weights`.
         If the `Scheduler` instance has a limit on the job execution counts
         per call of :func:`~scheduler.core.Scheduler.exec_jobs`, via the `max_exec`
-        argument, `Job`\ s of lower priority might not get executed when competing `Job`\ s
+        argument, :class:`~scheduler.job.Job`\ s of lower priority might not get executed when competing :class:`~scheduler.job.Job`\ s
         are overdue.
 
         Parameters
         ----------
         force_exec_all : bool
-            Ignore the both - the status of the `Job` timers as well as the execution limit
+            Ignore the both - the status of the :class:`~scheduler.job.Job` timers as well as the execution limit
             of the `Scheduler`
 
         Returns
         -------
         int
-            Number of executed `Job`\ s.
+            Number of executed :class:`~scheduler.job.Job`\ s.
         """
         with self.__lock, self.__jobs_lock:
             ref_dt = dt.datetime.now(tz=self.__tzinfo)
@@ -273,12 +273,12 @@ class Scheduler:
     @property
     def jobs(self) -> set[Job]:
         r"""
-        Get the set of all `Job`\ s.
+        Get the set of all :class:`~scheduler.job.Job`\ s.
 
         Returns
         -------
         set[Job]
-            Currently scheduled `Job`\ s.
+            Currently scheduled :class:`~scheduler.job.Job`\ s.
         """
         with self.__lock:
             return self.__jobs.copy()
@@ -290,7 +290,7 @@ class Scheduler:
         handle: Callable[..., None],
         **kwargs,
     ) -> Job:
-        """Encapsulate the `Job` and add the `Scheduler` timezone."""
+        """Encapsulate the :class:`~scheduler.job.Job` and add the `Scheduler` timezone."""
         job = Job(
             job_type=job_type,
             timing=timing,
@@ -305,10 +305,10 @@ class Scheduler:
 
     def cyclic(self, timing: TimingTypeCyclic, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a cyclic `Job`.
+        Schedule a cyclic :class:`~scheduler.job.Job`.
 
         Use a `datetime.timedelta` object or a `list` of `datetime.timedelta` objects
-        to schedule a cyclic `Job`.
+        to schedule a cyclic :class:`~scheduler.job.Job`.
 
         Parameters
         ----------
@@ -320,7 +320,7 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled `Job`.
+            Instance of a scheduled :class:`~scheduler.job.Job`.
         """
         try:
             tg.check_type("timing", timing, TimingTypeCyclic)
@@ -332,10 +332,10 @@ class Scheduler:
 
     def minutely(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a minutely `Job`.
+        Schedule a minutely :class:`~scheduler.job.Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
-        to schedule a `Job` every minute.
+        to schedule a :class:`~scheduler.job.Job` every minute.
 
         Notes
         -----
@@ -352,7 +352,7 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled `Job`.
+            Instance of a scheduled :class:`~scheduler.job.Job`.
         """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
@@ -364,10 +364,10 @@ class Scheduler:
 
     def hourly(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a hourly `Job`.
+        Schedule a hourly :class:`~scheduler.job.Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
-        to schedule a `Job` every hour.
+        to schedule a :class:`~scheduler.job.Job` every hour.
 
         Notes
         -----
@@ -384,7 +384,7 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled `Job`.
+            Instance of a scheduled :class:`~scheduler.job.Job`.
         """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
@@ -396,10 +396,10 @@ class Scheduler:
 
     def daily(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a daily `Job`.
+        Schedule a daily :class:`~scheduler.job.Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
-        to schedule a `Job` every day.
+        to schedule a :class:`~scheduler.job.Job` every day.
 
         Parameters
         ----------
@@ -411,7 +411,7 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled `Job`.
+            Instance of a scheduled :class:`~scheduler.job.Job`.
         """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
@@ -423,10 +423,10 @@ class Scheduler:
 
     def weekly(self, timing: TimingTypeWeekly, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a weekly `Job`.
+        Schedule a weekly :class:`~scheduler.job.Job`.
 
         Use a `tuple` of a `Weekday` and a `datetime.time` object to define a weekly recuring
-        `Job`. Combine multiple desired `tuples` in a `list`. If the planed execution time
+        :class:`~scheduler.job.Job`. Combine multiple desired `tuples` in a `list`. If the planed execution time
         is `00:00` the `datetime.time` object can be ingored, just pass a `Weekday` without
         a `tuple`.
 
@@ -440,7 +440,7 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled `Job`.
+            Instance of a scheduled :class:`~scheduler.job.Job`.
         """
         try:
             tg.check_type("timing", timing, TimingTypeWeekly)
@@ -458,7 +458,7 @@ class Scheduler:
         weight: float = 1,
     ):
         r"""
-        Schedule a oneshot `Job`.
+        Schedule a oneshot :class:`~scheduler.job.Job`.
 
         Notes
         -----
@@ -474,12 +474,12 @@ class Scheduler:
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a Job.
         weight : float
-            Relative weight against other `Job`\ s.
+            Relative weight against other :class:`~scheduler.job.Job`\ s.
 
         Returns
         -------
         Job
-            Instance of a scheduled `Job`.
+            Instance of a scheduled :class:`~scheduler.job.Job`.
         """
         try:
             tg.check_type("timing", timing, TimingTypeOnce)

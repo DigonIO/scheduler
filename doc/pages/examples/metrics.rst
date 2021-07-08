@@ -4,7 +4,7 @@ Metrics
 The :class:`~scheduler.core.Scheduler` and :class:`~scheduler.job.Job` classes
 provide access to various metrics that can be of interest for the using program.
 
-Starting with a `Scheduler` and two `Job`\ s:
+Starting with a `Scheduler` and two :class:`~scheduler.job.Job`\ s:
 
 .. code-block:: pycon
 
@@ -24,15 +24,15 @@ Starting with a `Scheduler` and two `Job`\ s:
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     foo()            2021-06-21 04:53:34   0:09:59           0/1      1
 
-`Scheduler` provides access to the set of `Job`\ s stored with the `jobs`
-We can access the `Job`\ s of the scheduler via the :attr:`~scheduler.core.Scheduler.jobs` property.
+`Scheduler` provides access to the set of :class:`~scheduler.job.Job`\ s stored with the `jobs`
+We can access the :class:`~scheduler.job.Job`\ s of the scheduler via the :attr:`~scheduler.core.Scheduler.jobs` property.
 
 .. code-block:: pycon
 
     >>> sch.jobs == {job}
     True
 
-For the `Job` with the following string representation
+For the :class:`~scheduler.job.Job` with the following string representation
 
 .. code-block:: pycon
 
@@ -48,7 +48,7 @@ informations can directly be accessed and might look like similar to what is lis
     job.datetime = 2021-06-21 04:53:34.879346
     job.timedelta() = 0:09:59.999948
 
-These metrics can change during the `Job`\ s lifetime. We can exemplify this
+These metrics can change during the :class:`~scheduler.job.Job`\ s lifetime. We can exemplify this
 for the :attr:`~scheduler.job.Job.attempts` attribute:
 
 .. code-block:: pycon

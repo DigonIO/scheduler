@@ -43,7 +43,7 @@ Parallel execution
 
 The number of worker threads for the :class:`~scheduler.core.Scheduler` can be defined
 with the `n_threads` argument. For ``n_threads = 0`` the :class:`~scheduler.core.Scheduler`
-will spawn a seperate worker thread for every pending `Job`.
+will spawn a seperate worker thread for every pending :class:`~scheduler.job.Job`.
 
 .. code-block:: pycon
 
@@ -67,5 +67,5 @@ will spawn a seperate worker thread for every pending `Job`.
     >>> 0.1 < total_seconds and total_seconds < 0.11
     True
 
-.. warning:: When running `Job`\ s in parallel, be sure that possible side effects
+.. warning:: When running :class:`~scheduler.job.Job`\ s in parallel, be sure that possible side effects
     of the scheduled functions are implemented in a thread safe manner.

@@ -13,8 +13,8 @@ for all scheduling functions of :class:`~scheduler.core.Scheduler`:
 :func:`~scheduler.core.Scheduler.weekly`
 
 In the following example we schedule two :class:`~scheduler.job.Job`\ s via
-:func:`~scheduler.core.Scheduler.once`. The first `Job` exhibits the function's default behaviour.
-Whereas the second `Job` prints the modified message defined in the `params` argument.
+:func:`~scheduler.core.Scheduler.once`. The first :class:`~scheduler.job.Job` exhibits the function's default behaviour.
+Whereas the second :class:`~scheduler.job.Job` prints the modified message defined in the `params` argument.
 
 .. code-block:: pycon
 

@@ -31,7 +31,7 @@ Setup a couple of :class:`~scheduler.job.Job`\ s
     CYCLIC   foo()            2021-06-20 05:22:31   0:00:02         0/inf      1
     <BLANKLINE>
 
-Remove the specified `Job` `j2` from the :class:`~scheduler.core.Scheduler` via
+Remove the specified :class:`~scheduler.job.Job` `j2` from the :class:`~scheduler.core.Scheduler` via
 the :meth:`~scheduler.core.Scheduler.delete_job` method:
 
 .. code-block:: pycon
