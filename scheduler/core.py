@@ -49,12 +49,12 @@ class Scheduler:
     Notes
     -----
     Due to the support of `datetime` objects, `scheduler` is able to work
-    with time zones.W
+    with timezones.
 
     Parameters
     ----------
     tzinfo : datetime.timezone
-        Set the time zone of the :class:`~scheduler.core.Scheduler`.
+        Set the timezone of the :class:`~scheduler.core.Scheduler`.
     max_exec : int
         Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
         by calling function `Scheduler.exec_jobs()`.

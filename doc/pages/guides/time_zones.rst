@@ -12,9 +12,9 @@ The `scheduler` library supports timezones via the standard `datetime` library.
     `datetime` or :class:`~scheduler.job.Job` objects with timezones.
 
 For demonstration purposes, we will create a :class:`~scheduler.core.Scheduler` with
-:class:`~scheduler.job.Job`\ s defined in different time zones of the world.
+:class:`~scheduler.job.Job`\ s defined in different timezones of the world.
 
-First create the time zones of a few known cities and a useful function to schedule.
+First create the timezones of a few known cities and a useful function to schedule.
 
 .. code-block:: pycon
 
@@ -27,7 +27,7 @@ First create the time zones of a few known cities and a useful function to sched
     >>> tz_wuppertal = dt.timezone(dt.timedelta(hours=2))
     >>> tz_sydney = dt.timezone(dt.timedelta(hours=10))
 
-Next initialize a :class:`~scheduler.core.Scheduler` with UTC as its reference time zone:
+Next initialize a :class:`~scheduler.core.Scheduler` with UTC as its reference timezone:
 
 .. code-block:: pycon
 

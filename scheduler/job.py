@@ -221,7 +221,7 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
         raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
 
-class Job(AbstractJob):  # in job
+class Job(AbstractJob):
     r"""
     :class:`~scheduler.job.Job` class bundling time and callback function methods.
 
@@ -251,7 +251,7 @@ class Job(AbstractJob):  # in job
         If `True` a :class:`~scheduler.job.Job` will only schedule it's newest planned execution and
         drop older ones.
     tzinfo : datetime.timezone
-        Set the time zone of the :class:`~scheduler.core.Scheduler` the :class:`~scheduler.job.Job` is scheduled in.
+        Set the timezone of the :class:`~scheduler.core.Scheduler` the :class:`~scheduler.job.Job` is scheduled in.
 
     Returns
     -------
