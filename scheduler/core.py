@@ -277,7 +277,7 @@ class Scheduler:
 
         Returns
         -------
-        set[Job]W
+        set[Job]
             Currently scheduled :class:`~scheduler.job.Job`\ s.
         """
         with self.__lock:
@@ -339,8 +339,8 @@ class Scheduler:
 
         Notes
         -----
-        If the given `datetime.time` object has entries with a greater magnitude
-        than seconds, e.g. minutes, this entries will be ignored.
+        If given a `datetime.time` object with a non zero hour or minute property, these
+        informations will be ignored.
 
         Parameters
         ----------
@@ -371,8 +371,8 @@ class Scheduler:
 
         Notes
         -----
-        If the given `datetime.time` object has entries of type hour,
-        this entries will be ignored.
+        If given a `datetime.time` object with a non zero hour property, this information
+        will be ignored.
 
         Parameters
         ----------
@@ -459,11 +459,6 @@ class Scheduler:
     ):
         r"""
         Schedule a oneshot :class:`~scheduler.job.Job`.
-
-        Notes
-        -----
-        Usefull if a specific `datetime.datetime` for the planed execution
-        is known.
 
         Parameters
         ----------
