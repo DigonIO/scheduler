@@ -288,45 +288,22 @@ class Scheduler:
         job_type: JobType,
         timing: TimingJobUnion,
         handle: Callable[..., None],
-        params: Optional[dict[str, Any]],
-        max_attempts: int,
-        weight: float,
-        delay: bool,
-        start: Optional[dt.datetime],
-        stop: Optional[dt.datetime],
-        skip_missing: bool,
+        **kwargs,
     ) -> Job:
         """Encapsulate the `Job` and add the `Scheduler` timezone."""
         job = Job(
             job_type=job_type,
             timing=timing,
             handle=handle,
-            params=params,
-            max_attempts=max_attempts,
-            weight=weight,
-            delay=delay,
-            start=start,
-            stop=stop,
-            skip_missing=skip_missing,
             tzinfo=self.__tzinfo,
+            **kwargs,
         )
         if job.has_attempts_remaining:
             with self.__lock:
                 self.__jobs.add(job)
         return job
 
-    def cyclic(
-        self,
-        timing: TimingTypeCyclic,
-        handle: Callable[..., None],
-        params: Optional[dict[str, Any]] = None,
-        max_attempts: int = 0,
-        weight: float = 1,
-        delay: bool = True,
-        start: Optional[dt.datetime] = None,
-        stop: Optional[dt.datetime] = None,
-        skip_missing: bool = False,
-    ):
+    def cyclic(self, timing: TimingTypeCyclic, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a cyclic `Job`.
 
@@ -339,23 +316,6 @@ class Scheduler:
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
-        params : dict[str, Any]
-            The payload arguments to pass to the function handle within a Job.
-        weight : float
-            Relative weight against other `Job`\ s.
-        delay : bool
-            If `False` the `Job` will executed instantly or at a given offset.
-        start : Optional[datetime.datetime]
-            Set the reference `datetime.datetime` stamp the `Job` will be
-            scheduled against. Default value is `datetime.datetime.now()`.
-        end : Optional[datetime.datetime]
-            Define a point in time after which a `Job` will be stopped and deleted.
-        max_attempts : int
-            Number of times the `Job` will be executed. 0 <=> inf
-            A `Job` with no free attempt will be deleted.
-        skip_missing : bool
-            If `True` a `Job` will only do it's newest planned execution and
-            drop older ones.
 
         Returns
         -------
@@ -367,30 +327,10 @@ class Scheduler:
         except TypeError as err:
             raise SchedulerError(CYCLIC_TYPE_ERROR_MSG) from err
         return self.__schedule(
-            job_type=JobType.CYCLIC,
-            timing=timing,
-            handle=handle,
-            params=params,
-            max_attempts=max_attempts,
-            weight=weight,
-            delay=delay,
-            start=start,
-            stop=stop,
-            skip_missing=skip_missing,
+            job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs
         )
 
-    def minutely(
-        self,
-        timing: TimingTypeDaily,
-        handle: Callable[..., None],
-        params: Optional[dict[str, Any]] = None,
-        max_attempts: int = 0,
-        weight: float = 1,
-        delay: bool = True,
-        start: Optional[dt.datetime] = None,
-        stop: Optional[dt.datetime] = None,
-        skip_missing: bool = False,
-    ):
+    def minutely(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a minutely `Job`.
 
@@ -408,23 +348,6 @@ class Scheduler:
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
-        params : dict[str, Any]
-            The payload arguments to pass to the function handle within a Job.
-        weight : float
-            Relative weight against other `Job`\ s.
-        delay : bool
-            If `False` the `Job` will executed instantly or at a given offset.
-        start : Optional[datetime.datetime]
-            Set the reference `datetime.datetime` stamp the `Job` will be
-            scheduled against. Default value is `datetime.datetime.now()`.
-        end : Optional[datetime.datetime]
-            Define a point in time after which a `Job` will be stopped and deleted.
-        max_attempts : int
-            Number of times the `Job` will be executed. 0 <=> inf
-            A `Job` with no free attempt will be deleted.
-        skip_missing : bool
-            If `True` a `Job` will only do it's newest planned execution and
-            drop older ones.
 
         Returns
         -------
@@ -436,30 +359,10 @@ class Scheduler:
         except TypeError as err:
             raise SchedulerError(MINUTELY_TYPE_ERROR_MSG) from err
         return self.__schedule(
-            job_type=JobType.MINUTELY,
-            timing=timing,
-            handle=handle,
-            params=params,
-            max_attempts=max_attempts,
-            weight=weight,
-            delay=delay,
-            start=start,
-            stop=stop,
-            skip_missing=skip_missing,
+            job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs
         )
 
-    def hourly(
-        self,
-        timing: TimingTypeDaily,
-        handle: Callable[..., None],
-        params: Optional[dict[str, Any]] = None,
-        max_attempts: int = 0,
-        weight: float = 1,
-        delay: bool = True,
-        start: Optional[dt.datetime] = None,
-        stop: Optional[dt.datetime] = None,
-        skip_missing: bool = False,
-    ):
+    def hourly(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a hourly `Job`.
 
@@ -477,23 +380,6 @@ class Scheduler:
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
-        params : dict[str, Any]
-            The payload arguments to pass to the function handle within a Job.
-        weight : float
-            Relative weight against other `Job`\ s.
-        delay : bool
-            If `False` the `Job` will executed instantly or at a given offset.
-        start : Optional[datetime.datetime]
-            Set the reference `datetime.datetime` stamp the `Job` will be
-            scheduled against. Default value is `datetime.datetime.now()`.
-        end : Optional[datetime.datetime]
-            Define a point in time after which a `Job` will be stopped and deleted.
-        max_attempts : int
-            Number of times the `Job` will be executed. 0 <=> inf
-            A `Job` with no free attempt will be deleted.
-        skip_missing : bool
-            If `True` a `Job` will only do it's newest planned execution and
-            drop older ones.
 
         Returns
         -------
@@ -505,30 +391,10 @@ class Scheduler:
         except TypeError as err:
             raise SchedulerError(HOURLY_TYPE_ERROR_MSG) from err
         return self.__schedule(
-            job_type=JobType.HOURLY,
-            timing=timing,
-            handle=handle,
-            params=params,
-            max_attempts=max_attempts,
-            weight=weight,
-            delay=delay,
-            start=start,
-            stop=stop,
-            skip_missing=skip_missing,
+            job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs
         )
 
-    def daily(
-        self,
-        timing: TimingTypeDaily,
-        handle: Callable[..., None],
-        params: Optional[dict[str, Any]] = None,
-        max_attempts: int = 0,
-        weight: float = 1,
-        delay: bool = True,
-        start: Optional[dt.datetime] = None,
-        stop: Optional[dt.datetime] = None,
-        skip_missing: bool = False,
-    ):
+    def daily(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a daily `Job`.
 
@@ -541,23 +407,6 @@ class Scheduler:
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
-        params : dict[str, Any]
-            The payload arguments to pass to the function handle within a Job.
-        weight : float
-            Relative weight against other `Job`\ s.
-        delay : bool
-            If `False` the `Job` will executed instantly or at a given offset.
-        start : Optional[datetime.datetime]
-            Set the reference `datetime.datetime` stamp the `Job` will be
-            scheduled against. Default value is `datetime.datetime.now()`.
-        end : Optional[datetime.datetime]
-            Define a point in time after which a `Job` will be stopped and deleted.
-        max_attempts : int
-            Number of times the `Job` will be executed. 0 <=> inf
-            A `Job` with no free attempt will be deleted.
-        skip_missing : bool
-            If `True` a `Job` will only do it's newest planned execution and
-            drop older ones.
 
         Returns
         -------
@@ -569,30 +418,10 @@ class Scheduler:
         except TypeError as err:
             raise SchedulerError(DAILY_TYPE_ERROR_MSG) from err
         return self.__schedule(
-            job_type=JobType.DAILY,
-            timing=timing,
-            handle=handle,
-            params=params,
-            max_attempts=max_attempts,
-            weight=weight,
-            delay=delay,
-            start=start,
-            stop=stop,
-            skip_missing=skip_missing,
+            job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs
         )
 
-    def weekly(
-        self,
-        timing: TimingTypeWeekly,
-        handle: Callable[..., None],
-        params: Optional[dict[str, Any]] = None,
-        max_attempts: int = 0,
-        weight: float = 1,
-        delay: bool = True,
-        start: Optional[dt.datetime] = None,
-        stop: Optional[dt.datetime] = None,
-        skip_missing: bool = False,
-    ):
+    def weekly(self, timing: TimingTypeWeekly, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a weekly `Job`.
 
@@ -607,23 +436,6 @@ class Scheduler:
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
-        params : dict[str, Any]
-            The payload arguments to pass to the function handle within a Job.
-        weight : float
-            Relative weight against other `Job`\ s.
-        delay : bool
-            If `False` the `Job` will executed instantly or at a given offset.
-        start : Optional[datetime.datetime]
-            Set the reference `datetime.datetime` stamp the `Job` will be
-            scheduled against. Default value is `datetime.datetime.now()`.
-        end : Optional[datetime.datetime]
-            Define a point in time after which a `Job` will be stopped and deleted.
-        max_attempts : int
-            Number of times the `Job` will be executed. 0 <=> inf
-            A `Job` with no free attempt will be deleted.
-        skip_missing : bool
-            If `True` a `Job` will only do it's newest planned execution and
-            drop older ones.
 
         Returns
         -------
@@ -635,16 +447,7 @@ class Scheduler:
         except TypeError as err:
             raise SchedulerError(WEEKLY_TYPE_ERROR_MSG) from err
         return self.__schedule(
-            job_type=JobType.WEEKLY,
-            timing=timing,
-            handle=handle,
-            params=params,
-            max_attempts=max_attempts,
-            weight=weight,
-            delay=delay,
-            start=start,
-            stop=stop,
-            skip_missing=skip_missing,
+            job_type=JobType.WEEKLY, timing=timing, handle=handle, **kwargs
         )
 
     def once(
@@ -665,7 +468,7 @@ class Scheduler:
         Parameters
         ----------
         timing : TimingTypeOnce
-            Desired execution time(s).
+            Desired execution time.
         handle : Callable[..., None]
             Handle to a callback function.
         params : dict[str, Any]
