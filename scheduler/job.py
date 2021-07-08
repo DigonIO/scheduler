@@ -97,7 +97,7 @@ JOB_NEXT_DAYLIKE_MAPPING = {
 
 class JobTimer:
     """
-    The class provides the internal `datetime.datetime` calculations for :class:`~scheduler.job.Job`.
+    The class provides the internal `datetime.datetime` calculations for a `Job`.
 
     Parameters
     ----------
@@ -108,8 +108,8 @@ class JobTimer:
     start : datetime.datetime
         Timestamp reference from which future executions will be calculated.
     skip_missing : bool
-        If `True` a :class:`~scheduler.job.Job` will only schedule it's newest planned execution and
-        drop older ones.
+        If ``True`` a :class:`~scheduler.job.Job` will only schedule it's newest planned
+        execution and drop older ones.
     """
 
     def __init__(
@@ -183,7 +183,7 @@ class JobTimer:
 
     def timedelta(self, dt_stamp: dt.datetime) -> dt.timedelta:
         """
-        Get the `timedelta` until the execution of this :class:`~scheduler.job.Job`.
+        Get the `datetime.timedelta` until the execution of this `Job`.
 
         Parameters
         ----------
@@ -193,20 +193,20 @@ class JobTimer:
 
         Returns
         -------
-        timedelta
-            `timedelta` to the execution.
+        datetime.timedelta
+            `datetime.timedelta` to the execution.
         """
         return self.__next_exec - dt_stamp
 
 
 def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
     """
-    Determine if a given `timing` fulfill the `Type` for a specific `JobType`.
+    Determine if the `JobType` is fulfilled by the type of the specified `timing`.
 
     Parameters
     ----------
     job_type : JobType
-        `JobType` to test agains.
+        :class:`~scheduler.job.JobType` to test agains.
     timing : TimingJobUnion
         The `timing` object to be tested.
 
@@ -223,7 +223,7 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
 
 class Job(AbstractJob):
     r"""
-    :class:`~scheduler.job.Job` class bundling time and callback function methods.
+    `Job` class bundling time and callback function methods.
 
     Parameters
     ----------
@@ -234,24 +234,28 @@ class Job(AbstractJob):
     handle : Callable[..., None]
         Handle to a callback function.
     params : dict[str, Any]
-        The payload arguments to pass to the function handle within a Job.
+        The payload arguments to pass to the function handle within a
+        :class:`~scheduler.job.Job`.
     weight : float
-        Relative weight against other :class:`~scheduler.job.Job`\ s.
+        Relative `weight` against other :class:`~scheduler.job.Job`\ s.
     delay : bool
-        If `False` the :class:`~scheduler.job.Job` will executed instantly or at a given offset.
+        If ``False`` the :class:`~scheduler.job.Job` will executed instantly or at
+        a given offset.
     start : Optional[datetime.datetime]
-        Set the reference `datetime.datetime` stamp the :class:`~scheduler.job.Job` will be
-        scheduled against. Default value is `datetime.datetime.now()`.
+        Set the reference `datetime.datetime` stamp the :class:`~scheduler.job.Job`
+        will be scheduled against. Default value is `datetime.datetime.now()`.
     stop : Optional[datetime.datetime]
-        Define a point in time after which a :class:`~scheduler.job.Job` will be stopped and deleted.
+        Define a point in time after which a :class:`~scheduler.job.Job` will be stopped
+        and deleted.
     max_attempts : int
-        Number of times the :class:`~scheduler.job.Job` will be executed. 0 <=> inf
+        Number of times the :class:`~scheduler.job.Job` will be executed. ``0 <=> inf``
         A :class:`~scheduler.job.Job` with no free attempt will be deleted.
     skip_missing : bool
-        If `True` a :class:`~scheduler.job.Job` will only schedule it's newest planned execution and
-        drop older ones.
+        If ``True`` a :class:`~scheduler.job.Job` will only schedule it's newest planned
+        execution and drop older ones.
     tzinfo : datetime.timezone
-        Set the timezone of the :class:`~scheduler.core.Scheduler` the :class:`~scheduler.job.Job` is scheduled in.
+        Set the timezone of the :class:`~scheduler.core.Scheduler` the :class:`~scheduler.job.Job`
+        is scheduled in.
 
     Returns
     -------
@@ -496,12 +500,13 @@ class Job(AbstractJob):
 
     def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
         """
-        Calculate the next estimated execution `datetime.datetime` of the :class:`~scheduler.job.Job`.
+        Calculate the next estimated execution `datetime.datetime` of the `Job`.
 
         Parameters
         ----------
         ref_dt : datetime.datetime
-            Reference time stamp to which the :class:`~scheduler.job.Job` caluclates it's next execution.
+            Reference time stamp to which the :class:`~scheduler.job.Job` calculates
+            it's next execution.
         """
         with self.__lock:
             if self.__skip_missing:
@@ -530,11 +535,11 @@ class Job(AbstractJob):
     @property
     def has_attempts_remaining(self) -> bool:
         """
-        Check if a :class:`~scheduler.job.Job` has remaining attempts.
+        Check if a `Job` has remaining attempts.
 
         This function will return True if the :class:`~scheduler.job.Job` has open
-        execution counts and the stop argument is not in
-        the past relative to the next planed execution.
+        execution counts and the stop argument is not in the past relative to the
+        next planed execution.
 
         Returns
         -------
@@ -551,7 +556,7 @@ class Job(AbstractJob):
     @property
     def attempts(self) -> int:
         """
-        Get the number of executions for a :class:`~scheduler.job.Job`.
+        Get the number of executions for a `Job`.
 
         Returns
         -------
@@ -563,7 +568,7 @@ class Job(AbstractJob):
     @property
     def max_attempts(self) -> int:
         """
-        Get the execution limit for a :class:`~scheduler.job.Job`.
+        Get the execution limit for a `Job`.
 
         Returns
         -------
@@ -575,24 +580,24 @@ class Job(AbstractJob):
     @property
     def type(self) -> JobType:
         """
-        Return the `JobType` of the :class:`~scheduler.job.Job` instance.
+        Return the `JobType` of the `Job` instance.
 
         Returns
         -------
         JobType
-            `JobType` of the :class:`~scheduler.job.Job`.
+            :class:`~scheduler.job.JobType` of the :class:`~scheduler.job.Job`.
         """
         return self.__type
 
     @property
     def weight(self) -> float:
         """
-        Return the weight of the :class:`~scheduler.job.Job` instance.
+        Return the weight of the `Job` instance.
 
         Returns
         -------
         float
-            Job weight.
+            :class:`~scheduler.job.Job` `weight`.
         """
         return self.__weight
 
@@ -613,18 +618,17 @@ class Job(AbstractJob):
 
     def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
         """
-        Get the `timedelta` until the next execution of this :class:`~scheduler.job.Job`.
+        Get the `datetime.timedelta` until the next execution of this `Job`.
 
         Parameters
         ----------
         dt_stamp : Optional[datetime.datetime]
-            Time to be compared with the planned execution time
-            to determine the time difference.
+            Time to be compared with the planned execution time to determine the time difference.
 
         Returns
         -------
         timedelta
-            `timedelta` to the next execution.
+            `datetime.timedelta` to the next execution.
         """
         with self.__lock:
             if dt_stamp is None:
@@ -636,7 +640,7 @@ class Job(AbstractJob):
     @property
     def _tzinfo(self) -> Optional[dt.timezone]:
         """
-        Get the timezone of the :class:`~scheduler.core.Scheduler` in which the :class:`~scheduler.job.Job` is living.
+        Get the timezone of the `Scheduler` in which the `Job` is living.
 
         Returns
         -------
@@ -648,7 +652,7 @@ class Job(AbstractJob):
     @property
     def tzinfo(self) -> Optional[dt.tzinfo]:
         r"""
-        Get the timezone of the :class:`~scheduler.job.Job`\ s next execution.
+        Get the timezone of the `Job`'s next execution.
 
         Returns
         -------
@@ -664,7 +668,7 @@ class Job(AbstractJob):
 
         Returns
         -------
-        Optional[dt.datetime]
+        Optional[datetime.datetime]
             The start datetime stamp.
         """
         return self.__start
@@ -672,11 +676,11 @@ class Job(AbstractJob):
     @property
     def stop(self) -> Optional[dt.datetime]:
         """
-        Get the timestamp after which no more executions of the :class:`~scheduler.job.Job` should be scheduled.
+        Get the timestamp after which no more executions of the `Job` should be scheduled.
 
         Returns
         -------
-        Optional[dt.datetime]
+        Optional[datetime.datetime]
             The stop datetime stamp.
         """
         return self.__stop

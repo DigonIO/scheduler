@@ -8,9 +8,13 @@ passing of the `timing` argument via a `list` for the `scheduling` functions:
 
 :func:`~scheduler.core.Scheduler.minutely`,
 :func:`~scheduler.core.Scheduler.hourly`,
-:func:`~scheduler.core.Scheduler.daily`,
-:func:`~scheduler.core.Scheduler.weekly`
+:func:`~scheduler.core.Scheduler.daily` and
+:func:`~scheduler.core.Scheduler.weekly`.
 
+.. warning:: When bundling multiple times in a single :class:`~scheduler.job.Job`, they
+    are required to be distinct within the given context. Note that mixing of timezones
+    can lead to indistinguishable times. If indistinguishable times are used, a
+    :exc:`~scheduler.util.SchedulerError` will be raised.
 
 For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one :class:`~scheduler.job.Job` as follows:
 
@@ -25,9 +29,9 @@ For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one :
 
     >>> sch = Scheduler()
 
-    >>> timings = [dt.time(hour=12), dt.time(hour=18), dt.time(hour=0)]
+    >>> timings = [dt.time(hour=0), dt.time(hour=12), dt.time(hour=18)]
     >>> sch.daily(timing=timings, handle=foo)  # doctest:+ELLIPSIS
-    scheduler.Job(...DAILY..., [...time(12, 0), ...time(18, 0), ...time(0, 0)]...)
+    scheduler.Job(...DAILY..., [...time(0, 0), ...time(12, 0), ...time(18, 0)]...)
 
 In consequence, this :class:`~scheduler.core.Scheduler` instance only contains a single :class:`~scheduler.job.Job` instance of the `DAILY` type:
 
@@ -44,8 +48,3 @@ In consequence, this :class:`~scheduler.core.Scheduler` instance only contains a
 In the given example, the job will be scheduled three times a day. Note that each call to
 :meth:`~scheduler.core.Scheduler.exec_jobs` will only call the function handle
 of the :class:`~scheduler.job.Job` once, even if several timers are overdue.
-
-.. warning:: When bundling multiple times in a single :class:`~scheduler.job.Job`, they
-    are required to be distinct within the given context. Note that mixing of timezones
-    can lead to indistinguishable times. If indistinguishable times are used, a
-    :exc:`~scheduler.util.SchedulerError` will be raised.

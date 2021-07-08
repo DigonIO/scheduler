@@ -1,5 +1,5 @@
-Time Zones
-==========
+Timezones
+=========
 
 The `scheduler` library supports timezones via the standard `datetime` library.
 

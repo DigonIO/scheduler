@@ -15,7 +15,7 @@ TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
 
 
 class SchedulerError(Exception):
-    """Generic :class:`~scheduler.core.Scheduler` exception implementation."""
+    """Generic Scheduler exception."""
 
 
 class Weekday(Enum):
@@ -24,7 +24,7 @@ class Weekday(Enum):
 
     Notes
     -----
-    The `Weekday` enumeration is based on the numeration of
+    The :class:`~scheduler.util.Weekday` enumeration is based on the enumeration of
     weekdays in the `datetime` standard library.
     """
 
@@ -43,20 +43,20 @@ def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
 
     Notes
     -----
-    Weekday numeration based on
+    Weekday enumeration based on
     the `datetime` standard library.
 
     Parameters
     ----------
     wkdy_src : int
-        Source `Weekday` integer representation.
+        Source :class:`~scheduler.util.Weekday` integer representation.
     wkdy_dest : int
-        Destination `Weekday` interger representation.
+        Destination :class:`~scheduler.util.Weekday` interger representation.
 
     Returns
     -------
     int
-        Days to the destination weekday.
+        Days to the destination :class:`~scheduler.util.Weekday`.
     """
     if wkdy_src > 6 or wkdy_src < 0 or wkdy_dest > 6 or wkdy_dest < 0:
         raise SchedulerError("Weekday enumeration interval: [0,6] <=> [Monday, Sunday]")
@@ -79,7 +79,7 @@ def next_daily_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime
     now : datetime.datetime
         `datetime.datetime` object of today
     target_time : datetime.time
-        Desired time.
+        Desired `datetime.time`.
 
     Returns
     -------
@@ -108,7 +108,7 @@ def next_hourly_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetim
     now : datetime.datetime
         `datetime.datetime` object of today
     target_time : datetime.time
-        Desired time.
+        Desired `datetime.time`.
 
     Returns
     -------
@@ -136,7 +136,7 @@ def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datet
     now : datetime.datetime
         `datetime.datetime` object of today
     target_time : datetime.time
-        Desired time.
+        Desired `datetime.time`.
 
     Returns
     -------
@@ -161,12 +161,12 @@ def next_weekday_occurrence(now: dt.datetime, weekday: Weekday) -> dt.datetime:
     now : datetime.datetime
         `datetime.datetime` object of today
     weekday : Weekday
-        Desired `Weekday`.
+        Desired :class:`~scheduler.util.Weekday`.
 
     Returns
     -------
     datetime.datetime
-        Next `datetime.datetime` of a desired `Weekday`.
+        Next `datetime.datetime` of a desired weekday.
     """
     days = days_to_weekday(now.weekday(), weekday.value)
     delta = dt.timedelta(days=days)
@@ -188,14 +188,14 @@ def next_weekday_time_occurrence(
     now : datetime.datetime
         `datetime.datetime` object of today
     weekday : Weekday
-        Desired `Weekday`.
+        Desired :class:`~scheduler.util.Weekday`.
     target_time : datetime.time
-        Desired time.
+        Desired `datetime.time`.
 
     Returns
     -------
     datetime.datetime
-        Next `datetime.datetime` object with the desired `Weekday` and time.
+        Next `datetime.datetime` object with the desired weekday and time.
     """
     days = days_to_weekday(now.weekday(), weekday.value)
     if days == 7:
@@ -216,18 +216,18 @@ def next_weekday_time_occurrence(
 def are_times_unique(
     timelist: list[dt.time],
 ) -> bool:
-    """
-    Check if list contains distinct times.
+    r"""
+    Check if list contains distinct `datetime.time`\ s.
 
     Parameters
     ----------
-    timelist : list[dt.time]
+    timelist : list[datetime.time]
         List of time objects.
 
     Returns
     -------
     boolean
-        True if list entries are not equivalent with timezone offset.
+        ``True`` if list entries are not equivalent with timezone offset.
     """
     ref = dt.datetime(year=1970, month=1, day=1)
     collection = {
@@ -249,17 +249,18 @@ def are_weekday_times_unique(
     """
     Check if list contains distinct weekday times.
 
-    .. warning:: Both arguments are expected to be either timezone aware or not, no internal checks.
+    .. warning:: Both arguments are expected to be either timezone aware or not
+        - no internal checks.
 
     Parameters
     ----------
-    timelist : list[tuple[Weekday, dt.time]]
-        List of tuple[Weekday, dt.time] objects.
+    timelist : list[tuple[Weekday, datetime.time]]
+        List of ``tuple[Weekday, datetime.time]`` objects.
 
     Returns
     -------
     boolean
-        True if list entries are not equivalent with timezone offset.
+        ``True`` if list entries are not equivalent with timezone offset.
     """
     ref = dt.datetime(year=1970, month=1, day=1, tzinfo=timezone)
     collection = {
@@ -271,11 +272,11 @@ def are_weekday_times_unique(
 
 class AbstractJob(ABC):
     """
-    Abstract definition of the :class:`~scheduler.job.Job` class.
+    Abstract definition of the `Job` class.
 
     Notes
     -----
-    Needed to provide linting and typing in the `scheduler.util.py` module.
+    Needed to provide linting and typing in the :mod:`~scheduler.util` module.
     """
 
     @abstractproperty
@@ -287,8 +288,8 @@ class Prioritization:
     """
     Collection of prioritization functions.
 
-    For compatibility with the :class:`~scheduler.core.Scheduler`, the prioritization functions have to be of type
-    ``Callable[[float, Job, int, int], float]``.
+    For compatibility with the :class:`~scheduler.core.Scheduler`, the prioritization
+    functions have to be of type ``Callable[[float, Job, int, int], float]``.
     """
 
     @staticmethod
@@ -296,10 +297,10 @@ class Prioritization:
         time_delta: float, job: AbstractJob, max_exec: int, job_count: int
     ) -> float:  # pragma: no cover
         r"""
-        Interprete the :class:`~scheduler.job.Job`'s weight as its priority.
+        Interprete the `Job`'s weight as its priority.
 
-        Return the :class:`~scheduler.job.Job`'s weight for overdue :class:`~scheduler.job.Job`\ s, otherwise
-        return zero:
+        Return the :class:`~scheduler.job.Job`'s weight for overdue
+        :class:`~scheduler.job.Job`\ s, otherwise return zero:
 
         .. math::
             \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
@@ -408,7 +409,7 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
     max_length : int
         Max resulting string length.
     cut_tail : bool
-        `False` for string abbreviation from the front, else `True`.
+        ``False`` for string abbreviation from the front, else ``True``.
 
     Returns
     -------

@@ -26,6 +26,10 @@ By default, the :class:`~scheduler.core.Scheduler` will prioritize using a linea
 (:func:`~scheduler.util.linear_priority_function`) that depends on the
 :class:`~scheduler.job.Job`\ s `weight` and time it is overdue.
 
+.. tip:: It is possible to change the prioritization behaviour of a
+    :class:`~scheduler.core.Scheduler` instance using the `priority_function` argument.
+    Details can be found in the guide :ref:`guides.prioritization`.
+
 If several :class:`~scheduler.job.Job`\ s are scheduled for the same point in time,
 they will be executed in order of their weights, starting with the :class:`~scheduler.job.Job`
 of the highest weight:

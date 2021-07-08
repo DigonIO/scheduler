@@ -1,5 +1,5 @@
 """
-`Scheduler` implementation for `Job` based callback function execution.
+Scheduler implementation for job based callback function execution.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
@@ -41,7 +41,7 @@ ONCE_TYPE_ERROR_MSG = (
 
 class Scheduler:
     r"""
-    Implementation of a `Scheduler` for callback functions.
+    Implementation of a scheduler for callback functions.
 
     This implementation enables the planning of :class:`~scheduler.job.Job`\ s depending on time
     cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
@@ -163,7 +163,7 @@ class Scheduler:
 
     def delete_job(self, job: Job) -> None:
         """
-        Delete a :class:`~scheduler.job.Job` from the :class:`~scheduler.core.Scheduler`.
+        Delete a `Job` from the `Scheduler`.
 
         Parameters
         ----------
@@ -174,7 +174,7 @@ class Scheduler:
             self.__jobs.remove(job)
 
     def delete_all_jobs(self) -> None:
-        r"""Delete all :class:`~scheduler.job.Job`\ s from the :class:`~scheduler.core.Scheduler`."""
+        r"""Delete all `Job`\ s from the `Scheduler`."""
         with self.__jobs_lock:
             self.__jobs = set()
 
@@ -222,21 +222,22 @@ class Scheduler:
 
     def exec_jobs(self, force_exec_all: bool = False) -> int:
         r"""
-        Execute scheduled :class:`~scheduler.job.Job`\ s.
+        Execute scheduled `Job`\ s.
 
         By default executes the :class:`~scheduler.job.Job`\ s that are overdue.
 
-        :class:`~scheduler.job.Job`\ s are executed in order of their priority :ref:`examples.weights`.
-        If the :class:`~scheduler.core.Scheduler` instance has a limit on the job execution counts
-        per call of :func:`~scheduler.core.Scheduler.exec_jobs`, via the `max_exec`
-        argument, :class:`~scheduler.job.Job`\ s of lower priority might not get executed when competing :class:`~scheduler.job.Job`\ s
-        are overdue.
+        :class:`~scheduler.job.Job`\ s are executed in order of their priority
+        :ref:`examples.weights`. If the :class:`~scheduler.core.Scheduler` instance
+        has a limit on the job execution counts per call of
+        :func:`~scheduler.core.Scheduler.exec_jobs`, via the `max_exec` argument,
+        :class:`~scheduler.job.Job`\ s of lower priority might not get executed when
+        competing :class:`~scheduler.job.Job`\ s are overdue.
 
         Parameters
         ----------
         force_exec_all : bool
-            Ignore the both - the status of the :class:`~scheduler.job.Job` timers as well as the execution limit
-            of the :class:`~scheduler.core.Scheduler`
+            Ignore the both - the status of the :class:`~scheduler.job.Job` timers
+            as well as the execution limit of the :class:`~scheduler.core.Scheduler`
 
         Returns
         -------
@@ -273,7 +274,7 @@ class Scheduler:
     @property
     def jobs(self) -> set[Job]:
         r"""
-        Get the set of all :class:`~scheduler.job.Job`\ s.
+        Get the set of all `Job`\ s.
 
         Returns
         -------
@@ -290,7 +291,7 @@ class Scheduler:
         handle: Callable[..., None],
         **kwargs,
     ) -> Job:
-        """Encapsulate the :class:`~scheduler.job.Job` and add the :class:`~scheduler.core.Scheduler`'s timezone."""
+        """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
         job = Job(
             job_type=job_type,
             timing=timing,
@@ -305,7 +306,7 @@ class Scheduler:
 
     def cyclic(self, timing: TimingTypeCyclic, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a cyclic :class:`~scheduler.job.Job`.
+        Schedule a cyclic `Job`.
 
         Use a `datetime.timedelta` object or a `list` of `datetime.timedelta` objects
         to schedule a cyclic :class:`~scheduler.job.Job`.
@@ -332,7 +333,7 @@ class Scheduler:
 
     def minutely(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a minutely :class:`~scheduler.job.Job`.
+        Schedule a minutely `Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
         to schedule a :class:`~scheduler.job.Job` every minute.
@@ -364,7 +365,7 @@ class Scheduler:
 
     def hourly(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a hourly :class:`~scheduler.job.Job`.
+        Schedule an hourly `Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
         to schedule a :class:`~scheduler.job.Job` every hour.
@@ -396,7 +397,7 @@ class Scheduler:
 
     def daily(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a daily :class:`~scheduler.job.Job`.
+        Schedule a daily `Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
         to schedule a :class:`~scheduler.job.Job` every day.
@@ -423,12 +424,12 @@ class Scheduler:
 
     def weekly(self, timing: TimingTypeWeekly, handle: Callable[..., None], **kwargs):
         r"""
-        Schedule a weekly :class:`~scheduler.job.Job`.
+        Schedule a weekly `Job`.
 
-        Use a `tuple` of a `Weekday` and a `datetime.time` object to define a weekly recuring
-        :class:`~scheduler.job.Job`. Combine multiple desired `tuples` in a `list`. If the planed execution time
-        is `00:00` the `datetime.time` object can be ingored, just pass a `Weekday` without
-        a `tuple`.
+        Use a `tuple` of a `Weekday` and a `datetime.time` object to define a weekly
+        recuring :class:`~scheduler.job.Job`. Combine multiple desired `tuples` in
+        a `list`. If the planed execution time is `00:00` the `datetime.time` object
+        can be ingored, just pass a `Weekday` without a `tuple`.
 
         Parameters
         ----------
@@ -458,7 +459,7 @@ class Scheduler:
         weight: float = 1,
     ):
         r"""
-        Schedule a oneshot :class:`~scheduler.job.Job`.
+        Schedule a oneshot `Job`.
 
         Parameters
         ----------
@@ -467,7 +468,8 @@ class Scheduler:
         handle : Callable[..., None]
             Handle to a callback function.
         params : dict[str, Any]
-            The payload arguments to pass to the function handle within a Job.
+            The payload arguments to pass to the function handle within a
+            :class:`~scheduler.job.Job`.
         weight : float
             Relative weight against other :class:`~scheduler.job.Job`\ s.
 

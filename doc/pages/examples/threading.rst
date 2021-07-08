@@ -5,6 +5,10 @@ The :class:`~scheduler.core.Scheduler` is thread safe and supports parallel exec
 of pending :class:`~scheduler.job.Job`\ s.
 :class:`~scheduler.job.Job`\ s with a relevant execution time or blocking IO operations
 can delay each other.
+
+.. warning:: When running :class:`~scheduler.job.Job`\ s in parallel, be sure that possible side effects
+    of the scheduled functions are implemented in a thread safe manner.
+
 The following examples show the difference between concurrent and parallel
 :class:`~scheduler.core.Scheduler`\ s:
 
@@ -66,6 +70,3 @@ will spawn a seperate worker thread for every pending :class:`~scheduler.job.Job
 
     >>> 0.1 < total_seconds and total_seconds < 0.11
     True
-
-.. warning:: When running :class:`~scheduler.job.Job`\ s in parallel, be sure that possible side effects
-    of the scheduled functions are implemented in a thread safe manner.

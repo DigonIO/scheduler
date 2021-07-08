@@ -1,3 +1,5 @@
+.. _guides.prioritization:
+
 Custom Prioritization
 =====================
 
