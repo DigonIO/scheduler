@@ -4,7 +4,7 @@ Metrics
 The :class:`~scheduler.core.Scheduler` and :class:`~scheduler.job.Job` classes
 provide access to various metrics that can be of interest for the using program.
 
-Starting with a `Scheduler` and two :class:`~scheduler.job.Job`\ s:
+Starting with a :class:`~scheduler.core.Scheduler` and two :class:`~scheduler.job.Job`\ s:
 
 .. code-block:: pycon
 
@@ -24,7 +24,7 @@ Starting with a `Scheduler` and two :class:`~scheduler.job.Job`\ s:
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     foo()            2021-06-21 04:53:34   0:09:59           0/1      1
 
-`Scheduler` provides access to the set of :class:`~scheduler.job.Job`\ s stored with the `jobs`
+:class:`~scheduler.core.Scheduler` provides access to the set of :class:`~scheduler.job.Job`\ s stored with the `jobs`
 We can access the :class:`~scheduler.job.Job`\ s of the scheduler via the :attr:`~scheduler.core.Scheduler.jobs` property.
 
 .. code-block:: pycon

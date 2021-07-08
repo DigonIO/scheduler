@@ -15,7 +15,7 @@ TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
 
 
 class SchedulerError(Exception):
-    """Generic `Scheduler` exception implementation."""
+    """Generic :class:`~scheduler.core.Scheduler` exception implementation."""
 
 
 class Weekday(Enum):
@@ -287,7 +287,7 @@ class Prioritization:
     """
     Collection of prioritization functions.
 
-    For compatibility with the `Scheduler`, the prioritization functions have to be of type
+    For compatibility with the :class:`~scheduler.core.Scheduler`, the prioritization functions have to be of type
     ``Callable[[float, Job, int, int], float]``.
     """
 

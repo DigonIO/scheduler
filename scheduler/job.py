@@ -1,5 +1,5 @@
 """
-Implementation of a :class:`~scheduler.job.Job` as callback function represention.
+Implementation of a `Job` as callback function represention.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
@@ -251,7 +251,7 @@ class Job(AbstractJob):  # in job
         If `True` a :class:`~scheduler.job.Job` will only schedule it's newest planned execution and
         drop older ones.
     tzinfo : datetime.timezone
-        Set the timeW zone of the `Scheduler` the :class:`~scheduler.job.Job` is scheduled in.
+        Set the time zone of the :class:`~scheduler.core.Scheduler` the :class:`~scheduler.job.Job` is scheduled in.
 
     Returns
     -------
@@ -636,7 +636,7 @@ class Job(AbstractJob):  # in job
     @property
     def _tzinfo(self) -> Optional[dt.timezone]:
         """
-        Get the timezone of the `Scheduler` in which the :class:`~scheduler.job.Job` is living.
+        Get the timezone of the :class:`~scheduler.core.Scheduler` in which the :class:`~scheduler.job.Job` is living.
 
         Returns
         -------

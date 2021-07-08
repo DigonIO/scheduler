@@ -1,5 +1,5 @@
 """
-`Scheduler` implementation for :class:`~scheduler.job.Job` based callback function execution.
+`Scheduler` implementation for `Job` based callback function execution.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
@@ -49,12 +49,12 @@ class Scheduler:
     Notes
     -----
     Due to the support of `datetime` objects, `scheduler` is able to work
-    with time zones.
+    with time zones.W
 
     Parameters
     ----------
     tzinfo : datetime.timezone
-        Set the time zone of the `Scheduler`.
+        Set the time zone of the :class:`~scheduler.core.Scheduler`.
     max_exec : int
         Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
         by calling function `Scheduler.exec_jobs()`.
@@ -163,7 +163,7 @@ class Scheduler:
 
     def delete_job(self, job: Job) -> None:
         """
-        Delete a :class:`~scheduler.job.Job` from the `Scheduler`.
+        Delete a :class:`~scheduler.job.Job` from the :class:`~scheduler.core.Scheduler`.
 
         Parameters
         ----------
@@ -174,7 +174,7 @@ class Scheduler:
             self.__jobs.remove(job)
 
     def delete_all_jobs(self) -> None:
-        r"""Delete all :class:`~scheduler.job.Job`\ s from the `Scheduler`."""
+        r"""Delete all :class:`~scheduler.job.Job`\ s from the :class:`~scheduler.core.Scheduler`."""
         with self.__jobs_lock:
             self.__jobs = set()
 
@@ -227,7 +227,7 @@ class Scheduler:
         By default executes the :class:`~scheduler.job.Job`\ s that are overdue.
 
         :class:`~scheduler.job.Job`\ s are executed in order of their priority :ref:`examples.weights`.
-        If the `Scheduler` instance has a limit on the job execution counts
+        If the :class:`~scheduler.core.Scheduler` instance has a limit on the job execution counts
         per call of :func:`~scheduler.core.Scheduler.exec_jobs`, via the `max_exec`
         argument, :class:`~scheduler.job.Job`\ s of lower priority might not get executed when competing :class:`~scheduler.job.Job`\ s
         are overdue.
@@ -236,7 +236,7 @@ class Scheduler:
         ----------
         force_exec_all : bool
             Ignore the both - the status of the :class:`~scheduler.job.Job` timers as well as the execution limit
-            of the `Scheduler`
+            of the :class:`~scheduler.core.Scheduler`
 
         Returns
         -------
@@ -277,7 +277,7 @@ class Scheduler:
 
         Returns
         -------
-        set[Job]
+        set[Job]W
             Currently scheduled :class:`~scheduler.job.Job`\ s.
         """
         with self.__lock:
@@ -290,7 +290,7 @@ class Scheduler:
         handle: Callable[..., None],
         **kwargs,
     ) -> Job:
-        """Encapsulate the :class:`~scheduler.job.Job` and add the `Scheduler` timezone."""
+        """Encapsulate the :class:`~scheduler.job.Job` and add the :class:`~scheduler.core.Scheduler`'s timezone."""
         job = Job(
             job_type=job_type,
             timing=timing,

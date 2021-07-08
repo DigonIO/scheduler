@@ -29,7 +29,7 @@ For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one :
     >>> sch.daily(timing=timings, handle=foo)  # doctest:+ELLIPSIS
     scheduler.Job(...DAILY..., [...time(12, 0), ...time(18, 0), ...time(0, 0)]...)
 
-In consequence, this `Scheduler` instance only contains a single :class:`~scheduler.job.Job` instance of the `DAILY` type:
+In consequence, this :class:`~scheduler.core.Scheduler` instance only contains a single :class:`~scheduler.job.Job` instance of the `DAILY` type:
 
 .. code-block:: pycon
 
