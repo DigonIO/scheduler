@@ -6,7 +6,6 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 from __future__ import annotations
 
 import datetime as dt
-from enum import Enum, auto
 from threading import RLock
 
 
@@ -16,6 +15,7 @@ import typeguard as tg
 
 from scheduler.util import (
     TZ_ERROR_MSG,
+    JobType,
     AbstractJob,
     SchedulerError,
     Weekday,
@@ -68,16 +68,6 @@ WEEKLY_TYPE_ERROR_MSG = (
 _TZ_ERROR_MSG = TZ_ERROR_MSG[:-1] + " for {0}."
 
 START_STOP_ERROR = "Start argument must be smaller than the stop argument."
-
-
-class JobType(Enum):  # in job
-    """Indicate the `JobType` of a |Job|."""
-
-    CYCLIC = auto()
-    MINUTELY = auto()
-    HOURLY = auto()
-    DAILY = auto()
-    WEEKLY = auto()
 
 
 JOB_TIMING_TYPE_MAPPING = {
@@ -624,7 +614,7 @@ class Job(AbstractJob):
     @property
     def skip_missing(self) -> bool:
         """
-        Return ``True`` `Job` will only schedule it's newest planned execution and drop older ones.
+        Return ``True`` if `Job` will only schedule it's newest planned execution.
 
         Returns
         -------

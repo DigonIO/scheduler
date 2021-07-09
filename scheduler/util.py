@@ -7,9 +7,10 @@ from __future__ import annotations
 
 import datetime as dt
 import random
-from abc import ABC, abstractproperty
-from enum import Enum
-from typing import Optional
+from abc import ABC, abstractmethod
+from typing import Optional, Callable, Any
+from enum import Enum, auto
+
 
 TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
 
@@ -35,6 +36,16 @@ class Weekday(Enum):
     FRIDAY = 4
     SATURDAY = 5
     SUNDAY = 6
+
+
+class JobType(Enum):
+    """Indicate the `JobType` of a |Job|."""
+
+    CYCLIC = auto()
+    MINUTELY = auto()
+    HOURLY = auto()
+    DAILY = auto()
+    WEEKLY = auto()
 
 
 def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
@@ -279,9 +290,79 @@ class AbstractJob(ABC):
     Needed to provide linting and typing in the :mod:`~scheduler.util` module.
     """
 
-    @abstractproperty
+    @property
+    @abstractmethod
+    def type(self) -> JobType:
+        """Return the `JobType` of the `Job` instance."""
+
+    @property
+    @abstractmethod
+    def handle(self) -> Callable[..., None]:
+        """Get the callback function handle."""
+
+    @property
+    @abstractmethod
+    def params(self) -> dict[str, Any]:
+        r"""Get the payload arguments to pass to the function handle within a `Job`."""
+
+    @property
+    @abstractmethod
     def weight(self) -> float:
-        """Abstract weight."""
+        """Return the weight of the `Job` instance."""
+
+    @property
+    @abstractmethod
+    def delay(self) -> bool:
+        """Return ``True`` if the first `Job` execution will wait for the next scheduled time."""
+
+    @property
+    @abstractmethod
+    def start(self) -> Optional[dt.datetime]:
+        """Get the timestamp at which the `JobTimer` starts."""
+
+    @property
+    @abstractmethod
+    def stop(self) -> Optional[dt.datetime]:
+        """Get the timestamp after which no more executions of the `Job` should be scheduled."""
+
+    @property
+    @abstractmethod
+    def max_attempts(self) -> int:
+        """Get the execution limit for a `Job`."""
+
+    @property
+    @abstractmethod
+    def skip_missing(self) -> bool:
+        """Return ``True`` if `Job` will only schedule it's newest planned execution."""
+
+    @property
+    @abstractmethod
+    def tzinfo(self) -> Optional[dt.tzinfo]:
+        r"""Get the timezone of the `Job`'s next execution."""
+
+    @property
+    @abstractmethod
+    def _tzinfo(self) -> Optional[dt.timezone]:
+        """Get the timezone of the `Scheduler` in which the `Job` is living."""
+
+    @property
+    @abstractmethod
+    def has_attempts_remaining(self) -> bool:
+        """Check if a `Job` has remaining attempts."""
+
+    @property
+    @abstractmethod
+    def attempts(self) -> int:
+        """Get the number of executions for a `Job`."""
+
+    @property
+    @abstractmethod
+    def datetime(self) -> dt.datetime:
+        """Give the `datetime.datetime` object for the planed execution."""
+
+    @abstractmethod
+    def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
+        """Get the `datetime.timedelta` until the next execution of this `Job`."""
 
 
 class Prioritization:
