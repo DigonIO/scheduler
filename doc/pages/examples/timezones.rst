@@ -6,13 +6,13 @@ The `scheduler` library supports timezones via the standard `datetime` library.
 .. warning:: **Mixing of offset-naive and offset-aware** `datetime.time` **and**
     `datetime.datetime` **objects is not supported.**
 
-    If a :class:`~scheduler.core.Scheduler` is initialized with a timezone, all `datetime.time`, `datetime.datetime` and
-    :class:`~scheduler.job.Job` objects require timezones.
-    Vice versa a :class:`~scheduler.core.Scheduler` without timezone informations does not support
-    `datetime` or :class:`~scheduler.job.Job` objects with timezones.
+    If a |Scheduler| is initialized with a timezone, all `datetime.time`, `datetime.datetime` and
+    |Job| objects require timezones.
+    Vice versa a |Scheduler| without timezone informations does not support
+    `datetime` or |Job| objects with timezones.
 
-For demonstration purposes, we will create a :class:`~scheduler.core.Scheduler` with
-:class:`~scheduler.job.Job`\ s defined in different timezones of the world.
+For demonstration purposes, we will create a |Scheduler| with
+|Job|\ s defined in different timezones of the world.
 
 First create the timezones of a few known cities and a useful function to schedule.
 
@@ -27,7 +27,7 @@ First create the timezones of a few known cities and a useful function to schedu
     >>> tz_wuppertal = dt.timezone(dt.timedelta(hours=2))
     >>> tz_sydney = dt.timezone(dt.timedelta(hours=10))
 
-Next initialize a :class:`~scheduler.core.Scheduler` with UTC as its reference timezone:
+Next initialize a |Scheduler| with UTC as its reference timezone:
 
 .. code-block:: pycon
 
@@ -55,8 +55,8 @@ Lastly create a job running every Monday at ``10:00`` local time of Sydney as fo
     >>> job_sy = sch.weekly((Weekday.MONDAY, dt.time(hour=10, tzinfo=tz_sydney)), useful)
 
 A simple `print(sch)` statement can be used for an overview of the scheduled
-:class:`~scheduler.job.Job`\ s. As this :class:`~scheduler.core.Scheduler` instance is timezone
-aware, the table contains a `timezone` column. Verify if the :class:`~scheduler.job.Job`\ s are
+|Job|\ s. As this |Scheduler| instance is timezone
+aware, the table contains a `timezone` column. Verify if the |Job|\ s are
 scheduled as expected.
 
 .. code-block:: pycon

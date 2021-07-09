@@ -71,7 +71,7 @@ START_STOP_ERROR = "Start argument must be smaller than the stop argument."
 
 
 class JobType(Enum):  # in job
-    """Indicate the `JobType` of a :class:`~scheduler.job.Job`."""
+    """Indicate the `JobType` of a |Job|."""
 
     CYCLIC = auto()
     MINUTELY = auto()
@@ -108,7 +108,7 @@ class JobTimer:
     start : datetime.datetime
         Timestamp reference from which future executions will be calculated.
     skip_missing : bool
-        If ``True`` a :class:`~scheduler.job.Job` will only schedule it's newest planned
+        If ``True`` a |Job| will only schedule it's newest planned
         execution and drop older ones.
     """
 
@@ -235,32 +235,31 @@ class Job(AbstractJob):
         Handle to a callback function.
     params : dict[str, Any]
         The payload arguments to pass to the function handle within a
-        :class:`~scheduler.job.Job`.
+        |Job|.
     weight : float
-        Relative `weight` against other :class:`~scheduler.job.Job`\ s.
+        Relative `weight` against other |Job|\ s.
     delay : bool
-        If ``False`` the :class:`~scheduler.job.Job` will executed instantly or at
-        a given offset.
+        If ``True`` wait with the execution for the next scheduled time.
     start : Optional[datetime.datetime]
-        Set the reference `datetime.datetime` stamp the :class:`~scheduler.job.Job`
+        Set the reference `datetime.datetime` stamp the |Job|
         will be scheduled against. Default value is `datetime.datetime.now()`.
     stop : Optional[datetime.datetime]
-        Define a point in time after which a :class:`~scheduler.job.Job` will be stopped
+        Define a point in time after which a |Job| will be stopped
         and deleted.
     max_attempts : int
-        Number of times the :class:`~scheduler.job.Job` will be executed where ``0 <=> inf``.
-        A :class:`~scheduler.job.Job` with no free attempt will be deleted.
+        Number of times the |Job| will be executed where ``0 <=> inf``.
+        A |Job| with no free attempt will be deleted.
     skip_missing : bool
-        If ``True`` a :class:`~scheduler.job.Job` will only schedule it's newest planned
+        If ``True`` a |Job| will only schedule it's newest planned
         execution and drop older ones.
     tzinfo : datetime.timezone
-        Set the timezone of the :class:`~scheduler.core.Scheduler` the :class:`~scheduler.job.Job`
+        Set the timezone of the |Scheduler| the |Job|
         is scheduled in.
 
     Returns
     -------
     Job
-        Instance of a scheduled :class:`~scheduler.job.Job`.
+        Instance of a scheduled |Job|.
     """
 
     def __init__(
@@ -486,18 +485,6 @@ class Job(AbstractJob):
             *self._str()
         )
 
-    @property
-    def handle(self) -> Callable[..., None]:
-        """
-        Get the callback function handle.
-
-        Returns
-        -------
-        Callable
-            Callback function.
-        """
-        return self.__handle
-
     def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
         """
         Calculate the next estimated execution `datetime.datetime` of the `Job`.
@@ -505,7 +492,7 @@ class Job(AbstractJob):
         Parameters
         ----------
         ref_dt : datetime.datetime
-            Reference time stamp to which the :class:`~scheduler.job.Job` calculates
+            Reference time stamp to which the |Job| calculates
             it's next execution.
         """
         with self.__lock:
@@ -533,18 +520,157 @@ class Job(AbstractJob):
             self.__pending_timer = sorted_timers[0]
 
     @property
+    def type(self) -> JobType:
+        """
+        Return the `JobType` of the `Job` instance.
+
+        Returns
+        -------
+        JobType
+            :class:`~scheduler.job.JobType` of the |Job|.
+        """
+        return self.__type
+
+    @property
+    def handle(self) -> Callable[..., None]:
+        """
+        Get the callback function handle.
+
+        Returns
+        -------
+        Callable
+            Callback function.
+        """
+        return self.__handle
+
+    @property
+    def params(self) -> dict[str, Any]:
+        r"""
+        Get the payload arguments to pass to the function handle within a `Job`.
+
+        .. warning:: When running |Job|\ s in parallel threads,
+            be sure to implement possible side effects of parameter accessing in a
+            thread safe manner.
+
+        Returns
+        -------
+        dict[str, Any]
+            The payload arguments to pass to the function handle within a
+            |Job|.
+        """
+        return self.__params
+
+    @property
+    def weight(self) -> float:
+        """
+        Return the weight of the `Job` instance.
+
+        Returns
+        -------
+        float
+            |Job| `weight`.
+        """
+        return self.__weight
+
+    @property
+    def delay(self) -> bool:
+        """
+        Return ``True`` if the first `Job` execution will wait for the next scheduled time.
+
+        Returns
+        -------
+        bool
+            If ``True`` wait with the execution for the next scheduled time. If ``False``
+            the first execution will target the time of `Job.start`.
+        """
+        return self.__delay
+
+    @property
+    def start(self) -> Optional[dt.datetime]:
+        """
+        Get the timestamp at which the `JobTimer` starts.
+
+        Returns
+        -------
+        Optional[datetime.datetime]
+            The start datetime stamp.
+        """
+        return self.__start
+
+    @property
+    def stop(self) -> Optional[dt.datetime]:
+        """
+        Get the timestamp after which no more executions of the `Job` should be scheduled.
+
+        Returns
+        -------
+        Optional[datetime.datetime]
+            The stop datetime stamp.
+        """
+        return self.__stop
+
+    @property
+    def max_attempts(self) -> int:
+        """
+        Get the execution limit for a `Job`.
+
+        Returns
+        -------
+        int
+            Max execution attempts.
+        """
+        return self.__max_attempts
+
+    @property
+    def skip_missing(self) -> bool:
+        """
+        Return ``True`` `Job` will only schedule it's newest planned execution and drop older ones.
+
+        Returns
+        -------
+        bool
+            If ``True`` a |Job| will only schedule it's newest planned
+            execution and drop older ones.
+        """
+        return self.__skip_missing
+
+    @property
+    def tzinfo(self) -> Optional[dt.tzinfo]:
+        r"""
+        Get the timezone of the `Job`'s next execution.
+
+        Returns
+        -------
+        Optional[datetime.timezone]
+            Timezone of the |Job|\ s next execution.
+        """
+        return self.datetime.tzinfo
+
+    @property
+    def _tzinfo(self) -> Optional[dt.timezone]:
+        """
+        Get the timezone of the `Scheduler` in which the `Job` is living.
+
+        Returns
+        -------
+        Optional[datetime.timezone]
+            Timezone of the |Job|.
+        """
+        return self.__tzinfo
+
+    @property
     def has_attempts_remaining(self) -> bool:
         """
         Check if a `Job` has remaining attempts.
 
-        This function will return True if the :class:`~scheduler.job.Job` has open
+        This function will return True if the |Job| has open
         execution counts and the stop argument is not in the past relative to the
         next planed execution.
 
         Returns
         -------
         bool
-            True if the :class:`~scheduler.job.Job` has execution attempts.
+            True if the |Job| has execution attempts.
         """
         with self.__lock:
             if self.__mark_delete:
@@ -564,42 +690,6 @@ class Job(AbstractJob):
             Execution attempts.
         """
         return self.__attempts
-
-    @property
-    def max_attempts(self) -> int:
-        """
-        Get the execution limit for a `Job`.
-
-        Returns
-        -------
-        int
-            Max execution attempts.
-        """
-        return self.__max_attempts
-
-    @property
-    def type(self) -> JobType:
-        """
-        Return the `JobType` of the `Job` instance.
-
-        Returns
-        -------
-        JobType
-            :class:`~scheduler.job.JobType` of the :class:`~scheduler.job.Job`.
-        """
-        return self.__type
-
-    @property
-    def weight(self) -> float:
-        """
-        Return the weight of the `Job` instance.
-
-        Returns
-        -------
-        float
-            :class:`~scheduler.job.Job` `weight`.
-        """
-        return self.__weight
 
     @property
     def datetime(self) -> dt.datetime:
@@ -636,51 +726,3 @@ class Job(AbstractJob):
             if not self.__delay and self.__attempts == 0:
                 return cast(dt.datetime, self.__start) - dt_stamp
             return self.__pending_timer.timedelta(dt_stamp)
-
-    @property
-    def _tzinfo(self) -> Optional[dt.timezone]:
-        """
-        Get the timezone of the `Scheduler` in which the `Job` is living.
-
-        Returns
-        -------
-        Optional[datetime.timezone]
-            Timezone of the :class:`~scheduler.job.Job`.
-        """
-        return self.__tzinfo
-
-    @property
-    def tzinfo(self) -> Optional[dt.tzinfo]:
-        r"""
-        Get the timezone of the `Job`'s next execution.
-
-        Returns
-        -------
-        Optional[datetime.timezone]
-            Timezone of the :class:`~scheduler.job.Job`\ s next execution.
-        """
-        return self.datetime.tzinfo
-
-    @property
-    def start(self) -> Optional[dt.datetime]:
-        """
-        Get the timestamp at which the `JobTimer` starts.
-
-        Returns
-        -------
-        Optional[datetime.datetime]
-            The start datetime stamp.
-        """
-        return self.__start
-
-    @property
-    def stop(self) -> Optional[dt.datetime]:
-        """
-        Get the timestamp after which no more executions of the `Job` should be scheduled.
-
-        Returns
-        -------
-        Optional[datetime.datetime]
-            The stop datetime stamp.
-        """
-        return self.__stop

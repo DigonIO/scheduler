@@ -288,7 +288,7 @@ class Prioritization:
     """
     Collection of prioritization functions.
 
-    For compatibility with the :class:`~scheduler.core.Scheduler`, the prioritization
+    For compatibility with the |Scheduler|, the prioritization
     functions have to be of type ``Callable[[float, Job, int, int], float]``.
     """
 
@@ -299,8 +299,8 @@ class Prioritization:
         r"""
         Interprete the `Job`'s weight as its priority.
 
-        Return the :class:`~scheduler.job.Job`'s weight for overdue
-        :class:`~scheduler.job.Job`\ s, otherwise return zero:
+        Return the |Job|'s weight for overdue
+        |Job|\ s, otherwise return zero:
 
         .. math::
             \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
@@ -311,19 +311,19 @@ class Prioritization:
         Parameters
         ----------
         time_delta : float
-            The time in seconds that a :class:`~scheduler.job.Job` is overdue.
+            The time in seconds that a |Job| is overdue.
         job : Job
-            The :class:`~scheduler.job.Job` instance
+            The |Job| instance
         max_exec : int
-            Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
+            Limits the number of overdue |Job|\ s that can be executed
             by calling function `Scheduler.exec_jobs()`.
         job_count : int
-            Number of scheduled :class:`~scheduler.job.Job`\ s
+            Number of scheduled |Job|\ s
 
         Returns
         -------
         float
-            The weight of a :class:`~scheduler.job.Job` as priority.
+            The weight of a |Job| as priority.
         """
         _ = max_exec
         _ = job_count
@@ -336,12 +336,12 @@ class Prioritization:
         time_delta: float, job: AbstractJob, max_exec: int, job_count: int
     ) -> float:
         r"""
-        Compute the :class:`~scheduler.job.Job`\ s default linear priority.
+        Compute the |Job|\ s default linear priority.
 
-        Linear :class:`~scheduler.job.Job` prioritization such that the priority increases
-        linearly with the amount of time that a :class:`~scheduler.job.Job` is overdue.
+        Linear |Job| prioritization such that the priority increases
+        linearly with the amount of time that a |Job| is overdue.
         At the exact time of the scheduled execution, the priority is equal to the
-        :class:`~scheduler.job.Job`\ s weight.
+        |Job|\ s weight.
 
         The function is defined as
 
@@ -354,19 +354,19 @@ class Prioritization:
         Parameters
         ----------
         time_delta : float
-            The time in seconds that a :class:`~scheduler.job.Job` is overdue.
+            The time in seconds that a |Job| is overdue.
         job : Job
-            The :class:`~scheduler.job.Job` instance
+            The |Job| instance
         max_exec : int
-            Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
+            Limits the number of overdue |Job|\ s that can be executed
             by calling function `Scheduler.exec_jobs()`.
         job_count : int
-            Number of scheduled :class:`~scheduler.job.Job`\ s
+            Number of scheduled |Job|\ s
 
         Returns
         -------
         float
-            The time dependant priority for a :class:`~scheduler.job.Job`
+            The time dependant priority for a |Job|
         """
         _ = max_exec
         _ = job_count
@@ -385,7 +385,7 @@ class Prioritization:
         .. warning:: Not suitable for security relevant purposes.
 
         The priority generator will return 1 if the random number
-        is lower then the :class:`~scheduler.job.Job`'s weight, otherwise it will return 0.
+        is lower then the |Job|'s weight, otherwise it will return 0.
         """
         _ = time
         _ = max_exec

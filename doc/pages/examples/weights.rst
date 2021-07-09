@@ -3,12 +3,12 @@
 Job Prioritization
 ==================
 
-:class:`~scheduler.job.Job`\ s can be prioritized using `weight`\ s.
-Prioritization becomes particulary relevant with increasing :class:`~scheduler.job.Job`
-execution times compared to the :class:`~scheduler.core.Scheduler`\ s cycle length.
+|Job|\ s can be prioritized using `weight`\ s.
+Prioritization becomes particulary relevant with increasing |Job|
+execution times compared to the |Scheduler|\ s cycle length.
 
 The `weight` parameter is available for all scheduling functions of
-:class:`~scheduler.core.Scheduler`:
+|Scheduler|:
 
 :func:`~scheduler.core.Scheduler.once`,
 :func:`~scheduler.core.Scheduler.cyclic`,
@@ -22,16 +22,16 @@ The `weight` parameter is available for all scheduling functions of
 Default behaviour
 -----------------
 
-By default, the :class:`~scheduler.core.Scheduler` will prioritize using a linear function
+By default, the |Scheduler| will prioritize using a linear function
 (:func:`~scheduler.util.linear_priority_function`) that depends on the
-:class:`~scheduler.job.Job`\ s `weight` and time it is overdue.
+|Job|\ s `weight` and time it is overdue.
 
 .. tip:: It is possible to change the prioritization behaviour of a
-    :class:`~scheduler.core.Scheduler` instance using the `priority_function` argument.
+    |Scheduler| instance using the `priority_function` argument.
     Details can be found in the guide :ref:`guides.prioritization`.
 
-If several :class:`~scheduler.job.Job`\ s are scheduled for the same point in time,
-they will be executed in order of their weights, starting with the :class:`~scheduler.job.Job`
+If several |Job|\ s are scheduled for the same point in time,
+they will be executed in order of their weights, starting with the |Job|
 of the highest weight:
 
 .. code-block:: pycon
@@ -58,13 +58,13 @@ of the highest weight:
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     print(?)         2021-06-21 03:24:23  -0:00:00           0/1      1
 
-Note that in this example the :class:`~scheduler.job.Job` with the lowest weight was not
-executed, as the execution count per call for the :class:`~scheduler.core.Scheduler`
+Note that in this example the |Job| with the lowest weight was not
+executed, as the execution count per call for the |Scheduler|
 has been set to ``3`` via the `max_exec` parameter.
 
-If several :class:`~scheduler.job.Job`\ s of the same weight are overdue, the
-:class:`~scheduler.job.Job`\ s are prioritized by their delay, starting with the
-:class:`~scheduler.job.Job` of the highest delay.
+If several |Job|\ s of the same weight are overdue, the
+|Job|\ s are prioritized by their delay, starting with the
+|Job| of the highest delay.
 
 .. code-block:: pycon
 

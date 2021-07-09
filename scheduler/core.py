@@ -43,7 +43,7 @@ class Scheduler:
     r"""
     Implementation of a scheduler for callback functions.
 
-    This implementation enables the planning of :class:`~scheduler.job.Job`\ s depending on time
+    This implementation enables the planning of |Job|\ s depending on time
     cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
 
     Notes
@@ -54,12 +54,12 @@ class Scheduler:
     Parameters
     ----------
     tzinfo : datetime.timezone
-        Set the timezone of the :class:`~scheduler.core.Scheduler`.
+        Set the timezone of the |Scheduler|.
     max_exec : int
-        Limits the number of overdue :class:`~scheduler.job.Job`\ s that can be executed
+        Limits the number of overdue |Job|\ s that can be executed
         by calling function `Scheduler.exec_jobs()`.
     priority_function : Callable[[float, Job, int, int], float]
-        A function handle to compute the priority of a :class:`~scheduler.job.Job` depending
+        A function handle to compute the priority of a |Job| depending
         on the time it is overdue and its respective weight. Defaults to a linear
         priority function.
     jobs : set[Job]
@@ -168,7 +168,7 @@ class Scheduler:
         Parameters
         ----------
         job : Job
-            :class:`~scheduler.job.Job` instance to delete.
+            |Job| instance to delete.
         """
         with self.__jobs_lock:
             self.__jobs.remove(job)
@@ -224,25 +224,25 @@ class Scheduler:
         r"""
         Execute scheduled `Job`\ s.
 
-        By default executes the :class:`~scheduler.job.Job`\ s that are overdue.
+        By default executes the |Job|\ s that are overdue.
 
-        :class:`~scheduler.job.Job`\ s are executed in order of their priority
-        :ref:`examples.weights`. If the :class:`~scheduler.core.Scheduler` instance
+        |Job|\ s are executed in order of their priority
+        :ref:`examples.weights`. If the |Scheduler| instance
         has a limit on the job execution counts per call of
         :func:`~scheduler.core.Scheduler.exec_jobs`, via the `max_exec` argument,
-        :class:`~scheduler.job.Job`\ s of lower priority might not get executed when
-        competing :class:`~scheduler.job.Job`\ s are overdue.
+        |Job|\ s of lower priority might not get executed when
+        competing |Job|\ s are overdue.
 
         Parameters
         ----------
         force_exec_all : bool
-            Ignore the both - the status of the :class:`~scheduler.job.Job` timers
-            as well as the execution limit of the :class:`~scheduler.core.Scheduler`
+            Ignore the both - the status of the |Job| timers
+            as well as the execution limit of the |Scheduler|
 
         Returns
         -------
         int
-            Number of executed :class:`~scheduler.job.Job`\ s.
+            Number of executed |Job|\ s.
         """
         with self.__lock, self.__jobs_lock:
             ref_dt = dt.datetime.now(tz=self.__tzinfo)
@@ -279,7 +279,7 @@ class Scheduler:
         Returns
         -------
         set[Job]
-            Currently scheduled :class:`~scheduler.job.Job`\ s.
+            Currently scheduled |Job|\ s.
         """
         with self.__lock:
             return self.__jobs.copy()
@@ -309,7 +309,7 @@ class Scheduler:
         Schedule a cyclic `Job`.
 
         Use a `datetime.timedelta` object or a `list` of `datetime.timedelta` objects
-        to schedule a cyclic :class:`~scheduler.job.Job`.
+        to schedule a cyclic |Job|.
 
         Parameters
         ----------
@@ -321,16 +321,16 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled :class:`~scheduler.job.Job`.
+            Instance of a scheduled |Job|.
 
         Other Parameters
         ----------------
         **kwargs
-            :class:`~scheduler.job.Job` properties, optional
+            |Job| properties, optional
 
-            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+            `kwargs` are used to specify |Job| properties.
 
-            Here is a list of available :class:`~scheduler.job.Job` properties:
+            Here is a list of available |Job| properties:
 
             .. include:: ../_assets/kwargs.rst
         """
@@ -347,7 +347,7 @@ class Scheduler:
         Schedule a minutely `Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
-        to schedule a :class:`~scheduler.job.Job` every minute.
+        to schedule a |Job| every minute.
 
         Notes
         -----
@@ -364,16 +364,16 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled :class:`~scheduler.job.Job`.
+            Instance of a scheduled |Job|.
 
         Other Parameters
         ----------------
         **kwargs
-            :class:`~scheduler.job.Job` properties, optional
+            |Job| properties, optional
 
-            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+            `kwargs` are used to specify |Job| properties.
 
-            Here is a list of available :class:`~scheduler.job.Job` properties:
+            Here is a list of available |Job| properties:
 
             .. include:: ../_assets/kwargs.rst
         """
@@ -390,7 +390,7 @@ class Scheduler:
         Schedule an hourly `Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
-        to schedule a :class:`~scheduler.job.Job` every hour.
+        to schedule a |Job| every hour.
 
         Notes
         -----
@@ -407,16 +407,16 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled :class:`~scheduler.job.Job`.
+            Instance of a scheduled |Job|.
 
         Other Parameters
         ----------------
         **kwargs
-            :class:`~scheduler.job.Job` properties, optional
+            |Job| properties, optional
 
-            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+            `kwargs` are used to specify |Job| properties.
 
-            Here is a list of available :class:`~scheduler.job.Job` properties:
+            Here is a list of available |Job| properties:
 
             .. include:: ../_assets/kwargs.rst
         """
@@ -433,7 +433,7 @@ class Scheduler:
         Schedule a daily `Job`.
 
         Use a `datetime.time` object or a `list` of `datetime.time` objects
-        to schedule a :class:`~scheduler.job.Job` every day.
+        to schedule a |Job| every day.
 
         Parameters
         ----------
@@ -445,16 +445,16 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled :class:`~scheduler.job.Job`.
+            Instance of a scheduled |Job|.
 
         Other Parameters
         ----------------
         **kwargs
-            :class:`~scheduler.job.Job` properties, optional
+            |Job| properties, optional
 
-            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+            `kwargs` are used to specify |Job| properties.
 
-            Here is a list of available :class:`~scheduler.job.Job` properties:
+            Here is a list of available |Job| properties:
 
             .. include:: ../_assets/kwargs.rst
         """
@@ -471,7 +471,7 @@ class Scheduler:
         Schedule a weekly `Job`.
 
         Use a `tuple` of a `Weekday` and a `datetime.time` object to define a weekly
-        recuring :class:`~scheduler.job.Job`. Combine multiple desired `tuples` in
+        recuring |Job|. Combine multiple desired `tuples` in
         a `list`. If the planed execution time is `00:00` the `datetime.time` object
         can be ingored, just pass a `Weekday` without a `tuple`.
 
@@ -485,16 +485,16 @@ class Scheduler:
         Returns
         -------
         Job
-            Instance of a scheduled :class:`~scheduler.job.Job`.
+            Instance of a scheduled |Job|.
 
         Other Parameters
         ----------------
         **kwargs
-            :class:`~scheduler.job.Job` properties, optional
+            |Job| properties, optional
 
-            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+            `kwargs` are used to specify |Job| properties.
 
-            Here is a list of available :class:`~scheduler.job.Job` properties:
+            Here is a list of available |Job| properties:
 
             .. include:: ../_assets/kwargs.rst
         """
@@ -524,14 +524,14 @@ class Scheduler:
             Handle to a callback function.
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a
-            :class:`~scheduler.job.Job`.
+            |Job|.
         weight : float
-            Relative weight against other :class:`~scheduler.job.Job`\ s.
+            Relative weight against other |Job|\ s.
 
         Returns
         -------
         Job
-            Instance of a scheduled :class:`~scheduler.job.Job`.
+            Instance of a scheduled |Job|.
         """
         try:
             tg.check_type("timing", timing, TimingTypeOnce)

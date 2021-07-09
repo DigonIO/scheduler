@@ -1,8 +1,8 @@
 Quick Start
 ===========
 
-To get started with the basic functions and :class:`~scheduler.job.Job` types of the scheduler
-module, create a :class:`~scheduler.core.Scheduler` instance and the functions `foo` and `bar`
+To get started with the basic functions and |Job| types of the scheduler
+module, create a |Scheduler| instance and the functions `foo` and `bar`
 to schedule:
 
 .. code-block:: pycon
@@ -102,7 +102,7 @@ A human readable overview of the scheduled jobs can be created with a simple `pr
     ONCE     foo()            2022-02-15 00:45:00  242 days           0/1      1
     <BLANKLINE>
 
-Unless :class:`~scheduler.core.Scheduler` was given a limit on the execution count via the `max_exec` option, a call to
+Unless |Scheduler| was given a limit on the execution count via the `max_exec` option, a call to
 the Scheduler instances :meth:`~scheduler.core.Scheduler.exec_jobs` function will execute every
 overdue job exactly once.
 
@@ -110,7 +110,7 @@ overdue job exactly once.
 
     >>> sch.exec_jobs()  # doctest:+SKIP
 
-For cyclic execution of :class:`~scheduler.job.Job`\ s, the :meth:`~scheduler.core.Scheduler.exec_jobs` function should
+For cyclic execution of |Job|\ s, the :meth:`~scheduler.core.Scheduler.exec_jobs` function should
 be embedded in a loop of the host program:
 
 .. code-block:: pycon
