@@ -24,7 +24,7 @@ copyright = "2021, Jendrik A. Potyka, Fabian A. Preiss"
 author = "Jendrik A. Potyka, Fabian A. Preiss"
 
 # The full version, including alpha/beta/rc tags
-release = "0.5.1"
+release = "0.5.2"
 
 
 # -- General configuration ---------------------------------------------------

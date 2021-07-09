@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.2
+
+### API changes
+
++ Extended `Job` API by `params`, `skip_missing` and `delay`.
+
+### Misc
+
++ Refactoring of `scheduling` functions using `**kwargs`
++ General documentation improvements
+
 ## 0.5.1
 
 ### Features
@@ -44,7 +55,7 @@
 
 ### API changes
 
-+ completely overhauled `Scheduler` API
++ Completely overhauled `Scheduler` API
 
 ### Bugfixes
 
