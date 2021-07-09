@@ -95,7 +95,7 @@ print(sch)
 ```
 
 ```text
-max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=9
+max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=9
 
 type     function         due at                 due in      attempts weight
 -------- ---------------- ------------------- --------- ------------- ------

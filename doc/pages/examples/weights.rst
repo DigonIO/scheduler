@@ -52,7 +52,7 @@ of the highest weight:
     weight = 2
 
     >>> print(sch)  # doctest:+SKIP
-    max_exec=3, timezone=None, priority_function=linear_priority_function, #jobs=1
+    max_exec=3, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -85,7 +85,7 @@ If several |Job|\ s of the same weight are overdue, the
     delayed_by = 2s
 
     >>> print(sch)  # doctest:+SKIP
-    max_exec=3, timezone=None, priority_function=linear_priority_function, #jobs=1
+    max_exec=3, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------

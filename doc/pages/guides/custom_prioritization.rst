@@ -91,7 +91,7 @@ our |Job|\ s.
 .. code-block:: pycon
 
     >>> print(sch)  # doctest:+SKIP
-    max_exec=3, timezone=None, priority_function=constant_weight_prioritization, #jobs=4
+    max_exec=3, tzinfo=None, priority_function=constant_weight_prioritization, #jobs=4
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -119,7 +119,7 @@ in the |Scheduler|.
 .. code-block:: pycon
 
     >>> print(sch)  # doctest:+SKIP
-    max_exec=3, timezone=None, priority_function=constant_weight_prioritization, #jobs=1
+    max_exec=3, tzinfo=None, priority_function=constant_weight_prioritization, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -194,7 +194,7 @@ We can verify that the expected number of |Job|\ s with the given probabilities 
 .. code-block:: pycon
 
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, priority_function=random_priority_function, #jobs=11
+    max_exec=inf, tzinfo=None, priority_function=random_priority_function, #jobs=11
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------

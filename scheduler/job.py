@@ -242,7 +242,7 @@ class Job(AbstractJob):
     skip_missing : bool
         If ``True`` a |Job| will only schedule it's newest planned
         execution and drop older ones.
-    tzinfo : datetime.timezone
+    tzinfo : datetime.tzinfo
         Set the timezone of the |Scheduler| the |Job|
         is scheduled in.
 
@@ -264,7 +264,7 @@ class Job(AbstractJob):
         start: Optional[dt.datetime] = None,
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
-        tzinfo: Optional[dt.timezone] = None,
+        tzinfo: Optional[dt.tzinfo] = None,
     ):
         self.__lock = RLock()
         sane_timing_types(job_type, timing)
@@ -633,19 +633,19 @@ class Job(AbstractJob):
 
         Returns
         -------
-        Optional[datetime.timezone]
+        Optional[datetime.tzinfo]
             Timezone of the |Job|\ s next execution.
         """
         return self.datetime.tzinfo
 
     @property
-    def _tzinfo(self) -> Optional[dt.timezone]:
+    def _tzinfo(self) -> Optional[dt.tzinfo]:
         """
         Get the timezone of the `Scheduler` in which the `Job` is living.
 
         Returns
         -------
-        Optional[datetime.timezone]
+        Optional[datetime.tzinfo]
             Timezone of the |Job|.
         """
         return self.__tzinfo

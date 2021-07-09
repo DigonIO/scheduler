@@ -50,7 +50,7 @@ def test_general_readme():
     scheduler.Job(<JobType.CYCLIC...>, datetime.timedelta(0), <function foo at 0x...>, {}, 1, 1, False, datetime.datetime(2022, 2, 15, 0, 45), None, False, None)
 
     >>> print(sch)  # doctest:+ELLIPSIS
-    max_exec=inf, timezone=None, priority_function=linear_priority_function, #jobs=9
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------

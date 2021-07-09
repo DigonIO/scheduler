@@ -56,15 +56,15 @@ Lastly create a job running every Monday at ``10:00`` local time of Sydney as fo
 
 A simple `print(sch)` statement can be used for an overview of the scheduled
 |Job|\ s. As this |Scheduler| instance is timezone
-aware, the table contains a `timezone` column. Verify if the |Job|\ s are
+aware, the table contains a `tzinfo` column. Verify if the |Job|\ s are
 scheduled as expected.
 
 .. code-block:: pycon
 
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=UTC, priority_function=linear_priority_function, #jobs=3
+    max_exec=inf, tzinfo=UTC, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
-    type     function         due at              timezone        due in      attempts weight
+    type     function         due at              tzinfo          due in      attempts weight
     -------- ---------------- ------------------- ------------ --------- ------------- ------
     ONCE     useful()         2021-07-01 11:49:49 UTC-05:00     -0:00:00           0/1      1
     DAILY    useful()         2021-07-02 11:45:00 UTC+02:00     16:55:10         0/inf      1

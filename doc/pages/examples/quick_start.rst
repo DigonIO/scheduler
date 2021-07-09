@@ -87,7 +87,7 @@ A human readable overview of the scheduled jobs can be created with a simple `pr
 .. code-block:: pycon
 
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=9
+    max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=9
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------

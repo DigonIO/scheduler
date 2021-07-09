@@ -53,7 +53,7 @@ class Scheduler:
 
     Parameters
     ----------
-    tzinfo : datetime.timezone
+    tzinfo : datetime.tzinfo
         Set the timezone of the |Scheduler|.
     max_exec : int
         Limits the number of overdue |Job|\ s that can be executed
@@ -71,7 +71,7 @@ class Scheduler:
     def __init__(
         self,
         max_exec: int = 0,
-        tzinfo: Optional[dt.timezone] = None,
+        tzinfo: Optional[dt.tzinfo] = None,
         priority_function: Callable[
             [float, AbstractJob, int, int],
             float,
@@ -112,7 +112,7 @@ class Scheduler:
         with self.__lock, self.__jobs_lock:
             headings = [
                 f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
-                f"timezone={self.__tz_str}",
+                f"tzinfo={self.__tz_str}",
                 f"priority_function={self.__priority_function.__name__}",
                 f"#jobs={len(self.__jobs)}",
             ]
@@ -131,7 +131,7 @@ class Scheduler:
                 "type",
                 "function",
                 "due at",
-                "timezone",
+                "tzinfo",
                 "due in",
                 "attempts",
                 "weight",

@@ -18,7 +18,7 @@ Starting with a |Scheduler| and two |Job|\ s:
     >>> sch = Scheduler()
     >>> job = sch.once(dt.timedelta(minutes=10), foo)
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, priority_function=linear_priority_function, #jobs=2
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=2
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
