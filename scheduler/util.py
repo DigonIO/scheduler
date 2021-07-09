@@ -69,14 +69,10 @@ def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
     int
         Days to the destination :class:`~scheduler.util.Weekday`.
     """
-    if wkdy_src > 6 or wkdy_src < 0 or wkdy_dest > 6 or wkdy_dest < 0:
+    if not (0 <= wkdy_src <= 6 and 0 <= wkdy_dest <= 6):
         raise SchedulerError("Weekday enumeration interval: [0,6] <=> [Monday, Sunday]")
 
-    if wkdy_src == wkdy_dest:
-        return 7
-    if wkdy_dest < wkdy_src:
-        return wkdy_dest - wkdy_src + 7
-    return wkdy_dest - wkdy_src
+    return (wkdy_dest - wkdy_src - 1) % 7 + 1
 
 
 def next_daily_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
@@ -159,7 +155,7 @@ def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datet
         microsecond=target_time.microsecond,
     )
     if (target - now).total_seconds() <= 0:
-        target = target + dt.timedelta(minutes=1)
+        return target + dt.timedelta(minutes=1)
     return target
 
 
@@ -502,9 +498,8 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
 
     if len(string) > max_length:
         pos = max_length - 1
-        if cut_tail:
-            return string[:pos] + "#"
-        return "#" + string[-pos:]
+        return string[:pos] + "#" if cut_tail else "#" + string[-pos:]
+
     return string
 
 
