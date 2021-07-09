@@ -1,18 +1,22 @@
 Job Batching
 ============
 
-It is possible to bundle a :class:`~scheduler.job.Job` with more than one
-:class:`~scheduler.job.JobTimer`. Except for :func:`~scheduler.core.Scheduler.once`
-and :func:`~scheduler.core.Scheduler.cyclic`, :class:`~scheduler.core.Scheduler` supports
+It is possible to bundle a |Job| with more than one
+|JobTimer|. Except for :func:`~scheduler.core.Scheduler.once`
+and :func:`~scheduler.core.Scheduler.cyclic`, |Scheduler| supports
 passing of the `timing` argument via a `list` for the `scheduling` functions:
 
 :func:`~scheduler.core.Scheduler.minutely`,
 :func:`~scheduler.core.Scheduler.hourly`,
-:func:`~scheduler.core.Scheduler.daily`,
-:func:`~scheduler.core.Scheduler.weekly`
+:func:`~scheduler.core.Scheduler.daily` and
+:func:`~scheduler.core.Scheduler.weekly`.
 
+.. warning:: When bundling multiple times in a single |Job|, they
+    are required to be distinct within the given context. Note that mixing of timezones
+    can lead to indistinguishable times. If indistinguishable times are used, a
+    :exc:`~scheduler.util.SchedulerError` will be raised.
 
-For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one `Job` as follows:
+For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one |Job| as follows:
 
 .. code-block:: pycon
 
@@ -25,11 +29,11 @@ For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one `
 
     >>> sch = Scheduler()
 
-    >>> timings = [dt.time(hour=12), dt.time(hour=18), dt.time(hour=0)]
+    >>> timings = [dt.time(hour=0), dt.time(hour=12), dt.time(hour=18)]
     >>> sch.daily(timing=timings, handle=foo)  # doctest:+ELLIPSIS
-    scheduler.Job(...DAILY..., [...time(12, 0), ...time(18, 0), ...time(0, 0)]...)
+    scheduler.Job(...DAILY..., [...time(0, 0), ...time(12, 0), ...time(18, 0)]...)
 
-In consequence, this `Scheduler` instance only contains a single `Job` instance of the `DAILY` type:
+In consequence, this |Scheduler| instance only contains a single |Job| instance of the `DAILY` type:
 
 .. code-block:: pycon
 
@@ -43,9 +47,4 @@ In consequence, this `Scheduler` instance only contains a single `Job` instance 
 
 In the given example, the job will be scheduled three times a day. Note that each call to
 :meth:`~scheduler.core.Scheduler.exec_jobs` will only call the function handle
-of the `Job` once, even if several timers are overdue.
-
-.. warning:: When bundling multiple times in a single :class:`~scheduler.job.Job`, they
-    are required to be distinct within the given context. Note that mixing of timezones
-    can lead to indistinguishable times. If indistinguishable times are used, a
-    :exc:`~scheduler.util.SchedulerError` will be raised.
+of the |Job| once, even if several timers are overdue.

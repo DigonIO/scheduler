@@ -1,10 +1,12 @@
+.. _guides.prioritization:
+
 Custom Prioritization
 =====================
 
-We previously discussed the default :class:`~scheduler.job.Job` prioritization behaviour
+We previously discussed the default |Job| prioritization behaviour
 in the :ref:`examples.weights` example.
 
-By default the priority in :class:`~scheduler.core.Scheduler` is computed using the
+By default the priority in |Scheduler| is computed using the
 :func:`~scheduler.util.linear_priority_function`, where :math:`\mathtt{time\_delta}` is
 defined as the difference between the current time (:math:`\mathtt{now}`) and the
 planned execution time (:math:`\mathtt{next\_exec}`) with
@@ -18,12 +20,12 @@ using the following formula:
     {\left(\mathtt{time\_delta}+1\right)}\cdot\mathtt{weight} & :\ \mathtt{time\_delta}\geq0
     \end{cases}
 
-.. note:: By default :class:`~scheduler.job.Job`\ s with a priority value smaller or
+.. note:: By default |Job|\ s with a priority value smaller or
     equal to zero are not executed by the :meth:`~scheduler.core.Scheduler.exec_jobs`
-    method of the :class:`~scheduler.core.Scheduler`.
+    method of the |Scheduler|.
 
 Some applications require customized prioritization models (e.g. with quadratic or exponential
-behaviour). Each :class:`~scheduler.core.Scheduler` instance supports a custom implementation
+behaviour). Each |Scheduler| instance supports a custom implementation
 of the prioritization function.
 
 .. note:: The custom prioritization functions implemented in this guide are directly
@@ -41,7 +43,7 @@ of the default :func:`~scheduler.util.linear_priority_function` with:
     \mathtt{weight} & :\ \mathtt{time\_delta}\geq0
     \end{cases}
 
-The :class:`~scheduler.core.Scheduler` expects a prioritization function of the signature
+The |Scheduler| expects a prioritization function of the signature
 ``Callable[[float, Job, int, int], float]``. The custom prioritization function is
 available in :mod:`~scheduler.util` as :meth:`~scheduler.util.Prioritization.constant_weight_prioritization`.
 
@@ -59,7 +61,7 @@ available in :mod:`~scheduler.util` as :meth:`~scheduler.util.Prioritization.con
             return 0
         return job.weight
 
-Instantiate the :class:`~scheduler.core.Scheduler` with the custom priority function.
+Instantiate the |Scheduler| with the custom priority function.
 
 .. code-block:: pycon
 
@@ -70,7 +72,7 @@ Instantiate the :class:`~scheduler.core.Scheduler` with the custom priority func
     >>> now = dt.datetime.now()
     >>> sch = Scheduler(max_exec=3, priority_function=Prio.constant_weight_prioritization)
 
-Schedule some :class:`~scheduler.job.Job`\ s at different points in the past with distinct weights:
+Schedule some |Job|\ s at different points in the past with distinct weights:
 
 .. code-block:: pycon
 
@@ -84,7 +86,7 @@ Schedule some :class:`~scheduler.job.Job`\ s at different points in the past wit
     ...     )
 
 Note how the columns ``due in`` and ``weight`` in the following table reflect the definitions of
-our :class:`~scheduler.job.Job`\ s.
+our |Job|\ s.
 
 .. code-block:: pycon
 
@@ -101,7 +103,7 @@ our :class:`~scheduler.job.Job`\ s.
 
 In contrast to the second the example in :ref:`examples.weights.default_behaviour`
 the time delay is not taken into consideration in the execution order of the
-:class:`~scheduler.job.Job`\ s.
+|Job|\ s.
 
 .. code-block:: pycon
 
@@ -110,9 +112,9 @@ the time delay is not taken into consideration in the execution order of the
     weight = 3; delayed_by = 1s
     weight = 2; delayed_by = 3s
 
-Due to the :class:`~scheduler.core.Scheduler`'s limit on the execution count argument
-`max_exec`, the :class:`~scheduler.job.Job` with the lowest weight is still residing
-in the :class:`~scheduler.core.Scheduler`.
+Due to the |Scheduler|'s limit on the execution count argument
+`max_exec`, the |Job| with the lowest weight is still residing
+in the |Scheduler|.
 
 .. code-block:: pycon
 
@@ -131,16 +133,16 @@ Uniform Random Prioritization
 This example demonstrates, how the priority function can be used to implement behaviours
 resembling more of a load balancer than a classical scheduler.
 
-The following function implementation interpretes the `weight` of a :class:`~scheduler.job.Job`
+The following function implementation interpretes the `weight` of a |Job|
 as a probability for it's execution using the `uniformly distributed`_ random number
 generator `random.random()`. With `random.random()` generating values in the interval
-``[0,1)``, the :class:`~scheduler.job.Job`'s `weight`\ s of ``0``, ``0.3`` and ``1``
+``[0,1)``, the |Job|'s `weight`\ s of ``0``, ``0.3`` and ``1``
 would be interpreted as a probabilities of ``0%``, ``30%`` and ``100%``.
 
 .. warning:: In contrast to a regular scheduler the following example completely disregards
     the time element.
 
-The :class:`~scheduler.core.Scheduler` expects a prioritization function of the signature
+The |Scheduler| expects a prioritization function of the signature
 ``Callable[[float, Job, int, int], float]``. The custom prioritization function is
 available in :mod:`~scheduler.util` as
 :meth:`~scheduler.util.Prioritization.random_priority_function`.
@@ -159,7 +161,7 @@ available in :mod:`~scheduler.util` as
         .. warning:: Not suitable for security relevant purposes.
 
         The priority generator will return 1 if the random number
-        is lower then the `Job`'s weight, otherwise it will return 0.
+        is lower then the |Job|'s weight, otherwise it will return 0.
         """
         _ = time
         _ = max_exec
@@ -168,8 +170,8 @@ available in :mod:`~scheduler.util` as
             return 1
         return 0
 
-Now instantiate a :class:`~scheduler.core.Scheduler` with the custom `random_priority_function`. Then create
-some generic :class:`~scheduler.job.Job`\ s with probabilities from ``0%`` to ``100%``:
+Now instantiate a |Scheduler| with the custom `random_priority_function`. Then create
+some generic |Job|\ s with probabilities from ``0%`` to ``100%``:
 
 .. code-block:: pycon
 
@@ -187,7 +189,7 @@ some generic :class:`~scheduler.job.Job`\ s with probabilities from ``0%`` to ``
     ...         weight=0.01*percentage,
     ...     )
 
-We can verify that the expected number of :class:`~scheduler.job.Job`\ s with the given probabilities are scheduled:
+We can verify that the expected number of |Job|\ s with the given probabilities are scheduled:
 
 .. code-block:: pycon
 
@@ -210,7 +212,7 @@ We can verify that the expected number of :class:`~scheduler.job.Job`\ s with th
     <BLANKLINE>
 
 For the next step we run a small statistical experiment and perform ``10k`` executions
-with the :class:`~scheduler.core.Scheduler`.
+with the |Scheduler|.
 
 .. code-block:: pycon
 

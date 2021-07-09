@@ -10,7 +10,7 @@
 ---
 
 A simple in-process python scheduler library with seamless integration of the `datetime`
-standard library. Time zone support and planning of `Job`s depending on time cycles,
+standard library. Timezone support and planning of `Job`s depending on time cycles,
 fixed times, weekdays, dates, weights, offsets and execution counts.
 
 ## Features
@@ -22,8 +22,8 @@ fixed times, weekdays, dates, weights, offsets and execution counts.
   * Oneshot `Job`s
   * Passing of parameters to `Job`
     [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/params.html)
-* Time zone compatibility
-  [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/time_zones.html)
+* Timezone compatibility
+  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/timezones.html)
 * Parallel `Job` execution with `threading` [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
 * `Job` prioritization
   * Default linear prioritization

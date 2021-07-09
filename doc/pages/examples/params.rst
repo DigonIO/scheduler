@@ -3,7 +3,7 @@ Parameter Forwarding
 
 It is possible to forward parameters to the the scheduled callback function via the `params` argument.
 It accepts a dictionary with strings referencing the callback function's arguments and is available
-for all scheduling functions of :class:`~scheduler.core.Scheduler`:
+for all scheduling functions of |Scheduler|:
 
 :func:`~scheduler.core.Scheduler.once`,
 :func:`~scheduler.core.Scheduler.cyclic`,
@@ -12,9 +12,9 @@ for all scheduling functions of :class:`~scheduler.core.Scheduler`:
 :func:`~scheduler.core.Scheduler.daily`,
 :func:`~scheduler.core.Scheduler.weekly`
 
-In the following example we schedule two :class:`~scheduler.job.Job`\ s via
-:func:`~scheduler.core.Scheduler.once`. The first `Job` exhibits the function's default behaviour.
-Whereas the second `Job` prints the modified message defined in the `params` argument.
+In the following example we schedule two |Job|\ s via
+:func:`~scheduler.core.Scheduler.once`. The first |Job| exhibits the function's default behaviour.
+Whereas the second |Job| prints the modified message defined in the `params` argument.
 
 .. code-block:: pycon
 

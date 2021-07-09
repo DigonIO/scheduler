@@ -8,6 +8,7 @@ from scheduler.util import Weekday
 
 from helpers import (
     utc,
+    utc2,
     T_2021_5_26__3_55,
     T_2021_5_26__3_55_UTC,
     samples_minutes_utc,
@@ -21,16 +22,24 @@ def test_misc_properties():
         job_type=JobType.CYCLIC,
         timing=dt.timedelta(),
         handle=foo,
+        params={"abc": 123},
+        weight=1 / 3,
+        delay=False,
         start=T_2021_5_26__3_55_UTC,
-        tzinfo=utc,
+        stop=T_2021_5_26__3_55_UTC + dt.timedelta(seconds=1),
+        skip_missing=True,
+        tzinfo=utc2,
     )
-
-    assert job.handle == foo
-    assert job.tzinfo == utc
-    assert job.weight == 1
-    assert job.max_attempts == 0
-    assert job.attempts == 0
     assert job.type == JobType.CYCLIC
+    assert job.handle == foo
+    assert job.params == {"abc": 123}
+    assert job.weight == 1 / 3
+    assert job.delay == False
+    assert job.start == T_2021_5_26__3_55_UTC
+    assert job.stop == T_2021_5_26__3_55_UTC + dt.timedelta(seconds=1)
+    assert job.tzinfo == utc
+    assert job.skip_missing == True
+    assert job._tzinfo == utc2
 
 
 @pytest.mark.parametrize(

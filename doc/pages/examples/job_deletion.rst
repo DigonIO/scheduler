@@ -1,12 +1,12 @@
 Job Deletion
 ============
 
-There are two ways to remove :class:`~scheduler.job.Job`\ s from a scheduler.
+There are two ways to remove |Job|\ s from a scheduler.
 
 Delete a specific Job by it's reference
 ---------------------------------------
 
-Setup a couple of :class:`~scheduler.job.Job`\ s
+Setup a couple of |Job|\ s
 
 .. code-block:: pycon
 
@@ -31,7 +31,7 @@ Setup a couple of :class:`~scheduler.job.Job`\ s
     CYCLIC   foo()            2021-06-20 05:22:31   0:00:02         0/inf      1
     <BLANKLINE>
 
-Remove the specified `Job` `j2` from the :class:`~scheduler.core.Scheduler` via
+Remove the specified |Job| `j2` from the |Scheduler| via
 the :meth:`~scheduler.core.Scheduler.delete_job` method:
 
 .. code-block:: pycon
@@ -50,7 +50,7 @@ the :meth:`~scheduler.core.Scheduler.delete_job` method:
 Delete all Jobs
 ---------------
 
-Setup a couple of :class:`~scheduler.job.Job`\ s
+Setup a couple of |Job|\ s
 
 .. code-block:: pycon
 
@@ -78,7 +78,7 @@ Setup a couple of :class:`~scheduler.job.Job`\ s
     CYCLIC   foo()            2021-06-20 05:22:31   0:00:02         0/inf      1
     <BLANKLINE>
 
-Clear the :class:`~scheduler.core.Scheduler` from :class:`~scheduler.job.Job`\ s
+Clear the |Scheduler| from |Job|\ s
 with a single function call to :meth:`~scheduler.core.Scheduler.delete_all_jobs`.
 
 .. code-block:: pycon

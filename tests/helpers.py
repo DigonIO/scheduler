@@ -5,6 +5,7 @@ from scheduler.util import Weekday
 
 
 utc = dt.timezone.utc
+utc2 = dt.timezone(dt.timedelta(hours=2))
 T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
 T_2021_5_26__3_55_UTC = dt.datetime(2021, 5, 26, 3, 55, tzinfo=utc)
 
