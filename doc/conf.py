@@ -44,6 +44,9 @@ extensions = [
     "m2r2",
 ]
 
+with open("_assets/prolog.rst", encoding="utf-8") as f:
+    rst_prolog = f.read()
+
 imgmath_image_format = "svg"
 # Add any paths that contain templates here, relative to this directory.
 numpydoc_show_class_members = False
@@ -55,7 +58,7 @@ autosummary_generate = True
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "_assets"]
 pygments_style = "default"
 
 # -- Options for HTML output -------------------------------------------------

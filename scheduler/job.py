@@ -248,7 +248,7 @@ class Job(AbstractJob):
         Define a point in time after which a :class:`~scheduler.job.Job` will be stopped
         and deleted.
     max_attempts : int
-        Number of times the :class:`~scheduler.job.Job` will be executed. ``0 <=> inf``
+        Number of times the :class:`~scheduler.job.Job` will be executed where ``0 <=> inf``.
         A :class:`~scheduler.job.Job` with no free attempt will be deleted.
     skip_missing : bool
         If ``True`` a :class:`~scheduler.job.Job` will only schedule it's newest planned

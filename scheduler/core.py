@@ -322,6 +322,17 @@ class Scheduler:
         -------
         Job
             Instance of a scheduled :class:`~scheduler.job.Job`.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            :class:`~scheduler.job.Job` properties, optional
+
+            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+
+            Here is a list of available :class:`~scheduler.job.Job` properties:
+
+            .. include:: ../_assets/kwargs.rst
         """
         try:
             tg.check_type("timing", timing, TimingTypeCyclic)
@@ -354,6 +365,17 @@ class Scheduler:
         -------
         Job
             Instance of a scheduled :class:`~scheduler.job.Job`.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            :class:`~scheduler.job.Job` properties, optional
+
+            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+
+            Here is a list of available :class:`~scheduler.job.Job` properties:
+
+            .. include:: ../_assets/kwargs.rst
         """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
@@ -386,6 +408,17 @@ class Scheduler:
         -------
         Job
             Instance of a scheduled :class:`~scheduler.job.Job`.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            :class:`~scheduler.job.Job` properties, optional
+
+            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+
+            Here is a list of available :class:`~scheduler.job.Job` properties:
+
+            .. include:: ../_assets/kwargs.rst
         """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
@@ -413,6 +446,17 @@ class Scheduler:
         -------
         Job
             Instance of a scheduled :class:`~scheduler.job.Job`.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            :class:`~scheduler.job.Job` properties, optional
+
+            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+
+            Here is a list of available :class:`~scheduler.job.Job` properties:
+
+            .. include:: ../_assets/kwargs.rst
         """
         try:
             tg.check_type("timing", timing, TimingTypeDaily)
@@ -442,6 +486,17 @@ class Scheduler:
         -------
         Job
             Instance of a scheduled :class:`~scheduler.job.Job`.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            :class:`~scheduler.job.Job` properties, optional
+
+            `kwargs` are used to specify :class:`~scheduler.job.Job` properties.
+
+            Here is a list of available :class:`~scheduler.job.Job` properties:
+
+            .. include:: ../_assets/kwargs.rst
         """
         try:
             tg.check_type("timing", timing, TimingTypeWeekly)
