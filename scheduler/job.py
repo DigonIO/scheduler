@@ -288,7 +288,8 @@ class Job(AbstractJob):
         self.__pending_timer: JobTimer
 
         expanded_timing = self.__standardize_timing_format()
-        self.__check_allowed_timezone_info(expanded_timing)
+        self.__check_timing_tzinfo(expanded_timing)
+        self.__check_start_stop_tzinfo()
         self.__check_duplicate_effective_timings(expanded_timing)
 
         # create JobTimers
@@ -323,7 +324,7 @@ class Job(AbstractJob):
                 self.__timing = cast(dt.time, self.__timing).replace(hour=0)
         return None
 
-    def __check_allowed_timezone_info(
+    def __check_timing_tzinfo(
         self, expanded_timing: Optional[list[tuple[Weekday, dt.time]]]
     ):
         if isinstance(self.__timing, list):
@@ -343,6 +344,7 @@ class Job(AbstractJob):
                 if bool(cast(dt.time, self.__timing).tzinfo) ^ bool(self.__tzinfo):
                     raise SchedulerError(TZ_ERROR_MSG)
 
+    def __check_start_stop_tzinfo(self):
         if self.__start:
             if bool(self.__start.tzinfo) ^ bool(self.__tzinfo):
                 raise SchedulerError(_TZ_ERROR_MSG.format("start"))
