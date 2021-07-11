@@ -1,4 +1,8 @@
-# scheduler
+<p align="center">
+  <a href="https://gitlab.com/DigonIO/scheduler"><img alt="scheduler" src="https://gitlab.com/DigonIO/scheduler/-/raw/logo/doc/_assets/logo_name.svg" width="60%"></a>
+</p>
+<p>A simple in-process python scheduler library with timezone and threading support. Schedule tasks by their
+time cycles, fixed times, weekdays, dates, weights, offsets and execution counts and automate Jobs.</p>
 
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
 [![license](https://img.shields.io/badge/license-LGPLv3-orange)](https://gitlab.com/DigonIO/scheduler/-/blob/master/LICENSE)
@@ -9,9 +13,7 @@
 
 ---
 
-A simple in-process python scheduler library with seamless integration of the `datetime`
-standard library. Timezone support and planning of `Job`s depending on time cycles,
-fixed times, weekdays, dates, weights, offsets and execution counts.
+
 
 ## Features
 
