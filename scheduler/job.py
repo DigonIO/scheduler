@@ -417,7 +417,7 @@ class Job(AbstractJob):
         self.__type = job_type
         self.__timing = timing
         self.__handle = handle
-        self.__params = params or {}
+        self.__params = {} if params is None else params
         self.__max_attempts = max_attempts
         self.__weight = weight
         self.__delay = delay
