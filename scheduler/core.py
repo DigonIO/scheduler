@@ -6,7 +6,8 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 import queue
 import threading
-from typing import Any, Callable, Optional, Union, cast
+import operator
+from typing import Any, Callable, Optional, Union, Iterable, cast
 
 import typeguard as tg
 
@@ -173,10 +174,33 @@ class Scheduler:
         with self.__jobs_lock:
             self.__jobs.remove(job)
 
-    def delete_all_jobs(self) -> None:
+    def delete_jobs(
+        self,
+        tags: Optional[list[str]] = None,
+        mode: Callable[Iterable[object], bool] = any,
+    ) -> int:
         r"""Delete all `Job`\ s from the `Scheduler`."""
         with self.__jobs_lock:
-            self.__jobs = set()
+            if tags is None or tags == {}:
+                n_jobs = len(self.__jobs)
+                self.__jobs = set()
+                return n_jobs
+
+            op_rel: Union[operator.le, operator.eq]
+            if mode == any:
+                op_rel = operator.le
+            elif mode == all:
+                op_rel = operator.eq
+            else:
+                raise SchedulerError("Unknown deletion mode, chose 'any' or 'all'")
+
+            to_delete: set[Job] = set()
+            for job in self.__jobs:
+                if op_rel(job.tags, tags):
+                    to_delete.add(job)
+
+            self.__jobs = self.__jobs - to_delete
+            return len(to_delete)
 
     @staticmethod
     def __exec_job_worker(que: queue.Queue[Job]):

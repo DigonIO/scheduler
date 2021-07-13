@@ -593,7 +593,7 @@ class Job(AbstractJob):
         set[str]
             The tags of a |Job|.
         """
-        return self.__tags
+        return self.__tags.copy()
 
     @property
     def weight(self) -> float:
