@@ -17,12 +17,12 @@ from helpers import (
 @pytest.mark.parametrize(
     "job_type, timing, start, stop, tzinfo, err",
     (
-        [JobType.WEEKLY, Weekday.MONDAY, None, None, None, None],
+        [JobType.WEEKLY, [Weekday.MONDAY], None, None, None, None],
         [JobType.WEEKLY, [Weekday.MONDAY, Weekday.TUESDAY], None, None, None, None],
-        [JobType.WEEKLY, Weekday.MONDAY, None, None, utc, None],
+        [JobType.WEEKLY, [Weekday.MONDAY], None, None, utc, None],
         [
             JobType.DAILY,
-            dt.time(tzinfo=utc),
+            [dt.time(tzinfo=utc)],
             dt.datetime.now(utc),
             None,
             utc,
@@ -30,7 +30,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(tzinfo=utc),
+            [dt.time(tzinfo=utc)],
             dt.datetime.now(utc),
             None,
             utc,
@@ -38,7 +38,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(tzinfo=None),
+            [dt.time(tzinfo=None)],
             dt.datetime.now(utc),
             None,
             utc,
@@ -54,7 +54,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(tzinfo=None),
+            [dt.time(tzinfo=None)],
             None,
             dt.datetime.now(utc),
             utc,
@@ -62,7 +62,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(),
+            [dt.time()],
             dt.datetime.now(utc),
             None,
             None,
@@ -70,7 +70,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(),
+            [dt.time()],
             None,
             dt.datetime.now(utc),
             None,
@@ -78,7 +78,7 @@ from helpers import (
         ],
         [
             JobType.WEEKLY,
-            Weekday.MONDAY,
+            [Weekday.MONDAY],
             dt.datetime.now(utc),
             dt.datetime.now(utc) - dt.timedelta(hours=1),
             utc,

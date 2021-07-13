@@ -46,7 +46,7 @@ from helpers import samples_days, sample_seconds_interference_lag
             [0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 6, 6],
             Job(
                 JobType.CYCLIC,
-                dt.timedelta(seconds=4),
+                [dt.timedelta(seconds=4)],
                 print,
                 start=sample_seconds_interference_lag[0],
                 skip_missing=False,
@@ -57,7 +57,7 @@ from helpers import samples_days, sample_seconds_interference_lag
             [0, 1, 1, 1, 1, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 5, 5, 5, 5],
             Job(
                 JobType.CYCLIC,
-                dt.timedelta(seconds=4),
+                [dt.timedelta(seconds=4)],
                 print,
                 start=sample_seconds_interference_lag[0],
                 skip_missing=True,

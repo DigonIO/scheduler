@@ -6,16 +6,18 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 import threading
 import queue
-from typing import Callable, Optional, Any
+from typing import Callable, Optional, Any, Union, cast
 
 import typeguard as tg
 
 from scheduler.job import (
-    TimingTypeCyclic,
-    TimingTypeDaily,
-    TimingTypeWeekly,
+    TimingCyclic,
+    TimingDailyUnion,
+    TimingWeeklyUnion,
+    TimingOnceUnion,
+    TimingDailyUnion,
+    TimingWeeklyUnion,
     TimingJobUnion,
-    TimingTypeOnce,
     CYCLIC_TYPE_ERROR_MSG,
     MINUTELY_TYPE_ERROR_MSG,
     HOURLY_TYPE_ERROR_MSG,
@@ -287,14 +289,19 @@ class Scheduler:
     def __schedule(
         self,
         job_type: JobType,
-        timing: TimingJobUnion,
+        timing: Union[TimingCyclic, TimingDailyUnion, TimingWeeklyUnion],
         handle: Callable[..., None],
         **kwargs,
     ) -> Job:
         """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
+        if not isinstance(timing, list):
+            timing_list = cast(TimingJobUnion, [timing])
+        else:
+            timing_list = cast(TimingJobUnion, timing)
+
         job = Job(
             job_type=job_type,
-            timing=timing,
+            timing=timing_list,
             handle=handle,
             tzinfo=self.__tzinfo,
             **kwargs,
@@ -304,7 +311,7 @@ class Scheduler:
                 self.__jobs.add(job)
         return job
 
-    def cyclic(self, timing: TimingTypeCyclic, handle: Callable[..., None], **kwargs):
+    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a cyclic `Job`.
 
@@ -314,7 +321,7 @@ class Scheduler:
         Parameters
         ----------
         timing : TimingTypeCyclic
-            Desired execution time(s).
+            Desired execution time.
         handle : Callable[..., None]
             Handle to a callback function.
 
@@ -335,14 +342,14 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeCyclic)
+            tg.check_type("timing", timing, TimingCyclic)
         except TypeError as err:
             raise SchedulerError(CYCLIC_TYPE_ERROR_MSG) from err
         return self.__schedule(
             job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs
         )
 
-    def minutely(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
+    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a minutely `Job`.
 
@@ -356,7 +363,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeDaily
+        timing : TimingDailyUnion
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -378,14 +385,14 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeDaily)
+            tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(MINUTELY_TYPE_ERROR_MSG) from err
         return self.__schedule(
             job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs
         )
 
-    def hourly(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
+    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
         r"""
         Schedule an hourly `Job`.
 
@@ -399,7 +406,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeDaily
+        timing : TimingDailyUnion
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -421,14 +428,14 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeDaily)
+            tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(HOURLY_TYPE_ERROR_MSG) from err
         return self.__schedule(
             job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs
         )
 
-    def daily(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
+    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a daily `Job`.
 
@@ -437,7 +444,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeDaily
+        timing : TimingDailyUnion
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -459,14 +466,14 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeDaily)
+            tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(DAILY_TYPE_ERROR_MSG) from err
         return self.__schedule(
             job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs
         )
 
-    def weekly(self, timing: TimingTypeWeekly, handle: Callable[..., None], **kwargs):
+    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a weekly `Job`.
 
@@ -477,7 +484,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeWeekly
+        timing : TimingWeeklyUnion
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -499,7 +506,7 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeWeekly)
+            tg.check_type("timing", timing, TimingWeeklyUnion)
         except TypeError as err:
             raise SchedulerError(WEEKLY_TYPE_ERROR_MSG) from err
         return self.__schedule(
@@ -508,7 +515,7 @@ class Scheduler:
 
     def once(
         self,
-        timing: TimingTypeOnce,
+        timing: TimingOnceUnion,
         handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         weight: float = 1,
@@ -518,7 +525,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeOnce
+        timing : TimingOnceUnion
             Desired execution time.
         handle : Callable[..., None]
             Handle to a callback function.
@@ -534,7 +541,7 @@ class Scheduler:
             Instance of a scheduled |Job|.
         """
         try:
-            tg.check_type("timing", timing, TimingTypeOnce)
+            tg.check_type("timing", timing, TimingOnceUnion)
         except TypeError as err:
             raise SchedulerError(ONCE_TYPE_ERROR_MSG) from err
         if isinstance(timing, dt.datetime):

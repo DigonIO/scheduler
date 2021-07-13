@@ -269,7 +269,7 @@ def bar(msg="bar"):
 job_args = (
     {
         "job_type": JobType.CYCLIC,
-        "timing": dt.timedelta(hours=1),
+        "timing": [dt.timedelta(hours=1)],
         "handle": foo,
         "params": None,
         "max_attempts": 1,
@@ -282,7 +282,7 @@ job_args = (
     },
     {
         "job_type": JobType.MINUTELY,
-        "timing": dt.time(second=20),
+        "timing": [dt.time(second=20)],
         "handle": bar,
         "params": {"msg": "foobar"},
         "max_attempts": 20,
@@ -295,7 +295,7 @@ job_args = (
     },
     {
         "job_type": JobType.DAILY,
-        "timing": dt.time(hour=7, minute=5),
+        "timing": [dt.time(hour=7, minute=5)],
         "handle": foo,
         "params": None,
         "max_attempts": 7,
@@ -310,18 +310,18 @@ job_args = (
 
 job_reprs = (
     [
-        "scheduler.Job(<JobType.CYCLIC: 1>, datetime.timedelta(seconds=3600), <function foo at 0x",
+        "scheduler.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
         ">, {}, 1, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None)",
     ],
     [
-        "scheduler.Job(<JobType.MINUTELY: 2>, datetime.time(0, 0, 20), <function bar at 0x",
+        "scheduler.Job(<JobType.MINUTELY: 2>, [datetime.time(0, 0, 20)], <function bar at 0x",
         (
             ">, {'msg': 'foobar'}, 20, 0, False, datetime.datetime(2021, 5, 26, 3, 54, 15),"
             " datetime.datetime(2021, 5, 26, 4, 5), False, None)"
         ),
     ],
     [
-        "scheduler.Job(<JobType.DAILY: 4>, datetime.time(7, 5), <function foo at 0x",
+        "scheduler.Job(<JobType.DAILY: 4>, [datetime.time(7, 5)], <function foo at 0x",
         ">, {}, 7, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None)",
     ],
 )
@@ -329,7 +329,7 @@ job_reprs = (
 job_args_utc = (
     {
         "job_type": JobType.CYCLIC,
-        "timing": dt.timedelta(hours=1),
+        "timing": [dt.timedelta(hours=1)],
         "handle": foo,
         "params": None,
         "max_attempts": 0,
@@ -342,7 +342,7 @@ job_args_utc = (
     },
     {
         "job_type": JobType.HOURLY,
-        "timing": dt.time(hour=7, minute=5, tzinfo=utc),
+        "timing": [dt.time(hour=7, minute=5, tzinfo=utc)],
         "handle": print,
         "params": None,
         "max_attempts": 0,
@@ -355,7 +355,7 @@ job_args_utc = (
     },
     {
         "job_type": JobType.WEEKLY,
-        "timing": Weekday.MONDAY,
+        "timing": [Weekday.MONDAY],
         "handle": bar,
         "params": None,
         "max_attempts": 0,
@@ -386,7 +386,7 @@ job_args_utc = (
 
 job_reprs_utc = (
     [
-        "scheduler.Job(<JobType.CYCLIC: 1>, datetime.timedelta(seconds=3600), <function foo at 0x",
+        "scheduler.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
         (
             ">, {}, 0, 0.3333333333333333, False, datetime.datetime(2021, 5, 26, 3, 54, 59, 999990"
             ", tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"
@@ -394,14 +394,14 @@ job_reprs_utc = (
     ],
     [
         (
-            "scheduler.Job(<JobType.HOURLY: 3>, datetime.time(0, 5, tzinfo=datetime.timezone.utc),"
+            "scheduler.Job(<JobType.HOURLY: 3>, [datetime.time(0, 5, tzinfo=datetime.timezone.utc)],"
             " <built-in function print>, {}, 0, 20, False, datetime.datetime(2021, 5, 26, 3, 55,"
             " tzinfo=datetime.timezone.utc), datetime.datetime(2021, 5, 26, 23, 55, "
             "tzinfo=datetime.timezone.utc), False, datetime.timezone.utc)"
         )
     ],
     [
-        "scheduler.Job(<JobType.WEEKLY: 5>, <Weekday.MONDAY: 0>, <function bar at 0x",
+        "scheduler.Job(<JobType.WEEKLY: 5>, [<Weekday.MONDAY: 0>], <function bar at 0x",
         (
             ">, {}, 0, 1, False, datetime.datetime(2021, 5, 25, 3, 55, "
             "tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"

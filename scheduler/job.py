@@ -8,7 +8,7 @@ from __future__ import annotations
 import datetime as dt
 import threading
 
-from typing import Callable, Optional, Union, Any, cast
+from typing import Callable, Optional, Union, Any, cast, ClassVar
 
 import typeguard as tg
 
@@ -29,21 +29,28 @@ from scheduler.util import (
 )
 
 # execution interval
-TimingTypeCyclic = dt.timedelta
+TimingCyclic = dt.timedelta  # Scheduler
+_TimingCyclicList = list[TimingCyclic]
+
 # time on the clock
-TimingTypeDaily = Union[dt.time, list[dt.time]]
+_TimingDaily = dt.time  # JobTimer
+# TimingDaily = Union[dt.time, list[dt.time]]
+_TimingDailyList = list[_TimingDaily]  # Job
+TimingDailyUnion = Union[_TimingDaily, _TimingDailyList]  # Scheduler
 
 # day of the week or time on the clock
-_TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
-TimingTypeWeekly = Union[_TimingTypeDay, list[_TimingTypeDay]]
+_TimingWeekly = Union[Weekday, tuple[Weekday, dt.time]]
+_TimingWeeklyList = list[_TimingWeekly]
+TimingWeeklyUnion = Union[_TimingWeekly, _TimingWeeklyList]  # Scheduler
 
-TimingJobTimerUnion = Union[dt.timedelta, dt.time, _TimingTypeDay]
-TimingJobUnion = Union[TimingTypeCyclic, TimingTypeDaily, TimingTypeWeekly]
 
-# specify point in time, distance to reference time, day of the week or time on the clock
-TimingTypeOnce = Union[
-    dt.datetime, dt.timedelta, Weekday, dt.time, tuple[Weekday, dt.time]
-]
+TimingJobTimerUnion = Union[TimingCyclic, _TimingDaily, _TimingWeekly]  # JobTimer
+TimingJobUnion = Union[_TimingCyclicList, _TimingDailyList, _TimingWeeklyList]  # Job
+
+TimingOnceUnion = Union[
+    dt.datetime, TimingCyclic, _TimingWeekly, _TimingDaily
+]  # Scheduler.once
+
 
 DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
 
@@ -70,11 +77,11 @@ START_STOP_ERROR = "Start argument must be smaller than the stop argument."
 
 
 JOB_TIMING_TYPE_MAPPING = {
-    JobType.CYCLIC: {"type": TimingTypeCyclic, "err": CYCLIC_TYPE_ERROR_MSG},
-    JobType.MINUTELY: {"type": TimingTypeDaily, "err": MINUTELY_TYPE_ERROR_MSG},
-    JobType.HOURLY: {"type": TimingTypeDaily, "err": HOURLY_TYPE_ERROR_MSG},
-    JobType.DAILY: {"type": TimingTypeDaily, "err": DAILY_TYPE_ERROR_MSG},
-    JobType.WEEKLY: {"type": TimingTypeWeekly, "err": WEEKLY_TYPE_ERROR_MSG},
+    JobType.CYCLIC: {"type": _TimingCyclicList, "err": CYCLIC_TYPE_ERROR_MSG},
+    JobType.MINUTELY: {"type": _TimingDailyList, "err": MINUTELY_TYPE_ERROR_MSG},
+    JobType.HOURLY: {"type": _TimingDailyList, "err": HOURLY_TYPE_ERROR_MSG},
+    JobType.DAILY: {"type": _TimingDailyList, "err": DAILY_TYPE_ERROR_MSG},
+    JobType.WEEKLY: {"type": _TimingWeeklyList, "err": WEEKLY_TYPE_ERROR_MSG},
 }
 
 JOB_NEXT_DAYLIKE_MAPPING = {
@@ -131,7 +138,7 @@ class JobTimer:
                 return
 
             if self.__job_type == JobType.WEEKLY:
-                #  check for _TimingTypeDay = Union[Weekday, tuple[Weekday, dt.time]]
+                #  check for _TimingWeekDay = Union[Weekday, tuple[Weekday, dt.time]]
                 if isinstance(self.__timing, Weekday):
                     self.__next_exec = next_weekday_occurrence(
                         self.__next_exec, self.__timing
@@ -208,6 +215,9 @@ class JobUtil:
         """
         try:
             tg.check_type("timing", timing, JOB_TIMING_TYPE_MAPPING[job_type]["type"])
+            if job_type == JobType.CYCLIC:
+                if not len(timing) == 1:
+                    raise TypeError
         except TypeError as err:
             raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
@@ -215,59 +225,42 @@ class JobUtil:
     def standardize_timing_format(
         job_type: JobType, timing: TimingJobUnion, tzinfo: Optional[dt.tzinfo]
     ) -> tuple[TimingJobUnion, Optional[list[tuple[Weekday, dt.time]]]]:
-        if isinstance(timing, list):
-            if job_type is JobType.MINUTELY:
-                timing = [
-                    time.replace(hour=0, minute=0)
-                    for time in cast(list[dt.time], timing)
-                ]
-            elif job_type is JobType.HOURLY:
-                timing = [time.replace(hour=0) for time in cast(list[dt.time], timing)]
-            elif job_type is JobType.WEEKLY:
-                return timing, [
-                    ele if isinstance(ele, tuple) else (ele, dt.time(tzinfo=tzinfo))
-                    for ele in cast(list[_TimingTypeDay], timing)
-                ]
-        else:
-            if job_type is JobType.MINUTELY:
-                timing = cast(dt.time, timing).replace(hour=0, minute=0)
-            elif job_type is JobType.HOURLY:
-                timing = cast(dt.time, timing).replace(hour=0)
+        if job_type is JobType.MINUTELY:
+            timing = [
+                time.replace(hour=0, minute=0) for time in cast(list[dt.time], timing)
+            ]
+        elif job_type is JobType.HOURLY:
+            timing = [time.replace(hour=0) for time in cast(list[dt.time], timing)]
+        elif job_type is JobType.WEEKLY:
+            return timing, [
+                ele if isinstance(ele, tuple) else (ele, dt.time(tzinfo=tzinfo))
+                for ele in cast(_TimingWeeklyList, timing)
+            ]
         return timing, None
 
     @staticmethod
     def check_timing_tzinfo(
-        job_type: TimingJobUnion,
+        job_type: JobType,
         timing: TimingJobUnion,
         tzinfo: Optional[dt.tzinfo],
         expanded_timing: Optional[list[tuple[Weekday, dt.time]]],
     ):
-        if isinstance(timing, list):
-            if job_type is JobType.WEEKLY:
-                for _, time in cast(list[tuple[Weekday, dt.time]], expanded_timing):
-                    if bool(time.tzinfo) ^ bool(tzinfo):
-                        raise SchedulerError(TZ_ERROR_MSG)
-            elif job_type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
-                for time in cast(list[dt.time], timing):
-                    if bool(time.tzinfo) ^ bool(tzinfo):
-                        raise SchedulerError(TZ_ERROR_MSG)
-        else:
-            if job_type is JobType.WEEKLY and isinstance(timing, tuple):
-                if bool(timing[1].tzinfo) ^ bool(tzinfo):
+        if job_type is JobType.WEEKLY:
+            for _, time in cast(list[tuple[Weekday, dt.time]], expanded_timing):
+                if bool(time.tzinfo) ^ bool(tzinfo):
                     raise SchedulerError(TZ_ERROR_MSG)
-            elif job_type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
-                if bool(cast(dt.time, timing).tzinfo) ^ bool(tzinfo):
+        elif job_type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
+            for time in cast(list[dt.time], timing):
+                if bool(time.tzinfo) ^ bool(tzinfo):
                     raise SchedulerError(TZ_ERROR_MSG)
 
     @staticmethod
     def check_duplicate_effective_timings(
         job_type: JobType,
         timing: TimingJobUnion,
-        tzinfo: dt.tzinfo,
+        tzinfo: Optional[dt.tzinfo],
         expanded_timing: Optional[list[tuple[Weekday, dt.time]]],
     ):
-        if not isinstance(timing, list):
-            return
         if job_type is JobType.WEEKLY:
             if not are_weekday_times_unique(
                 cast(list[tuple[Weekday, dt.time]], expanded_timing), tzinfo
@@ -283,7 +276,9 @@ class JobUtil:
 
     @staticmethod
     def set_start_check_stop_tzinfo(
-        start: dt.datetime, stop: dt.datetime, tzinfo: dt.tzinfo
+        start: Optional[dt.datetime],
+        stop: Optional[dt.datetime],
+        tzinfo: Optional[dt.tzinfo],
     ) -> dt.datetime:
         if start:
             if bool(start.tzinfo) ^ bool(tzinfo):
@@ -307,8 +302,6 @@ class JobUtil:
         start: dt.datetime,
         skip_missing: bool,
     ) -> list[JobTimer]:
-        if not isinstance(timing, list):
-            timing = [timing]
         timers = [JobTimer(job_type, tim, start, skip_missing) for tim in timing]
 
         # generate first dt_stamps for each JobTimer
@@ -338,7 +331,7 @@ class Job(AbstractJob):
     ----------
     job_type : JobType
         Indicator which defines which calculations has to be used.
-    timing : TimingTypeWeekly
+    timing : TimingWeekly
         Desired execution time(s).
     handle : Callable[..., None]
         Handle to a callback function.
@@ -373,7 +366,7 @@ class Job(AbstractJob):
     __type: JobType
     __timing: TimingJobUnion
     __handle: Callable[..., None]
-    __params: Optional[dict[str, Any]]
+    __params: dict[str, Any]
     __max_attempts: int
     __weight: float
     __delay: bool
@@ -416,7 +409,8 @@ class Job(AbstractJob):
 
         self.__type = job_type
         self.__timing = timing
-        self.__handle = handle
+        # NOTE: https://github.com/python/mypy/issues/2427
+        self.__handle = handle  # type: ignore
         self.__params = {} if params is None else params
         self.__max_attempts = max_attempts
         self.__weight = weight

@@ -20,7 +20,7 @@ from helpers import (
 def test_misc_properties():
     job = Job(
         job_type=JobType.CYCLIC,
-        timing=dt.timedelta(),
+        timing=[dt.timedelta()],
         handle=foo,
         params={"abc": 123},
         weight=1 / 3,
@@ -71,14 +71,14 @@ def test_job__lt__(
 ):
     job_1 = Job(
         job_type=JobType.CYCLIC,
-        timing=dt.timedelta(),
+        timing=[dt.timedelta()],
         handle=lambda: None,
         start=start_1,
         tzinfo=tzinfo,
     )
     job_2 = Job(
         job_type=JobType.CYCLIC,
-        timing=dt.timedelta(),
+        timing=[dt.timedelta()],
         handle=lambda: None,
         start=start_2,
         tzinfo=tzinfo,
@@ -91,7 +91,7 @@ def test_job__lt__(
     (
         [
             JobType.CYCLIC,
-            dt.timedelta(minutes=2),
+            [dt.timedelta(minutes=2)],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
@@ -99,7 +99,7 @@ def test_job__lt__(
         ],
         [
             JobType.CYCLIC,
-            dt.timedelta(weeks=2),
+            [dt.timedelta(weeks=2)],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
@@ -107,7 +107,7 @@ def test_job__lt__(
         ],
         [
             JobType.WEEKLY,
-            Weekday.SUNDAY,
+            [Weekday.SUNDAY],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
