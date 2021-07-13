@@ -335,12 +335,14 @@ class Job(AbstractJob):
         Desired execution time(s).
     handle : Callable[..., None]
         Handle to a callback function.
-    params : dict[str, Any]
+    params : Optional[dict[str, Any]]
         The payload arguments to pass to the function handle within a
         |Job|.
-    weight : float
+    tags : Optional[set[str]]
+        The tags of the |Job|.
+    weight : Optional[float]
         Relative `weight` against other |Job|\ s.
-    delay : bool
+    delay : Optional[bool]
         If ``True`` wait with the execution for the next scheduled time.
     start : Optional[datetime.datetime]
         Set the reference `datetime.datetime` stamp the |Job|
@@ -348,13 +350,13 @@ class Job(AbstractJob):
     stop : Optional[datetime.datetime]
         Define a point in time after which a |Job| will be stopped
         and deleted.
-    max_attempts : int
+    max_attempts : Optional[int]
         Number of times the |Job| will be executed where ``0 <=> inf``.
         A |Job| with no free attempt will be deleted.
-    skip_missing : bool
+    skip_missing : Optional[bool]
         If ``True`` a |Job| will only schedule it's newest planned
         execution and drop older ones.
-    tzinfo : datetime.tzinfo
+    tzinfo : Optional[datetime.tzinfo]
         Set the timezone of the |Scheduler| the |Job|
         is scheduled in.
 
@@ -368,6 +370,7 @@ class Job(AbstractJob):
     __handle: Callable[..., None]
     __params: dict[str, Any]
     __max_attempts: int
+    __tags: set[str]
     __weight: float
     __delay: bool
     __start: Optional[dt.datetime]
@@ -388,6 +391,7 @@ class Job(AbstractJob):
         handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
+        tags: Optional[set[str]] = None,
         weight: float = 1,
         delay: bool = True,
         start: Optional[dt.datetime] = None,
@@ -411,8 +415,9 @@ class Job(AbstractJob):
         self.__timing = timing
         # NOTE: https://github.com/python/mypy/issues/2427
         self.__handle = handle  # type: ignore
-        self.__params = {} if params is None else params
+        self.__params = {} if params is None else params.copy()
         self.__max_attempts = max_attempts
+        self.__tags = set() if tags is None else tags.copy()
         self.__weight = weight
         self.__delay = delay
         self.__stop = stop
@@ -578,6 +583,18 @@ class Job(AbstractJob):
             |Job|.
         """
         return self.__params
+
+    @property
+    def tags(self) -> set[str]:
+        r"""
+        Get the tags of a `Job`.
+
+        Returns
+        -------
+        set[str]
+            The tags of a |Job|.
+        """
+        return self.__tags
 
     @property
     def weight(self) -> float:

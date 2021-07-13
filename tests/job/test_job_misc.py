@@ -23,6 +23,7 @@ def test_misc_properties():
         timing=[dt.timedelta()],
         handle=foo,
         params={"abc": 123},
+        tags={"test", "misc"},
         weight=1 / 3,
         delay=False,
         start=T_2021_5_26__3_55_UTC,
@@ -33,6 +34,7 @@ def test_misc_properties():
     assert job.type == JobType.CYCLIC
     assert job.handle == foo
     assert job.params == {"abc": 123}
+    assert job.tags == {"test", "misc"}
     assert job.weight == 1 / 3
     assert job.delay == False
     assert job.start == T_2021_5_26__3_55_UTC
