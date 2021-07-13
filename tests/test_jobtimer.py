@@ -3,7 +3,7 @@ import datetime as dt
 import pytest
 
 from scheduler import SchedulerError
-from scheduler.job import JobTimer, JobType, sane_timing_types
+from scheduler.job import JobTimer, JobType, JobUtil
 from scheduler.util import Weekday
 
 from helpers import (
@@ -137,6 +137,6 @@ def test_skip(delta_m, offset_m, skip, res_delta_m):
 def test_sane_timing_types(job_type, timing, err):
     if err:
         with pytest.raises(SchedulerError, match=err):
-            sane_timing_types(job_type, timing)
+            JobUtil.sane_timing_types(job_type, timing)
     else:
-        sane_timing_types(job_type, timing)
+        JobUtil.sane_timing_types(job_type, timing)

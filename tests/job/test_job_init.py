@@ -46,6 +46,14 @@ from helpers import (
         ],
         [
             JobType.DAILY,
+            [dt.time(tzinfo=None)],
+            None,
+            None,
+            utc,
+            TZ_ERROR_MSG,
+        ],
+        [
+            JobType.DAILY,
             dt.time(tzinfo=None),
             None,
             dt.datetime.now(utc),
