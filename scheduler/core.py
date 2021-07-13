@@ -4,34 +4,32 @@ Scheduler implementation for job based callback function execution.
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import datetime as dt
-import threading
 import queue
-from typing import Callable, Optional, Any, Union, cast
+import threading
+from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
 from scheduler.job import (
+    CYCLIC_TYPE_ERROR_MSG,
+    DAILY_TYPE_ERROR_MSG,
+    HOURLY_TYPE_ERROR_MSG,
+    MINUTELY_TYPE_ERROR_MSG,
+    TZ_ERROR_MSG,
+    WEEKLY_TYPE_ERROR_MSG,
+    Job,
+    JobType,
     TimingCyclic,
     TimingDailyUnion,
-    TimingWeeklyUnion,
-    TimingOnceUnion,
-    TimingDailyUnion,
-    TimingWeeklyUnion,
     TimingJobUnion,
-    CYCLIC_TYPE_ERROR_MSG,
-    MINUTELY_TYPE_ERROR_MSG,
-    HOURLY_TYPE_ERROR_MSG,
-    DAILY_TYPE_ERROR_MSG,
-    WEEKLY_TYPE_ERROR_MSG,
-    TZ_ERROR_MSG,
-    JobType,
-    Job,
+    TimingOnceUnion,
+    TimingWeeklyUnion,
 )
 from scheduler.util import (
-    SchedulerError,
     AbstractJob,
-    Weekday,
     Prioritization,
+    SchedulerError,
+    Weekday,
     str_cutoff,
 )
 

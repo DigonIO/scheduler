@@ -8,9 +8,8 @@ from __future__ import annotations
 import datetime as dt
 import random
 from abc import ABC, abstractmethod
-from typing import Optional, Callable, Any
 from enum import Enum, auto
-
+from typing import Any, Callable, Optional
 
 TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
 

@@ -7,25 +7,24 @@ from __future__ import annotations
 
 import datetime as dt
 import threading
-
-from typing import Callable, Optional, Union, Any, cast, ClassVar
+from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
 from scheduler.util import (
     TZ_ERROR_MSG,
-    JobType,
     AbstractJob,
+    JobType,
     SchedulerError,
     Weekday,
-    next_minutely_occurrence,
-    next_hourly_occurrence,
+    are_times_unique,
+    are_weekday_times_unique,
     next_daily_occurrence,
+    next_hourly_occurrence,
+    next_minutely_occurrence,
     next_weekday_occurrence,
     next_weekday_time_occurrence,
     prettify_timedelta,
-    are_times_unique,
-    are_weekday_times_unique,
 )
 
 # execution interval
