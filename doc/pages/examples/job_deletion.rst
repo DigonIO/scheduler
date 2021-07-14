@@ -32,7 +32,7 @@ Setup a couple of |Job|\ s
     <BLANKLINE>
 
 Remove the specified |Job| `j2` from the |Scheduler| via
-the :meth:`~scheduler.core.Scheduler.delete_job` method:
+the :py:meth:`~scheduler.core.Scheduler.delete_job` method:
 
 .. code-block:: pycon
 
@@ -79,11 +79,12 @@ Setup a couple of |Job|\ s
     <BLANKLINE>
 
 Clear the |Scheduler| from |Job|\ s
-with a single function call to :meth:`~scheduler.core.Scheduler.delete_all_jobs`.
+with a single function call to :py:meth:`~scheduler.core.Scheduler.delete_jobs`.
 
 .. code-block:: pycon
 
-    >>> sch.delete_all_jobs()
+    >>> sch.delete_jobs()
+    3
     >>> print(sch)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=0
     <BLANKLINE>

@@ -35,7 +35,7 @@ Next initialize a |Scheduler| with UTC as its reference timezone:
 
     >>> sch = Scheduler(tzinfo=dt.timezone.utc)
 
-Schedule our useful function :func:`~scheduler.core.Scheduler.once` for the current point
+Schedule our useful function :py:func:`~scheduler.core.Scheduler.once` for the current point
 in time but using New York local time with:
 
 .. code-block:: pycon

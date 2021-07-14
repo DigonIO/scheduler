@@ -10,12 +10,12 @@ execution times compared to the |Scheduler|\ s cycle length.
 The `weight` parameter is available for all scheduling functions of
 |Scheduler|:
 
-:func:`~scheduler.core.Scheduler.once`,
-:func:`~scheduler.core.Scheduler.cyclic`,
-:func:`~scheduler.core.Scheduler.minutely`,
-:func:`~scheduler.core.Scheduler.hourly`,
-:func:`~scheduler.core.Scheduler.daily`,
-:func:`~scheduler.core.Scheduler.weekly`
+:py:func:`~scheduler.core.Scheduler.once`,
+:py:func:`~scheduler.core.Scheduler.cyclic`,
+:py:func:`~scheduler.core.Scheduler.minutely`,
+:py:func:`~scheduler.core.Scheduler.hourly`,
+:py:func:`~scheduler.core.Scheduler.daily`,
+:py:func:`~scheduler.core.Scheduler.weekly`
 
 .. _examples.weights.default_behaviour:
 
@@ -23,7 +23,7 @@ Default behaviour
 -----------------
 
 By default, the |Scheduler| will prioritize using a linear function
-(:func:`~scheduler.util.linear_priority_function`) that depends on the
+(py:func:`~scheduler.util.linear_priority_function`) that depends on the
 |Job|\ s `weight` and time it is overdue.
 
 .. tip:: It is possible to change the prioritization behaviour of a

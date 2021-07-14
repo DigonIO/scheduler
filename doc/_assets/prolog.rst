@@ -2,11 +2,11 @@
 
    <br />
 
-.. |Job| replace:: :class:`~scheduler.job.Job`
+.. |Job| replace:: :py:class:`~scheduler.job.Job`
 
-.. |Scheduler| replace:: :class:`~scheduler.core.Scheduler`
+.. |Scheduler| replace:: :py:class:`~scheduler.core.Scheduler`
 
-.. |JobTimer| replace:: :class:`~scheduler.job.JobTimer`
+.. |JobTimer| replace:: :py:class:`~scheduler.job.JobTimer`
 
 .. |params_text| replace:: The payload arguments to pass to the function handle |br|
     within a |Job|.

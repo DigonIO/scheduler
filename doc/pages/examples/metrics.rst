@@ -25,7 +25,7 @@ Starting with a |Scheduler| and two |Job|\ s:
     ONCE     foo()            2021-06-21 04:53:34   0:09:59           0/1      1
 
 |Scheduler| provides access to the set of |Job|\ s stored with the `jobs`
-We can access the |Job|\ s of the scheduler via the :attr:`~scheduler.core.Scheduler.jobs` property.
+We can access the |Job|\ s of the scheduler via the :py:attr:`~scheduler.core.Scheduler.jobs` property.
 
 .. code-block:: pycon
 
@@ -39,7 +39,7 @@ For the |Job| with the following string representation
     >>> print(job)  # doctest:+SKIP
     ONCE, foo(), at=2021-06-21 04:53:34, tz=None, in=0:09:59, #0/1, w=1.000
 
-The scheduled :attr:`~scheduler.job.Job.datetime` and :attr:`~scheduler.job.Job.timedelta`
+The scheduled :py:attr:`~scheduler.job.Job.datetime` and :py:attr:`~scheduler.job.Job.timedelta`
 informations can directly be accessed and might look like similar to what is listed below:
 
 .. code-block:: pycon
@@ -49,7 +49,7 @@ informations can directly be accessed and might look like similar to what is lis
     job.timedelta() = 0:09:59.999948
 
 These metrics can change during the |Job|\ s lifetime. We can exemplify this
-for the :attr:`~scheduler.job.Job.attempts` attribute:
+for the :py:attr:`~scheduler.job.Job.attempts` attribute:
 
 .. code-block:: pycon
 

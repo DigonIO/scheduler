@@ -103,14 +103,14 @@ A human readable overview of the scheduled jobs can be created with a simple `pr
     <BLANKLINE>
 
 Unless |Scheduler| was given a limit on the execution count via the `max_exec` option, a call to
-the Scheduler instances :meth:`~scheduler.core.Scheduler.exec_jobs` function will execute every
+the Scheduler instances :py:meth:`~scheduler.core.Scheduler.exec_jobs` function will execute every
 overdue job exactly once.
 
 .. code-block:: pycon
 
     >>> sch.exec_jobs()  # doctest:+SKIP
 
-For cyclic execution of |Job|\ s, the :meth:`~scheduler.core.Scheduler.exec_jobs` function should
+For cyclic execution of |Job|\ s, the :py:meth:`~scheduler.core.Scheduler.exec_jobs` function should
 be embedded in a loop of the host program:
 
 .. code-block:: pycon

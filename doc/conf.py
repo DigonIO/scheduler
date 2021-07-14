@@ -70,6 +70,9 @@ html_theme = "sphinx_rtd_theme"
 html_theme_path = [
     "_themes",
 ]
+html_favicon = "favicon.png"
+html_logo = "logo_w_border.svg"
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
