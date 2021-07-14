@@ -185,19 +185,19 @@ class Scheduler:
 
     def delete_jobs(
         self,
-        tags: Optional[list[str]] = None,
+        tags: Optional[set[str]] = None,
         mode: Callable[[Iterable[object]], bool] = any,
     ) -> int:
         r"""
-        Delete |Job|s from the |Scheduler|.
+        Delete |Job|\ s from the |Scheduler|.
 
         No given tags or an empty tag set will result in the deletion
-        of all |Job|s.
+        of all |Job|\ s.
 
         Parameters
         ----------
-        tags : Optional[list[str]]
-            Set of tags to identify target |Job|s.
+        tags : Optional[set[str]]
+            Set of tags to identify target |Job|\ s.
         mode : Callable[Iterable[object], bool].
             Tag selection mode.
             Mode `any` will remove every |Job| that matchs a given tag.
