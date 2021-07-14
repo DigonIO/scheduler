@@ -39,6 +39,8 @@ ONCE_TYPE_ERROR_MSG = (
     + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
 )
 
+DELETION_MODE_ERROR = "Unknown deletion mode, chose 'any' or 'all'"
+
 
 class Scheduler:
     r"""
@@ -179,24 +181,38 @@ class Scheduler:
         tags: Optional[list[str]] = None,
         mode: Callable[Iterable[object], bool] = any,
     ) -> int:
-        r"""Delete all `Job`\ s from the `Scheduler`."""
+        r"""
+        Delete |Job|s from the |Scheduler|.
+
+        No given tags or an empty tag set will result in the deletion
+        of all |Job|s.
+
+        Parameters
+        ----------
+        tags : Optional[list[str]]
+            Set of tags to identify target |Job|s.
+        mode : Callable[Iterable[object], bool].
+            Tag selection mode.
+            Mode `any` will remove every |Job| that matchs a given tag.
+            Mode `all` will remove every |Job| that matchs avery given tag.
+        """
         with self.__jobs_lock:
             if tags is None or tags == {}:
                 n_jobs = len(self.__jobs)
                 self.__jobs = set()
                 return n_jobs
 
-            op_rel: Union[operator.le, operator.eq]
+            op_rel: Union[operator.and_, operator.le]
             if mode == any:
-                op_rel = operator.le
+                op_rel = operator.and_
             elif mode == all:
-                op_rel = operator.eq
+                op_rel = operator.le
             else:
-                raise SchedulerError("Unknown deletion mode, chose 'any' or 'all'")
+                raise SchedulerError(DELETION_MODE_ERROR)
 
             to_delete: set[Job] = set()
             for job in self.__jobs:
-                if op_rel(job.tags, tags):
+                if op_rel(tags, job.tags):
                     to_delete.add(job)
 
             self.__jobs = self.__jobs - to_delete
@@ -540,6 +556,7 @@ class Scheduler:
         timing: TimingOnceUnion,
         handle: Callable[..., None],
         params: Optional[dict[str, Any]] = None,
+        tags: Optional[list[str]] = None,
         weight: float = 1,
     ):
         r"""
@@ -554,6 +571,8 @@ class Scheduler:
         params : dict[str, Any]
             The payload arguments to pass to the function handle within a
             |Job|.
+        tags : Optional[set[str]]
+            The tags of the |Job|.
         weight : float
             Relative weight against other |Job|\ s.
 
@@ -573,6 +592,7 @@ class Scheduler:
                 handle=handle,
                 params=params,
                 max_attempts=1,
+                tags=tags,
                 weight=weight,
                 delay=False,
                 start=timing,
@@ -594,6 +614,7 @@ class Scheduler:
                         handle=handle,
                         params=params,
                         max_attempts=1,
+                        tags=tags,
                         weight=weight,
                         delay=True,
                         start=None,
