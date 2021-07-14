@@ -73,7 +73,6 @@ from helpers import (
 def test_JobTimer_calc_next_exec(job_type, timing, start, target, next_target):
     timer = JobTimer(job_type, timing, start)
 
-    timer.calc_next_exec()
     assert timer.datetime == target
     assert timer.timedelta(start) == target - start
 
@@ -89,11 +88,11 @@ def test_JobTimer_calc_next_exec(job_type, timing, start, target, next_target):
         [1, 1, True, 2],
         [20, 20, True, 40],
         [20, 1, True, 21],
-        [20, 21, False, 20],
-        [1, 21, False, 1],
-        [1, 1, False, 1],
-        [20, 20, False, 20],
-        [20, 1, False, 20],
+        [20, 21, False, 40],
+        [1, 21, False, 2],
+        [1, 1, False, 2],
+        [20, 20, False, 40],
+        [20, 1, False, 40],
     ),
 )
 def test_skip(delta_m, offset_m, skip, res_delta_m):
@@ -107,7 +106,7 @@ def test_skip(delta_m, offset_m, skip, res_delta_m):
         start=T_2021_5_26__3_55,
         skip_missing=skip,
     )
-    assert jet.datetime == T_2021_5_26__3_55
+    assert jet.datetime == T_2021_5_26__3_55 + delta
 
     jet.calc_next_exec(T_2021_5_26__3_55 + offset)
     assert jet.datetime == T_2021_5_26__3_55 + res_delta

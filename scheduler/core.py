@@ -621,13 +621,12 @@ class Scheduler:
                 delay=False,
                 start=timing,
             )
-        else:
-            return self.__schedule(
-                job_type=JOB_TYPE_MAPPING[type(timing)],
-                timing=timing,
-                handle=handle,
-                params=params,
-                max_attempts=1,
-                tags=tags,
-                weight=weight,
-            )
+        return self.__schedule(
+            job_type=JOB_TYPE_MAPPING[type(timing)],
+            timing=timing,
+            handle=handle,
+            params=params,
+            max_attempts=1,
+            tags=tags,
+            weight=weight,
+        )

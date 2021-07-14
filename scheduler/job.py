@@ -119,6 +119,7 @@ class JobTimer:
         self.__timing = timing
         self.__next_exec = start
         self.__skip = skip_missing
+        self.calc_next_exec()
 
     def calc_next_exec(self, ref: Optional[dt.datetime] = None) -> None:
         """
@@ -195,6 +196,8 @@ class JobTimer:
 
 
 class JobUtil:
+    """Collection of |Job| related functions."""
+
     @staticmethod
     def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
         """
@@ -224,6 +227,12 @@ class JobUtil:
     def standardize_timing_format(
         job_type: JobType, timing: TimingJobUnion, tzinfo: Optional[dt.tzinfo]
     ) -> tuple[TimingJobUnion, Optional[list[tuple[Weekday, dt.time]]]]:
+        r"""
+        Return timing `Weekday`\ s in standarized form.
+
+        Clears time positionals insignificant for `JobType`.
+        Add missing times for single weekdays.
+        """
         if job_type is JobType.MINUTELY:
             timing = [
                 time.replace(hour=0, minute=0) for time in cast(list[dt.time], timing)
@@ -244,6 +253,7 @@ class JobUtil:
         tzinfo: Optional[dt.tzinfo],
         expanded_timing: Optional[list[tuple[Weekday, dt.time]]],
     ):
+        """Raise if `timing`/`expanded_timing` incompatible with `tzinfo` for `job_type`."""
         if job_type is JobType.WEEKLY:
             for _, time in cast(list[tuple[Weekday, dt.time]], expanded_timing):
                 if bool(time.tzinfo) ^ bool(tzinfo):
@@ -260,6 +270,7 @@ class JobUtil:
         tzinfo: Optional[dt.tzinfo],
         expanded_timing: Optional[list[tuple[Weekday, dt.time]]],
     ):
+        """Raise given timings are not effectively duplicates."""
         if job_type is JobType.WEEKLY:
             if not are_weekday_times_unique(
                 cast(list[tuple[Weekday, dt.time]], expanded_timing), tzinfo
@@ -279,6 +290,7 @@ class JobUtil:
         stop: Optional[dt.datetime],
         tzinfo: Optional[dt.tzinfo],
     ) -> dt.datetime:
+        """Raise if `start`, `stop` and `tzinfo` incompatible; Make start."""
         if start:
             if bool(start.tzinfo) ^ bool(tzinfo):
                 raise SchedulerError(_TZ_ERROR_MSG.format("start"))
@@ -295,23 +307,8 @@ class JobUtil:
         return start
 
     @staticmethod
-    def init_job_timers(
-        timing: TimingJobUnion,
-        job_type: JobType,
-        start: dt.datetime,
-        skip_missing: bool,
-    ) -> list[JobTimer]:
-        timers = [JobTimer(job_type, tim, start, skip_missing) for tim in timing]
-
-        # generate first dt_stamps for each JobTimer
-        for timer in timers:
-            timer.calc_next_exec()
-
-        return timers
-
-    @staticmethod
     def get_pending_timer(timers: list[JobTimer]) -> JobTimer:
-        """Get the pending timer at the moment."""
+        """Get the the timer with the largest overdue time."""
         unsorted_timer_datetimes: dict[JobTimer, dt.datetime] = {}
         for timer in timers:
             unsorted_timer_datetimes[timer] = timer.datetime
@@ -432,13 +429,9 @@ class Job(AbstractJob):
         self.__attempts = 0
 
         # create JobTimers
-        self.__timers = JobUtil.init_job_timers(
-            timing=timing,
-            job_type=job_type,
-            start=self.__start,
-            skip_missing=skip_missing,
-        )
-        # self.__set_pending_timer()
+        self.__timers = [
+            JobTimer(job_type, tim, self.__start, skip_missing) for tim in timing
+        ]
         self.__pending_timer = JobUtil.get_pending_timer(self.__timers)
 
         if self.__stop is not None:
