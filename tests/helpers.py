@@ -30,8 +30,6 @@ ONCE_TYPE_ERROR_MSG = (
     + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
 )
 
-DELETION_MODE_ERROR = "Unknown deletion mode, chose 'any' or 'all'"
-
 DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
 
 _TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together for {0}."

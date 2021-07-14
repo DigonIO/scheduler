@@ -4,10 +4,9 @@ Scheduler implementation for job based callback function execution.
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import datetime as dt
-import operator
 import queue
 import threading
-from typing import Any, Callable, Iterable, Optional, Union, cast
+from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
@@ -39,14 +38,22 @@ ONCE_TYPE_ERROR_MSG = (
     + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
 )
 
-DELETION_MODE_ERROR = "Unknown deletion mode, chose 'any' or 'all'"
-
 JOB_TYPE_MAPPING = {
     dt.timedelta: JobType.CYCLIC,
     Weekday: JobType.WEEKLY,
     tuple: JobType.WEEKLY,
     dt.time: JobType.DAILY,
 }
+
+
+def select_jobs_by_tag(
+    jobs: set[Job],
+    tags: set[str],
+    any_tag: bool,
+) -> set[Job]:
+    if any_tag:
+        return {job for job in jobs if tags & job.tags}
+    return {job for job in jobs if tags <= job.tags}
 
 
 class Scheduler:
@@ -186,12 +193,12 @@ class Scheduler:
     def delete_jobs(
         self,
         tags: Optional[set[str]] = None,
-        mode: Callable[[Iterable[object]], bool] = any,
+        any_tag: bool = False,
     ) -> int:
         r"""
-        Delete |Job|\ s from the |Scheduler|.
+        Delete a set of |Job|\ s from the |Scheduler| by tags.
 
-        No given tags or an empty tag set will result in the deletion
+        If no tags or an empty set of tags are given defaults to the deletion
         of all |Job|\ s.
 
         Parameters
@@ -200,8 +207,8 @@ class Scheduler:
             Set of tags to identify target |Job|\ s.
         mode : Callable[Iterable[object], bool].
             Tag selection mode.
-            Mode `any` will remove every |Job| that matchs a given tag.
-            Mode `all` will remove every |Job| that matchs avery given tag.
+            Mode ``any`` will remove every |Job| that matchs a given tag.
+            Mode ``all`` will remove every |Job| that matchs avery given tag.
         """
         with self.__jobs_lock:
             if tags is None or tags == {}:
@@ -209,18 +216,7 @@ class Scheduler:
                 self.__jobs = set()
                 return n_jobs
 
-            # op_rel: Union[operator.and_, operator.le]
-            if mode is any:
-                op_rel = operator.and_
-            elif mode is all:
-                op_rel = operator.le
-            else:
-                raise SchedulerError(DELETION_MODE_ERROR)
-
-            to_delete: set[Job] = set()
-            for job in self.__jobs:
-                if op_rel(tags, job.tags):
-                    to_delete.add(job)
+            to_delete = select_jobs_by_tag(self.__jobs, tags, any_tag)
 
             self.__jobs = self.__jobs - to_delete
             return len(to_delete)
@@ -317,6 +313,27 @@ class Scheduler:
                 and job_priority[job] > 0
             ]
             return self.__exec_jobs(filtered_jobs, ref_dt)
+
+    def get_jobs(
+        self,
+        tags: Optional[set[str]] = None,
+        any_tag: bool = False,
+    ) -> set[Job]:
+        r"""
+        Get a set of |Job|\ s from the |Scheduler| by tags.
+
+        If no tags or an empty set of tags are given defaults to returning
+        of all |Job|\ s.
+
+        Returns
+        -------
+        set[Job]
+            Currently scheduled |Job|\ s.
+        """
+        with self.__lock:
+            if tags is None or tags == {}:
+                return self.__jobs.copy()
+            return select_jobs_by_tag(self.__jobs, tags, any_tag)
 
     @property
     def jobs(self) -> set[Job]:
