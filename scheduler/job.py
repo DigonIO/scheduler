@@ -412,7 +412,8 @@ class Job(AbstractJob):
 
         self.__type = job_type
         self.__timing = timing
-        # NOTE: https://github.com/python/mypy/issues/2427
+        # NOTE: https://github.com/python/mypy/issues/708
+        #       https://github.com/python/mypy/issues/2427
         self.__handle = handle  # type: ignore
         self.__params = {} if params is None else params.copy()
         self.__max_attempts = max_attempts

@@ -4,10 +4,10 @@ Scheduler implementation for job based callback function execution.
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import datetime as dt
+import operator
 import queue
 import threading
-import operator
-from typing import Any, Callable, Optional, Union, Iterable, cast
+from typing import Any, Callable, Iterable, Optional, Union, cast
 
 import typeguard as tg
 
@@ -40,6 +40,13 @@ ONCE_TYPE_ERROR_MSG = (
 )
 
 DELETION_MODE_ERROR = "Unknown deletion mode, chose 'any' or 'all'"
+
+JOB_TYPE_MAPPING = {
+    dt.timedelta: JobType.CYCLIC,
+    Weekday: JobType.WEEKLY,
+    tuple: JobType.WEEKLY,
+    dt.time: JobType.DAILY,
+}
 
 
 class Scheduler:
@@ -179,7 +186,7 @@ class Scheduler:
     def delete_jobs(
         self,
         tags: Optional[list[str]] = None,
-        mode: Callable[Iterable[object], bool] = any,
+        mode: Callable[[Iterable[object]], bool] = any,
     ) -> int:
         r"""
         Delete |Job|s from the |Scheduler|.
@@ -202,10 +209,10 @@ class Scheduler:
                 self.__jobs = set()
                 return n_jobs
 
-            op_rel: Union[operator.and_, operator.le]
-            if mode == any:
+            # op_rel: Union[operator.and_, operator.le]
+            if mode is any:
                 op_rel = operator.and_
-            elif mode == all:
+            elif mode is all:
                 op_rel = operator.le
             else:
                 raise SchedulerError(DELETION_MODE_ERROR)
@@ -586,7 +593,7 @@ class Scheduler:
         except TypeError as err:
             raise SchedulerError(ONCE_TYPE_ERROR_MSG) from err
         if isinstance(timing, dt.datetime):
-            job = self.__schedule(
+            return self.__schedule(
                 job_type=JobType.CYCLIC,
                 timing=dt.timedelta(),
                 handle=handle,
@@ -596,29 +603,14 @@ class Scheduler:
                 weight=weight,
                 delay=False,
                 start=timing,
-                stop=None,
-                skip_missing=False,
             )
         else:
-            mapping = {
-                dt.timedelta: JobType.CYCLIC,
-                Weekday: JobType.WEEKLY,
-                tuple: JobType.WEEKLY,
-                dt.time: JobType.DAILY,
-            }
-            for timing_type, job_type in mapping.items():
-                if isinstance(timing, timing_type):
-                    job = self.__schedule(
-                        job_type=job_type,
-                        timing=timing,  # type: ignore
-                        handle=handle,
-                        params=params,
-                        max_attempts=1,
-                        tags=tags,
-                        weight=weight,
-                        delay=True,
-                        start=None,
-                        stop=None,
-                        skip_missing=False,
-                    )
-        return job
+            return self.__schedule(
+                job_type=JOB_TYPE_MAPPING[type(timing)],
+                timing=timing,
+                handle=handle,
+                params=params,
+                max_attempts=1,
+                tags=tags,
+                weight=weight,
+            )
