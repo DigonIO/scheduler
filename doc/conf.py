@@ -19,12 +19,19 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
+with open("../scheduler/__init__.py", "r") as file:
+    for line in file:
+        if "__version__" in line:
+            version = line.split('"')[1]
+        if "__author__" in line:
+            author = line.split('"')[1]
+
 project = "scheduler"
-copyright = "2021, Jendrik A. Potyka, Fabian A. Preiss"
-author = "Jendrik A. Potyka, Fabian A. Preiss"
+copyright = "2021, " + author
+author = author
 
 # The full version, including alpha/beta/rc tags
-release = "0.5.2"
+release = version
 
 
 # -- General configuration ---------------------------------------------------
