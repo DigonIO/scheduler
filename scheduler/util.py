@@ -297,7 +297,7 @@ class AbstractJob(ABC):
 
     @property
     @abstractmethod
-    def params(self) -> dict[str, Any]:
+    def kwargs(self) -> dict[str, Any]:
         r"""Get the payload arguments to pass to the function handle within a `Job`."""
 
     @property

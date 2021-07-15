@@ -14,7 +14,6 @@ time cycles, fixed times, weekdays, dates, weights, offsets and execution counts
 ---
 
 
-
 ## Features
 
 * Easy and user friendly in-process `Job` scheduling
@@ -23,7 +22,7 @@ time cycles, fixed times, weekdays, dates, weights, offsets and execution counts
   * Create recurring `Job`s with a given timedelta
   * Oneshot `Job`s
   * Passing of parameters to `Job`
-    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/params.html)
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/parameters.html)
 * Timezone compatibility
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/timezones.html)
 * Parallel `Job` execution with `threading` [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)

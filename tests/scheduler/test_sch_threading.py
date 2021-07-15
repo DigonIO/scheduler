@@ -24,7 +24,7 @@ def wrap_sleep(secs: float):
 )
 def test_thread_safety(duration):
     sch = Scheduler()
-    sch.cyclic(dt.timedelta(), wrap_sleep, params={"secs": duration}, skip_missing=True)
+    sch.cyclic(dt.timedelta(), wrap_sleep, kwargs={"secs": duration}, skip_missing=True)
     thread_1 = threading.Thread(target=sch.exec_jobs)
     thread_2 = threading.Thread(target=sch.exec_jobs)
     thread_1.daemon = True
@@ -80,7 +80,7 @@ def test_threading_slow_jobs(job_sleep, n_threads, max_exec, n_jobs, res_n_exec)
         sch.cyclic(
             dt.timedelta(),
             wrap_sleep,
-            params={"secs": job_sleep},
+            kwargs={"secs": job_sleep},
             delay=False,
         )
     results = []

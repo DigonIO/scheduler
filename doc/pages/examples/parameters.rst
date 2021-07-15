@@ -14,7 +14,7 @@ for all scheduling functions of |Scheduler|:
 
 In the following example we schedule two |Job|\ s via
 :func:`~scheduler.core.Scheduler.once`. The first |Job| exhibits the function's default behaviour.
-Whereas the second |Job| prints the modified message defined in the `params` argument.
+Whereas the second |Job| prints the modified message defined in the `kwargs` argument.
 
 .. code-block:: pycon
 
@@ -34,7 +34,7 @@ Whereas the second |Job| prints the modified message defined in the `params` arg
     >>> n_exec = sch.exec_jobs()
     bar
 
-    >>> sch.once(dt.timedelta(seconds=0.1), bar, params={"msg": "Hello World"})
+    >>> sch.once(dt.timedelta(seconds=0.1), bar, kwargs={"msg": "Hello World"})
     scheduler.Job(...timedelta(microseconds=100000)...bar...{'msg': 'Hello World'}...)
 
     >>> time.sleep(0.1)

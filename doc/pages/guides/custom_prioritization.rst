@@ -81,7 +81,7 @@ Schedule some |Job|\ s at different points in the past with distinct weights:
     ...     job = sch.once(
     ...         exec_time,
     ...         print,
-    ...         params={"end": f"{weight = }; {delayed_by = }s\n"},
+    ...         kwargs={"end": f"{weight = }; {delayed_by = }s\n"},
     ...         weight=weight,
     ...     )
 

@@ -321,7 +321,7 @@ class JobUtil:
 
 class Job(AbstractJob):
     r"""
-    `Job` class bundling time and callback function methods.
+    |Job| class bundling time and callback function methods.
 
     Parameters
     ----------
@@ -331,9 +331,10 @@ class Job(AbstractJob):
         Desired execution time(s).
     handle : Callable[..., None]
         Handle to a callback function.
-    params : Optional[dict[str, Any]]
-        The payload arguments to pass to the function handle within a
-        |Job|.
+    argument : tuple[Any]
+        Positional argument payload for the function handle within a |Job|.
+    kwargs : Optional[dict[str, Any]]
+        Keyword arguments payload for the function handle within a |Job|.
     tags : Optional[set[str]]
         The tags of the |Job|.
     weight : Optional[float]
@@ -364,7 +365,8 @@ class Job(AbstractJob):
     __type: JobType
     __timing: TimingJobUnion
     __handle: Callable[..., None]
-    __params: dict[str, Any]
+    __argument: tuple[Any]
+    __kwargs: dict[str, Any]
     __max_attempts: int
     __tags: set[str]
     __weight: float
@@ -385,7 +387,8 @@ class Job(AbstractJob):
         job_type: JobType,
         timing: TimingJobUnion,
         handle: Callable[..., None],
-        params: Optional[dict[str, Any]] = None,
+        argument: tuple[Any] = None,
+        kwargs: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         tags: Optional[set[str]] = None,
         weight: float = 1,
@@ -395,6 +398,8 @@ class Job(AbstractJob):
         skip_missing: bool = False,
         tzinfo: Optional[dt.tzinfo] = None,
     ):
+        if argument is not None:
+            raise NotImplementedError
         timing, expanded_timing = JobUtil.standardize_timing_format(
             job_type, timing, tzinfo
         )
@@ -412,7 +417,8 @@ class Job(AbstractJob):
         # NOTE: https://github.com/python/mypy/issues/708
         #       https://github.com/python/mypy/issues/2427
         self.__handle = handle  # type: ignore
-        self.__params = {} if params is None else params.copy()
+        self.__argument = () if argument is None else argument.copy()
+        self.__kwargs = {} if kwargs is None else kwargs.copy()
         self.__max_attempts = max_attempts
         self.__tags = set() if tags is None else tags.copy()
         self.__weight = weight
@@ -441,7 +447,7 @@ class Job(AbstractJob):
     def _exec(self) -> None:
         """Execute the callback function."""
         with self.__lock:
-            self.__handle(**self.__params)
+            self.__handle(*self.__argument, **self.__kwargs)
             self.__attempts += 1
 
     def __lt__(self, other: Job):
@@ -461,7 +467,8 @@ class Job(AbstractJob):
                             self.__type,
                             self.__timing,
                             self.__handle,
-                            self.__params,
+                            self.__argument,
+                            self.__kwargs,
                             self.__max_attempts,
                             self.__weight,
                             self.__delay,
@@ -561,7 +568,7 @@ class Job(AbstractJob):
         return self.__handle
 
     @property
-    def params(self) -> dict[str, Any]:
+    def kwargs(self) -> dict[str, Any]:
         r"""
         Get the payload arguments to pass to the function handle within a `Job`.
 
@@ -575,7 +582,7 @@ class Job(AbstractJob):
             The payload arguments to pass to the function handle within a
             |Job|.
         """
-        return self.__params
+        return self.__kwargs
 
     @property
     def tags(self) -> set[str]:

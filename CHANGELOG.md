@@ -4,6 +4,11 @@
 
     TODO
 
+### API changes
+
++ `Job`: `params` renamed to `kwargs` and introduced `argument` keyword analog to
+  `sched` library
+
 ## 0.5.2
 
 ### API changes

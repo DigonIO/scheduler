@@ -30,8 +30,8 @@ run times.
     ...     time.sleep(secs)
 
     >>> sch = Scheduler()
-    >>> job_1 = sch.once(dt.timedelta(), sleep, params={"secs": 0.1})
-    >>> job_2 = sch.once(dt.timedelta(), sleep, params={"secs": 0.1})
+    >>> job_1 = sch.once(dt.timedelta(), sleep, kwargs={"secs": 0.1})
+    >>> job_2 = sch.once(dt.timedelta(), sleep, kwargs={"secs": 0.1})
 
     >>> start_time = time.perf_counter()
     >>> n_exec = sch.exec_jobs()
@@ -59,8 +59,8 @@ will spawn a seperate worker thread for every pending |Job|.
     ...     time.sleep(secs)
 
     >>> sch = Scheduler(n_threads=0)
-    >>> job_1 = sch.once(dt.timedelta(), sleep, params={"secs": 0.1})
-    >>> job_2 = sch.once(dt.timedelta(), sleep, params={"secs": 0.1})
+    >>> job_1 = sch.once(dt.timedelta(), sleep, kwargs={"secs": 0.1})
+    >>> job_2 = sch.once(dt.timedelta(), sleep, kwargs={"secs": 0.1})
 
     >>> start_time = time.perf_counter()
     >>> n_exec = sch.exec_jobs()
