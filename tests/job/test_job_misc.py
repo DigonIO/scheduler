@@ -4,7 +4,7 @@ import pytest
 
 from scheduler import SchedulerError
 from scheduler.job import Job, JobType
-from scheduler.util import Weekday
+from scheduler.util import Trigger
 
 from helpers import (
     utc,
@@ -109,7 +109,7 @@ def test_job__lt__(
         ],
         [
             JobType.WEEKLY,
-            [Weekday.SUNDAY],
+            [Trigger.Weekly.Sunday()],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,

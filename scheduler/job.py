@@ -38,7 +38,7 @@ _TimingDailyList = list[_TimingDaily]  # Job
 TimingDailyUnion = Union[_TimingDaily, _TimingDailyList]  # Scheduler
 
 # day of the week or time on the clock
-_TimingWeekly = Union[Weekday, tuple[Weekday, dt.time]]
+_TimingWeekly = Weekday
 _TimingWeeklyList = list[_TimingWeekly]
 TimingWeeklyUnion = Union[_TimingWeekly, _TimingWeeklyList]  # Scheduler
 
@@ -66,7 +66,7 @@ DAILY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Daily")
 WEEKLY_TYPE_ERROR_MSG = (
     "Wrong input for Weekly! Select one of the following input types:\n"
     + "DAY | list[DAY]\n"
-    + "where `DAY = Weekday | tuple[Weekday, dt.time]`"
+    + "where `DAY = Weekday`"
 )
 
 
@@ -139,19 +139,20 @@ class JobTimer:
 
             if self.__job_type == JobType.WEEKLY:
                 #  check for _TimingWeekDay = Union[Weekday, tuple[Weekday, dt.time]]
-                if isinstance(self.__timing, Weekday):
-                    self.__next_exec = next_weekday_occurrence(
-                        self.__next_exec, self.__timing
+                # TODO rm
+                # if isinstance(self.__timing, Weekday):
+                #    self.__next_exec = next_weekday_occurrence(
+                #        self.__next_exec, self.__timing
+                #    )
+                # else:
+                self.__timing = cast(Weekday, self.__timing)
+                if self.__timing.time.tzinfo:
+                    self.__next_exec = self.__next_exec.astimezone(
+                        self.__timing.time.tzinfo
                     )
-                else:
-                    self.__timing = cast(tuple[Weekday, dt.time], self.__timing)
-                    if self.__timing[1].tzinfo:
-                        self.__next_exec = self.__next_exec.astimezone(
-                            self.__timing[1].tzinfo
-                        )
-                    self.__next_exec = next_weekday_time_occurrence(
-                        self.__next_exec, *self.__timing
-                    )
+                self.__next_exec = next_weekday_time_occurrence(
+                    self.__next_exec, self.__timing, self.__timing.time
+                )
 
             else:  # self.__job_type in JOB_NEXT_DAYLIKE_MAPPING:
                 self.__timing = cast(dt.time, self.__timing)
@@ -223,15 +224,15 @@ class JobUtil:
         except TypeError as err:
             raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
+    # TODO replace name and docstring
     @staticmethod
     def standardize_timing_format(
         job_type: JobType, timing: TimingJobUnion, tzinfo: Optional[dt.tzinfo]
-    ) -> tuple[TimingJobUnion, Optional[list[tuple[Weekday, dt.time]]]]:
+    ) -> TimingJobUnion:
         r"""
         Return timing `Weekday`\ s in standarized form.
 
         Clears time positionals insignificant for `JobType`.
-        Add missing times for single weekdays.
         """
         if job_type is JobType.MINUTELY:
             timing = [
@@ -239,24 +240,18 @@ class JobUtil:
             ]
         elif job_type is JobType.HOURLY:
             timing = [time.replace(hour=0) for time in cast(list[dt.time], timing)]
-        elif job_type is JobType.WEEKLY:
-            return timing, [
-                ele if isinstance(ele, tuple) else (ele, dt.time(tzinfo=tzinfo))
-                for ele in cast(_TimingWeeklyList, timing)
-            ]
-        return timing, None
+        return timing
 
     @staticmethod
     def check_timing_tzinfo(
         job_type: JobType,
         timing: TimingJobUnion,
         tzinfo: Optional[dt.tzinfo],
-        expanded_timing: Optional[list[tuple[Weekday, dt.time]]],
     ):
-        """Raise if `timing`/`expanded_timing` incompatible with `tzinfo` for `job_type`."""
+        """Raise if `timing` incompatible with `tzinfo` for `job_type`."""
         if job_type is JobType.WEEKLY:
-            for _, time in cast(list[tuple[Weekday, dt.time]], expanded_timing):
-                if bool(time.tzinfo) ^ bool(tzinfo):
+            for weekday in cast(list[Weekday], timing):
+                if bool(weekday.time.tzinfo) ^ bool(tzinfo):
                     raise SchedulerError(TZ_ERROR_MSG)
         elif job_type in (JobType.MINUTELY, JobType.HOURLY, JobType.DAILY):
             for time in cast(list[dt.time], timing):
@@ -268,13 +263,10 @@ class JobUtil:
         job_type: JobType,
         timing: TimingJobUnion,
         tzinfo: Optional[dt.tzinfo],
-        expanded_timing: Optional[list[tuple[Weekday, dt.time]]],
     ):
         """Raise given timings are not effectively duplicates."""
         if job_type is JobType.WEEKLY:
-            if not are_weekday_times_unique(
-                cast(list[tuple[Weekday, dt.time]], expanded_timing), tzinfo
-            ):
+            if not are_weekday_times_unique(cast(list[Weekday], timing), tzinfo):
                 raise SchedulerError(DUPLICATE_EFFECTIVE_TIME)
         elif job_type in (
             JobType.MINUTELY,
@@ -400,15 +392,11 @@ class Job(AbstractJob):
     ):
         if argument is not None:
             raise NotImplementedError
-        timing, expanded_timing = JobUtil.standardize_timing_format(
-            job_type, timing, tzinfo
-        )
+        timing = JobUtil.standardize_timing_format(job_type, timing, tzinfo)
 
         JobUtil.sane_timing_types(job_type, timing)
-        JobUtil.check_duplicate_effective_timings(
-            job_type, timing, tzinfo, expanded_timing
-        )
-        JobUtil.check_timing_tzinfo(job_type, timing, tzinfo, expanded_timing)
+        JobUtil.check_duplicate_effective_timings(job_type, timing, tzinfo)
+        JobUtil.check_timing_tzinfo(job_type, timing, tzinfo)
 
         self.__start = JobUtil.set_start_check_stop_tzinfo(start, stop, tzinfo)
 

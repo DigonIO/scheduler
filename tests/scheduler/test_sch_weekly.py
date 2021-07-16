@@ -3,7 +3,7 @@ import datetime as dt
 import pytest
 
 from scheduler import Scheduler, SchedulerError
-from scheduler.util import Weekday
+from scheduler.util import Trigger
 
 from helpers import (
     utc,
@@ -15,28 +15,26 @@ from helpers import (
     foo,
 )
 
-MONDAY_23_UTC = (Weekday.MONDAY, dt.time(hour=23, tzinfo=dt.timezone.utc))
-MONDAY_23_UTC_AS_SUNDAY = (
-    Weekday.SUNDAY,
+MONDAY_23_UTC = Trigger.Weekly.Monday(dt.time(hour=23, tzinfo=dt.timezone.utc))
+MONDAY_23_UTC_AS_SUNDAY = Trigger.Weekly.Sunday(
     dt.time(
         hour=23,
         minute=30,
         tzinfo=dt.timezone(-dt.timedelta(hours=23, minutes=30)),
-    ),
+    )
 )
-MONDAY_23_UTC_AS_TUESDAY = (
-    Weekday.TUESDAY,
+MONDAY_23_UTC_AS_TUESDAY = Trigger.Weekly.Thrusday(
     dt.time(hour=1, tzinfo=dt.timezone(dt.timedelta(hours=2))),
 )
-FRIDAY_4 = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=None))
-FRIDAY_4_UTC = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc))
+FRIDAY_4 = Trigger.Weekly.Friday(dt.time(hour=4, tzinfo=None))
+FRIDAY_4_UTC = Trigger.Weekly.Friday(dt.time(hour=4, tzinfo=utc))
 
 
 @pytest.mark.parametrize(
     "timing, counts, patch_datetime_now, tzinfo, err_msg",
     (
         [
-            Weekday.FRIDAY,
+            Trigger.Weekly.Friday(),
             [1, 2, 2, 2, 3, 3, 4, 4],
             samples_weeks,
             None,
@@ -50,14 +48,14 @@ FRIDAY_4_UTC = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc))
             None,
         ],
         [
-            Weekday.SUNDAY,
+            Trigger.Weekly.Sunday(),
             [1, 1, 1, 2, 2, 3, 3, 3],
             samples_weeks,
             None,
             None,
         ],
         [
-            [Weekday.WEDNESDAY, Weekday.WEDNESDAY],
+            [Trigger.Weekly.Wednesday(), Trigger.Weekly.Wednesday()],
             [],
             samples_weeks_utc,
             None,
@@ -85,7 +83,7 @@ FRIDAY_4_UTC = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc))
             DUPLICATE_EFFECTIVE_TIME,
         ],
         [
-            [Weekday.WEDNESDAY, Weekday.SUNDAY],
+            [Trigger.Weekly.Wednesday(), Trigger.Weekly.Sunday()],
             [1, 2, 2, 3, 4, 5, 6, 6],
             samples_weeks_utc,
             None,

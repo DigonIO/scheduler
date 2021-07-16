@@ -4,7 +4,7 @@ import pytest
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.job import Job
-from scheduler.util import Weekday
+from scheduler.util import Trigger
 
 from helpers import (
     utc,
@@ -36,7 +36,7 @@ from helpers import (
             None,
         ],
         [dt.time(hour=2), [], samples_hours_utc, utc, TZ_ERROR_MSG],
-        [Weekday.MONDAY, [], samples_hours, None, HOURLY_TYPE_ERROR_MSG],
+        [Trigger.Weekly.Monday(), [], samples_hours, None, HOURLY_TYPE_ERROR_MSG],
     ),
     indirect=["patch_datetime_now"],
 )

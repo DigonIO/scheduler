@@ -1,7 +1,7 @@
 import datetime as dt
 
 from scheduler.job import JobType
-from scheduler.util import Weekday
+from scheduler.util import Trigger
 
 
 utc = dt.timezone.utc
@@ -22,12 +22,12 @@ DAILY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Daily")
 WEEKLY_TYPE_ERROR_MSG = (
     "Wrong input for Weekly! Select one of the following input types:\n"
     + "DAY | list[DAY]\n"
-    + "where `DAY = Weekday | tuple[Weekday, dt.time]`"
+    + "where `DAY = Weekday`"
 )
 
 ONCE_TYPE_ERROR_MSG = (
     "Wrong input for Once! Select one of the following input types:\n"
-    + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
+    + "dt.datetime | dt.timedelta | Weekday | dt.time"
 )
 
 DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
@@ -355,7 +355,7 @@ job_args_utc = (
     },
     {
         "job_type": JobType.WEEKLY,
-        "timing": [Weekday.MONDAY],
+        "timing": [Trigger.Weekly.Monday(dt.time(tzinfo=utc))],
         "handle": bar,
         "kwargs": None,
         "max_attempts": 0,
@@ -369,8 +369,8 @@ job_args_utc = (
     {
         "job_type": JobType.WEEKLY,
         "timing": [
-            Weekday.WEDNESDAY,
-            (Weekday.TUESDAY, dt.time(23, 45, 59, tzinfo=utc)),
+            Trigger.Weekly.Wednesday(),
+            Trigger.Weekly.Tuesday(dt.time(23, 45, 59, tzinfo=utc)),
         ],
         "handle": print,
         "kwargs": {"end": "FOO\n"},
@@ -401,7 +401,7 @@ job_reprs_utc = (
         )
     ],
     [
-        "scheduler.Job(<JobType.WEEKLY: 5>, [<Weekday.MONDAY: 0>], <function bar at 0x",
+        "scheduler.Job(<JobType.WEEKLY: 5>, [<Trigger.Weekly.Monday>], <function bar at 0x",
         (
             ">, (), {}, 0, 1, False, datetime.datetime(2021, 5, 25, 3, 55, "
             "tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"
@@ -409,7 +409,7 @@ job_reprs_utc = (
     ],
     [
         (
-            "scheduler.Job(<JobType.WEEKLY: 5>, [<Weekday.WEDNESDAY: 2>, (<Weekday.TUESDAY: 1>,"
+            "scheduler.Job(<JobType.WEEKLY: 5>, [<Trigger.Weekly.Wednesday>, (<Trigger.Weekly.Tuesday>,"
             " datetime.time(23, 45, 59, tzinfo=datetime.timezone.utc))], <built-in function print>"
             ", (), {'end': 'FOO\\n'}, 1, 1, True, "
             "datetime.datetime(2021, 6, 2, 3, 55, tzinfo=datetime.timezone.utc),"

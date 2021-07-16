@@ -18,23 +18,56 @@ class SchedulerError(Exception):
     """Generic Scheduler exception."""
 
 
-class Weekday(Enum):
-    """
-    Enum representation of weekdays.
+class Weekday:
+    """Abstract class for a weekday object."""
 
-    Notes
-    -----
-    The :class:`~scheduler.util.Weekday` enumeration is based on the enumeration of
-    weekdays in the `datetime` standard library.
-    """
+    __value: int
 
-    MONDAY = 0
-    TUESDAY = 1
-    WEDNESDAY = 2
-    THURSDAY = 3
-    FRIDAY = 4
-    SATURDAY = 5
-    SUNDAY = 6
+    def __init__(self, time: dt.time = dt.time()):
+        self.__time = time
+
+    @property
+    def value(self) -> int:
+        return self.__value
+
+    @property
+    def time(self) -> dt.time:
+        return self.__time
+
+
+class Trigger:
+    """Container for all types of triggers"""
+
+    class Weekly:
+        """
+        Container of all weekday representations.
+
+        Notes
+        -----
+        The weekday enumeration is based on the enumeration of
+        weekdays in the `datetime` standard library.
+        """
+
+        class Monday(Weekday):
+            _Weekday__value = 0
+
+        class Tuesday(Weekday):
+            _Weekday__value = 1
+
+        class Wednesday(Weekday):
+            _Weekday__value = 2
+
+        class Thrusday(Weekday):
+            _Weekday__value = 3
+
+        class Friday(Weekday):
+            _Weekday__value = 4
+
+        class Saturday(Weekday):
+            _Weekday__value = 5
+
+        class Sunday(Weekday):
+            _Weekday__value = 6
 
 
 class JobType(Enum):
@@ -250,7 +283,7 @@ def are_times_unique(
 
 
 def are_weekday_times_unique(
-    timelist: list[tuple[Weekday, dt.time]], tzinfo: Optional[dt.tzinfo]
+    weekday_list: list[Weekday], tzinfo: Optional[dt.tzinfo]
 ) -> bool:
     """
     Check if list contains distinct weekday times.
@@ -260,8 +293,8 @@ def are_weekday_times_unique(
 
     Parameters
     ----------
-    timelist : list[tuple[Weekday, datetime.time]]
-        List of ``tuple[Weekday, datetime.time]`` objects.
+    weekday_list : list[Weekday]
+        List of weekday objects.
 
     Returns
     -------
@@ -270,10 +303,10 @@ def are_weekday_times_unique(
     """
     ref = dt.datetime(year=1970, month=1, day=1, tzinfo=tzinfo)
     collection = {
-        next_weekday_time_occurrence(ref.astimezone(time.tzinfo), day, time)
-        for day, time in timelist
+        next_weekday_time_occurrence(ref.astimezone(day.time.tzinfo), day, day.time)
+        for day in weekday_list
     }
-    return len(collection) == len(timelist)
+    return len(collection) == len(weekday_list)
 
 
 class AbstractJob(ABC):

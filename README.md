@@ -66,7 +66,7 @@ For advanced scheduling examples please visit the online
 ```py
 import time
 import datetime as dt
-from scheduler import Scheduler, Weekday
+from scheduler import Scheduler, Trigger
 
 def foo():
     print("foo")
@@ -81,11 +81,11 @@ sch.cyclic(dt.timedelta(minutes=10), foo)
 sch.minutely(dt.time(second=15), bar)
 sch.hourly(dt.time(minute=30, second=15), foo)
 sch.daily(dt.time(hour=16, minute=30), bar)
-sch.weekly(Weekday.MONDAY, foo)
-sch.weekly((Weekday.MONDAY, dt.time(hour=16, minute=30)), bar)
+sch.weekly(Trigger.Weekly.Monday(), foo)
+sch.weekly(Trigger.Weekly.Monday(dt.time(hour=16, minute=30)), bar)
 
 sch.once(dt.timedelta(minutes=10), foo)
-sch.once(Weekday.MONDAY, bar)
+sch.once(Trigger.Weekly.Monday(), bar)
 sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
 ```
 

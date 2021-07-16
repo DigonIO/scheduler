@@ -4,7 +4,7 @@ import pytest
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.job import Job
-from scheduler.util import Weekday
+from scheduler.util import Trigger
 
 from helpers import utc, ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, samples, samples_utc, foo
 
@@ -34,7 +34,7 @@ from helpers import utc, ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, samples, samples_utc
             None,
         ],
         [
-            Weekday.THURSDAY,
+            Trigger.Weekly.Thrusday(),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples,
             None,
@@ -48,14 +48,14 @@ from helpers import utc, ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, samples, samples_utc
             None,
         ],
         [
-            (Weekday.THURSDAY, dt.time(hour=3, minute=57, tzinfo=utc)),
+            Trigger.Weekly.Thrusday(dt.time(hour=3, minute=57, tzinfo=utc)),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples_utc,
             utc,
             None,
         ],
         [
-            (Weekday.THURSDAY, dt.time(hour=3, minute=57, tzinfo=None)),
+            Trigger.Weekly.Thrusday(dt.time(hour=3, minute=57, tzinfo=None)),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples_utc,
             utc,

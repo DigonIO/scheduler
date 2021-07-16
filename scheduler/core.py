@@ -29,20 +29,25 @@ from scheduler.util import (
     AbstractJob,
     Prioritization,
     SchedulerError,
-    Weekday,
+    Trigger,
     str_cutoff,
 )
 
 ONCE_TYPE_ERROR_MSG = (
     "Wrong input for Once! Select one of the following input types:\n"
-    + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
+    + "dt.datetime | dt.timedelta | Weekday | dt.time"
 )
 
 JOB_TYPE_MAPPING = {
     dt.timedelta: JobType.CYCLIC,
-    Weekday: JobType.WEEKLY,
-    tuple: JobType.WEEKLY,
     dt.time: JobType.DAILY,
+    Trigger.Weekly.Monday: JobType.WEEKLY,
+    Trigger.Weekly.Tuesday: JobType.WEEKLY,
+    Trigger.Weekly.Wednesday: JobType.WEEKLY,
+    Trigger.Weekly.Thrusday: JobType.WEEKLY,
+    Trigger.Weekly.Friday: JobType.WEEKLY,
+    Trigger.Weekly.Saturday: JobType.WEEKLY,
+    Trigger.Weekly.Sunday: JobType.WEEKLY,
 }
 
 

@@ -4,7 +4,7 @@ import pytest
 
 from scheduler import SchedulerError
 from scheduler.job import JobTimer, JobType, JobUtil
-from scheduler.util import Weekday
+from scheduler.util import Trigger
 
 from helpers import (
     utc,
@@ -22,14 +22,14 @@ from helpers import (
     (
         [
             JobType.WEEKLY,
-            Weekday.THURSDAY,
+            Trigger.Weekly.Thrusday(),
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39, tzinfo=utc),
             dt.datetime(year=2021, month=5, day=27, tzinfo=utc),
             dt.datetime(year=2021, month=6, day=3, tzinfo=utc),
         ],
         [
             JobType.WEEKLY,
-            (Weekday.FRIDAY, dt.time(hour=1, minute=1, tzinfo=utc)),
+            Trigger.Weekly.Friday(dt.time(hour=1, minute=1, tzinfo=utc)),
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39, tzinfo=utc),
             dt.datetime(year=2021, month=5, day=28, hour=1, minute=1, tzinfo=utc),
             dt.datetime(year=2021, month=6, day=4, hour=1, minute=1, tzinfo=utc),
@@ -117,17 +117,16 @@ def test_skip(delta_m, offset_m, skip, res_delta_m):
     (
         [JobType.CYCLIC, [dt.timedelta()], None],
         [JobType.CYCLIC, [dt.timedelta(), dt.timedelta()], CYCLIC_TYPE_ERROR_MSG],
-        [JobType.WEEKLY, [Weekday.MONDAY], None],
+        [JobType.WEEKLY, [Trigger.Weekly.Monday()], None],
         [JobType.DAILY, [dt.time()], None],
         [JobType.DAILY, [dt.time(), dt.time()], None],
         [JobType.HOURLY, [dt.time()], None],
         [JobType.HOURLY, [dt.time(), dt.time()], None],
         [JobType.MINUTELY, [dt.time()], None],
         [JobType.MINUTELY, [dt.time(), dt.time()], None],
-        [JobType.WEEKLY, [(Weekday.MONDAY, dt.time())], None],
         # [JobType.CYCLIC, (dt.timedelta(), dt.timedelta()), CYCLIC_TYPE_ERROR_MSG],
         # [JobType.WEEKLY, dt.time(), WEEKLY_TYPE_ERROR_MSG],
-        # [JobType.WEEKLY, [Weekday.MONDAY, dt.time()], WEEKLY_TYPE_ERROR_MSG],
+        # [JobType.WEEKLY, [Trigger.Weekly.Monday(), dt.time()], WEEKLY_TYPE_ERROR_MSG],
         # [JobType.DAILY, (dt.time(), dt.time()), DAILY_TYPE_ERROR_MSG],
         # [JobType.HOURLY, (dt.time(), dt.time()), HOURLY_TYPE_ERROR_MSG],
         # [JobType.MINUTELY, (dt.time(), dt.time()), MINUTELY_TYPE_ERROR_MSG],

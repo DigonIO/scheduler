@@ -4,7 +4,7 @@ import pytest
 
 from scheduler import SchedulerError
 from scheduler.job import Job, JobType
-from scheduler.util import Weekday
+from scheduler.util import Trigger
 
 from helpers import (
     utc,
@@ -17,9 +17,16 @@ from helpers import (
 @pytest.mark.parametrize(
     "job_type, timing, start, stop, tzinfo, err",
     (
-        [JobType.WEEKLY, [Weekday.MONDAY], None, None, None, None],
-        [JobType.WEEKLY, [Weekday.MONDAY, Weekday.TUESDAY], None, None, None, None],
-        [JobType.WEEKLY, [Weekday.MONDAY], None, None, utc, None],
+        [JobType.WEEKLY, [Trigger.Weekly.Monday()], None, None, None, None],
+        [
+            JobType.WEEKLY,
+            [Trigger.Weekly.Monday(), Trigger.Weekly.Thrusday()],
+            None,
+            None,
+            None,
+            None,
+        ],
+        [JobType.WEEKLY, [Trigger.Weekly.Monday()], None, None, utc, None],
         [
             JobType.DAILY,
             [dt.time(tzinfo=utc)],
@@ -78,7 +85,7 @@ from helpers import (
         ],
         [
             JobType.WEEKLY,
-            [Weekday.MONDAY],
+            [Trigger.Weekly.Monday()],
             dt.datetime.now(utc),
             dt.datetime.now(utc) - dt.timedelta(hours=1),
             utc,

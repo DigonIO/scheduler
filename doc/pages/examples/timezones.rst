@@ -52,7 +52,7 @@ Lastly create a job running every Monday at ``10:00`` local time of Sydney as fo
 
 .. code-block:: pycon
 
-    >>> job_sy = sch.weekly((Weekday.MONDAY, dt.time(hour=10, tzinfo=tz_sydney)), useful)
+    >>> job_sy = sch.weekly(Trigger.Weekly.Monday(dt.time(hour=10, tzinfo=tz_sydney)), useful)
 
 A simple `print(sch)` statement can be used for an overview of the scheduled
 |Job|\ s. As this |Scheduler| instance is timezone
