@@ -11,7 +11,7 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import Any, Callable, Optional
 
-from scheduler.trigger import Weekday
+from scheduler.trigger.core import Weekday
 
 TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
 

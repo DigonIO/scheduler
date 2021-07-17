@@ -66,7 +66,8 @@ For advanced scheduling examples please visit the online
 ```py
 import time
 import datetime as dt
-from scheduler import Scheduler, Trigger
+from scheduler import Scheduler
+import scheduler.trigger as trigger
 
 def foo():
     print("foo")
@@ -74,25 +75,25 @@ def foo():
 def bar(msg = "bar"):
     print(msg)
 
-sch = Scheduler()
+schedule = Scheduler()
 
-sch.cyclic(dt.timedelta(minutes=10), foo)
+schedule.cyclic(dt.timedelta(minutes=10), foo)
 
-sch.minutely(dt.time(second=15), bar)
-sch.hourly(dt.time(minute=30, second=15), foo)
-sch.daily(dt.time(hour=16, minute=30), bar)
-sch.weekly(Trigger.Weekly.Monday(), foo)
-sch.weekly(Trigger.Weekly.Monday(dt.time(hour=16, minute=30)), bar)
+schedule.minutely(dt.time(second=15), bar)
+schedule.hourly(dt.time(minute=30, second=15), foo)
+schedule.daily(dt.time(hour=16, minute=30), bar)
+schedule.weekly(trigger.Monday(), foo)
+schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), bar)
 
-sch.once(dt.timedelta(minutes=10), foo)
-sch.once(Trigger.Weekly.Monday(), bar)
-sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
+schedule.once(dt.timedelta(minutes=10), foo)
+schedule.once(trigger.Monday(), bar)
+schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
 ```
 
 A human readable overview of the scheduled jobs can be created with a simple `print` statement:
 
 ```py
-print(sch)
+print(schedule)
 ```
 
 ```text

@@ -3,8 +3,8 @@ import datetime as dt
 import pytest
 from helpers import CYCLIC_TYPE_ERROR_MSG, foo, samples_days, samples_seconds, utc
 
+import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
-from scheduler.trigger import Trigger
 
 
 @pytest.mark.parametrize(
@@ -15,7 +15,7 @@ from scheduler.trigger import Trigger
         [dt.timedelta(seconds=5), [1, 1, 2, 2, 2, 3, 3], samples_seconds, utc, None],
         [dt.timedelta(days=2), [0, 0, 1, 2, 2, 2, 2], samples_days, None, None],
         [dt.time(hour=2), [], samples_days, None, CYCLIC_TYPE_ERROR_MSG],
-        [Trigger.Weekly.Monday(), [], samples_days, None, CYCLIC_TYPE_ERROR_MSG],
+        [trigger.Monday(), [], samples_days, None, CYCLIC_TYPE_ERROR_MSG],
     ),
     indirect=["patch_datetime_now"],
 )

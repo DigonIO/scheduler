@@ -9,7 +9,8 @@ to schedule:
 
     >>> import time
     >>> import datetime as dt
-    >>> from scheduler import Scheduler, Weekday
+    >>> from scheduler import Scheduler
+    >>> import scheduler.trigger as trigger
 
     >>> def foo():
     ...     print("foo")
@@ -17,76 +18,76 @@ to schedule:
     >>> def bar(msg = "bar"):
     ...     print(msg)
 
-    >>> sch = Scheduler()
+    >>> schedule = Scheduler()
 
 Schedule a job that runs every 10 minutes:
 
 .. code-block:: pycon
 
-    >>> sch.cyclic(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
+    >>> schedule.cyclic(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...datetime.timedelta(seconds=600)...foo...0, 1...)
 
 Schedule a job that runs every minute at ``XX:XX:15``:
 
 .. code-block:: pycon
 
-    >>> sch.minutely(dt.time(second=15), bar)  # doctest:+ELLIPSIS
+    >>> schedule.minutely(dt.time(second=15), bar)  # doctest:+ELLIPSIS
     scheduler.Job(...MINUTELY...datetime.time(0, 0, 15)...bar...0, 1...)
 
 Schedule a job that runs every hour at ``XX:30:15``:
 
 .. code-block:: pycon
 
-    >>> sch.hourly(dt.time(minute=30, second=15), foo)  # doctest:+ELLIPSIS
+    >>> schedule.hourly(dt.time(minute=30, second=15), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...HOURLY...datetime.time(0, 30, 15)...foo...0, 1...)
 
 Schedule a job that runs every day at ``16:30:00``:
 
 .. code-block:: pycon
 
-    >>> sch.daily(dt.time(hour=16, minute=30), bar)  # doctest:+ELLIPSIS
+    >>> schedule.daily(dt.time(hour=16, minute=30), bar)  # doctest:+ELLIPSIS
     scheduler.Job(...DAILY...datetime.time(16, 30)...bar...0, 1...)
 
 Schedule a job that runs every monday at ``00:00``:
 
 .. code-block:: pycon
 
-    >>> sch.weekly(Trigger.Weekly.Monday(), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(...WEEKLY...MONDAY...foo...0, 1...)
+    >>> schedule.weekly(trigger.Monday(), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(...WEEKLY...Monday...foo...0, 1...)
 
 Schedule a job that runs every monday at ``16:30:00``:
 
 .. code-block:: pycon
 
-    >>> sch.weekly(Trigger.Weekly.Monday(dt.time(hour=16, minute=30)), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(...WEEKLY...(<Trigger.Weekly.Monday...>, datetime.time(16, 30))...bar...0, 1...)
+    >>> schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), bar)  # doctest:+ELLIPSIS
+    scheduler.Job(...WEEKLY...(<....Monday...>, datetime.time(16, 30))...bar...0, 1...)
 
 Schedule a job that runs exactly once in 10 minutes
 
 .. code-block:: pycon
 
-    >>> sch.once(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
+    >>> schedule.once(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...datetime.timedelta(seconds=600)...foo...1, 1...)
 
 Schedule a job that runs exactly once next monday at ``00:00``:
 
 .. code-block:: pycon
 
-    >>> sch.once(Trigger.Weekly.Monday(), bar)  # doctest:+ELLIPSIS
+    >>> schedule.once(trigger.Monday(), bar)  # doctest:+ELLIPSIS
     scheduler.Job(...WEEKLY...Trigger.Weekly.Monday...bar...1, 1...)
 
 Schedule a job that runs exactly once at the given date at ``2022-02-15 00:45:00``:
 
 .. code-block:: pycon
 
-    >>> sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
+    >>> schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...foo...1, 1...datetime.datetime(2022, 2, 15, 0, 45)...)
 
 A human readable overview of the scheduled jobs can be created with a simple `print` statement:
 
 .. code-block:: pycon
 
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=9
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -108,7 +109,7 @@ overdue job exactly once.
 
 .. code-block:: pycon
 
-    >>> sch.exec_jobs()  # doctest:+SKIP
+    >>> schedule.exec_jobs()  # doctest:+SKIP
 
 For cyclic execution of |Job|\ s, the :py:meth:`~scheduler.core.Scheduler.exec_jobs` function should
 be embedded in a loop of the host program:
@@ -116,5 +117,5 @@ be embedded in a loop of the host program:
 .. code-block:: pycon
 
     >>> while True:  # doctest:+SKIP
-    ...     sch.exec_jobs()
+    ...     schedule.exec_jobs()
     ...     time.sleep(1)

@@ -3,8 +3,8 @@ import datetime as dt
 import pytest
 from helpers import ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples, samples_utc, utc
 
+import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
-from scheduler.trigger import Trigger
 
 
 @pytest.mark.parametrize(
@@ -32,7 +32,7 @@ from scheduler.trigger import Trigger
             None,
         ],
         [
-            Trigger.Weekly.Thursday(),
+            trigger.Thursday(),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples,
             None,
@@ -46,14 +46,14 @@ from scheduler.trigger import Trigger
             None,
         ],
         [
-            Trigger.Weekly.Thursday(dt.time(hour=3, minute=57, tzinfo=utc)),
+            trigger.Thursday(dt.time(hour=3, minute=57, tzinfo=utc)),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples_utc,
             utc,
             None,
         ],
         [
-            Trigger.Weekly.Thursday(dt.time(hour=3, minute=57, tzinfo=None)),
+            trigger.Thursday(dt.time(hour=3, minute=57, tzinfo=None)),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples_utc,
             utc,

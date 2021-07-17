@@ -2,7 +2,7 @@ import datetime as dt
 
 import pytest
 
-from scheduler.trigger import Trigger
+import scheduler.trigger as trigger
 from scheduler.util import (
     SchedulerError,
     days_to_weekday,
@@ -20,11 +20,11 @@ err_msg = "Weekday enumeration interval: [0,6] <=> [Monday, Sunday]"
 @pytest.mark.parametrize(
     "wkdy_src, wkdy_dest, days, err_msg",
     (
-        [Trigger.Weekly.Monday(), Trigger.Weekly.Thursday(), 3, None],
-        [Trigger.Weekly.Wednesday(), Trigger.Weekly.Sunday(), 4, None],
-        [Trigger.Weekly.Friday(), Trigger.Weekly.Friday(), 7, None],
-        [Trigger.Weekly.Saturday(), Trigger.Weekly.Thursday(), 5, None],
-        [Trigger.Weekly.Sunday(), Trigger.Weekly.Saturday(), 6, None],
+        [trigger.Monday(), trigger.Thursday(), 3, None],
+        [trigger.Wednesday(), trigger.Sunday(), 4, None],
+        [trigger.Friday(), trigger.Friday(), 7, None],
+        [trigger.Saturday(), trigger.Thursday(), 5, None],
+        [trigger.Sunday(), trigger.Saturday(), 6, None],
         [3, 8, 0, err_msg],
         [4, -1, 0, err_msg],
         [8, 4, 0, err_msg],
@@ -45,22 +45,22 @@ def test_days_to_weekday(wkdy_src, wkdy_dest, days, err_msg):
     (
         [
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            Trigger.Weekly.Friday(),
+            trigger.Friday(),
             dt.datetime(year=2021, month=5, day=28),
         ],
         [
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            Trigger.Weekly.Wednesday(),
+            trigger.Wednesday(),
             dt.datetime(year=2021, month=6, day=2),
         ],
         [
             dt.datetime(year=2021, month=5, day=27),
-            Trigger.Weekly.Thursday(),
+            trigger.Thursday(),
             dt.datetime(year=2021, month=6, day=3),
         ],
         [
             dt.datetime(year=2021, month=5, day=27, tzinfo=dt.timezone.utc),
-            Trigger.Weekly.Thursday(),
+            trigger.Thursday(),
             dt.datetime(year=2021, month=6, day=3, tzinfo=dt.timezone.utc),
         ],
     ),
@@ -74,13 +74,13 @@ def test_next_weekday_occurrence(now, wkdy, target):
     (
         [
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            Trigger.Weekly.Friday(),
+            trigger.Friday(),
             dt.time(hour=0, minute=0),
             dt.datetime(year=2021, month=5, day=28),
         ],
         [
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            Trigger.Weekly.Wednesday(),
+            trigger.Wednesday(),
             dt.time(hour=12, minute=3, second=1),
             dt.datetime(year=2021, month=5, day=26, hour=12, minute=3, second=1),
         ],
@@ -88,7 +88,7 @@ def test_next_weekday_occurrence(now, wkdy, target):
             dt.datetime(
                 year=2021, month=5, day=26, hour=11, minute=39, tzinfo=dt.timezone.utc
             ),
-            Trigger.Weekly.Thursday(),
+            trigger.Thursday(),
             dt.time(hour=12, minute=3, second=1, tzinfo=dt.timezone.utc),
             dt.datetime(
                 year=2021,
@@ -102,7 +102,7 @@ def test_next_weekday_occurrence(now, wkdy, target):
         ],
         [
             dt.datetime(year=2021, month=6, day=16, hour=1, minute=53, second=45),
-            Trigger.Weekly.Wednesday(),
+            trigger.Wednesday(),
             dt.time(hour=2),
             dt.datetime(year=2021, month=6, day=16, hour=2),
         ],

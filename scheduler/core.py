@@ -10,6 +10,7 @@ from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
+import scheduler.trigger as trigger
 from scheduler.job import (
     CYCLIC_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
@@ -25,7 +26,6 @@ from scheduler.job import (
     TimingOnceUnion,
     TimingWeeklyUnion,
 )
-from scheduler.trigger import Trigger
 from scheduler.util import AbstractJob, Prioritization, SchedulerError, str_cutoff
 
 ONCE_TYPE_ERROR_MSG = (
@@ -36,13 +36,13 @@ ONCE_TYPE_ERROR_MSG = (
 JOB_TYPE_MAPPING = {
     dt.timedelta: JobType.CYCLIC,
     dt.time: JobType.DAILY,
-    Trigger.Weekly.Monday: JobType.WEEKLY,
-    Trigger.Weekly.Tuesday: JobType.WEEKLY,
-    Trigger.Weekly.Wednesday: JobType.WEEKLY,
-    Trigger.Weekly.Thursday: JobType.WEEKLY,
-    Trigger.Weekly.Friday: JobType.WEEKLY,
-    Trigger.Weekly.Saturday: JobType.WEEKLY,
-    Trigger.Weekly.Sunday: JobType.WEEKLY,
+    trigger.Monday: JobType.WEEKLY,
+    trigger.Tuesday: JobType.WEEKLY,
+    trigger.Wednesday: JobType.WEEKLY,
+    trigger.Thursday: JobType.WEEKLY,
+    trigger.Friday: JobType.WEEKLY,
+    trigger.Saturday: JobType.WEEKLY,
+    trigger.Sunday: JobType.WEEKLY,
 }
 
 

@@ -26,6 +26,7 @@ setup(
     license="LGPLv3",
     packages=[
         "scheduler",
+        "scheduler.trigger",
     ],
     keywords="scheduler schedule datetime date time timedelta timezone timing",
     install_requires=[

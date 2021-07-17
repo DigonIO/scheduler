@@ -11,7 +11,7 @@ from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
-from scheduler.trigger import Trigger
+from scheduler.trigger.core import Weekday
 from scheduler.util import (
     TZ_ERROR_MSG,
     AbstractJob,

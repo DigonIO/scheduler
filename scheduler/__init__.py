@@ -8,5 +8,4 @@ __version__ = "0.6.0"
 __author__ = "Jendrik A. Potyka, Fabian A. Preiss"
 
 from scheduler.core import Scheduler
-from scheduler.trigger import Trigger
 from scheduler.util import SchedulerError

@@ -12,8 +12,8 @@ from helpers import (
     utc,
 )
 
+import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
-from scheduler.trigger import Trigger
 
 
 @pytest.mark.parametrize(
@@ -43,7 +43,7 @@ from scheduler.trigger import Trigger
             None,
         ],
         [dt.time(hour=2), [], samples_minutes_utc, utc, TZ_ERROR_MSG],
-        [Trigger.Weekly.Monday(), [], samples_minutes, None, MINUTELY_TYPE_ERROR_MSG],
+        [trigger.Monday(), [], samples_minutes, None, MINUTELY_TYPE_ERROR_MSG],
     ),
     indirect=["patch_datetime_now"],
 )

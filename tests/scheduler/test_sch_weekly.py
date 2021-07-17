@@ -11,29 +11,29 @@ from helpers import (
     utc,
 )
 
+import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
-from scheduler.trigger import Trigger
 
-MONDAY_23_UTC = Trigger.Weekly.Monday(dt.time(hour=23, tzinfo=dt.timezone.utc))
-MONDAY_23_UTC_AS_SUNDAY = Trigger.Weekly.Sunday(
+MONDAY_23_UTC = trigger.Monday(dt.time(hour=23, tzinfo=dt.timezone.utc))
+MONDAY_23_UTC_AS_SUNDAY = trigger.Sunday(
     dt.time(
         hour=23,
         minute=30,
         tzinfo=dt.timezone(-dt.timedelta(hours=23, minutes=30)),
     )
 )
-MONDAY_23_UTC_AS_TUESDAY = Trigger.Weekly.Thursday(
+MONDAY_23_UTC_AS_TUESDAY = trigger.Thursday(
     dt.time(hour=1, tzinfo=dt.timezone(dt.timedelta(hours=2))),
 )
-FRIDAY_4 = Trigger.Weekly.Friday(dt.time(hour=4, tzinfo=None))
-FRIDAY_4_UTC = Trigger.Weekly.Friday(dt.time(hour=4, tzinfo=utc))
+FRIDAY_4 = trigger.Friday(dt.time(hour=4, tzinfo=None))
+FRIDAY_4_UTC = trigger.Friday(dt.time(hour=4, tzinfo=utc))
 
 
 @pytest.mark.parametrize(
     "timing, counts, patch_datetime_now, tzinfo, err_msg",
     (
         [
-            Trigger.Weekly.Friday(),
+            trigger.Friday(),
             [1, 2, 2, 2, 3, 3, 4, 4],
             samples_weeks,
             None,
@@ -47,14 +47,14 @@ FRIDAY_4_UTC = Trigger.Weekly.Friday(dt.time(hour=4, tzinfo=utc))
             None,
         ],
         [
-            Trigger.Weekly.Sunday(),
+            trigger.Sunday(),
             [1, 1, 1, 2, 2, 3, 3, 3],
             samples_weeks,
             None,
             None,
         ],
         [
-            [Trigger.Weekly.Wednesday(), Trigger.Weekly.Wednesday()],
+            [trigger.Wednesday(), trigger.Wednesday()],
             [],
             samples_weeks_utc,
             None,
@@ -82,7 +82,7 @@ FRIDAY_4_UTC = Trigger.Weekly.Friday(dt.time(hour=4, tzinfo=utc))
             DUPLICATE_EFFECTIVE_TIME,
         ],
         [
-            [Trigger.Weekly.Wednesday(), Trigger.Weekly.Sunday()],
+            [trigger.Wednesday(), trigger.Sunday()],
             [1, 2, 2, 3, 4, 5, 6, 6],
             samples_weeks_utc,
             None,

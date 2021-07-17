@@ -1,7 +1,7 @@
 import datetime as dt
 
+import scheduler.trigger as trigger
 from scheduler.job import JobType
-from scheduler.trigger import Trigger
 
 utc = dt.timezone.utc
 utc2 = dt.timezone(dt.timedelta(hours=2))
@@ -354,7 +354,7 @@ job_args_utc = (
     },
     {
         "job_type": JobType.WEEKLY,
-        "timing": [Trigger.Weekly.Monday(dt.time(tzinfo=utc))],
+        "timing": [trigger.Monday(dt.time(tzinfo=utc))],
         "handle": bar,
         "kwargs": None,
         "max_attempts": 0,
@@ -368,8 +368,8 @@ job_args_utc = (
     {
         "job_type": JobType.WEEKLY,
         "timing": [
-            Trigger.Weekly.Wednesday(),
-            Trigger.Weekly.Tuesday(dt.time(23, 45, 59, tzinfo=utc)),
+            trigger.Wednesday(),
+            trigger.Tuesday(dt.time(23, 45, 59, tzinfo=utc)),
         ],
         "handle": print,
         "kwargs": {"end": "FOO\n"},
@@ -400,7 +400,7 @@ job_reprs_utc = (
         )
     ],
     [
-        "scheduler.Job(<JobType.WEEKLY: 5>, [<Trigger.Weekly.Monday>], <function bar at 0x",
+        "scheduler.Job(<JobType.WEEKLY: 5>, [<trigger.Monday>], <function bar at 0x",
         (
             ">, (), {}, 0, 1, False, datetime.datetime(2021, 5, 25, 3, 55, "
             "tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"
@@ -408,7 +408,7 @@ job_reprs_utc = (
     ],
     [
         (
-            "scheduler.Job(<JobType.WEEKLY: 5>, [<Trigger.Weekly.Wednesday>, (<Trigger.Weekly.Tuesday>,"
+            "scheduler.Job(<JobType.WEEKLY: 5>, [<trigger.Wednesday>, (<trigger.Tuesday>,"
             " datetime.time(23, 45, 59, tzinfo=datetime.timezone.utc))], <built-in function print>"
             ", (), {'end': 'FOO\\n'}, 1, 1, True, "
             "datetime.datetime(2021, 6, 2, 3, 55, tzinfo=datetime.timezone.utc),"

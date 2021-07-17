@@ -11,8 +11,8 @@ from helpers import (
     utc2,
 )
 
+import scheduler.trigger as trigger
 from scheduler.job import Job, JobType
-from scheduler.trigger import Trigger
 
 
 def test_misc_properties():
@@ -108,7 +108,7 @@ def test_job__lt__(
         ],
         [
             JobType.WEEKLY,
-            [Trigger.Weekly.Sunday()],
+            [trigger.Sunday()],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
