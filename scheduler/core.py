@@ -25,13 +25,8 @@ from scheduler.job import (
     TimingOnceUnion,
     TimingWeeklyUnion,
 )
-from scheduler.util import (
-    AbstractJob,
-    Prioritization,
-    SchedulerError,
-    Trigger,
-    str_cutoff,
-)
+from scheduler.trigger import Trigger
+from scheduler.util import AbstractJob, Prioritization, SchedulerError, str_cutoff
 
 ONCE_TYPE_ERROR_MSG = (
     "Wrong input for Once! Select one of the following input types:\n"
@@ -44,7 +39,7 @@ JOB_TYPE_MAPPING = {
     Trigger.Weekly.Monday: JobType.WEEKLY,
     Trigger.Weekly.Tuesday: JobType.WEEKLY,
     Trigger.Weekly.Wednesday: JobType.WEEKLY,
-    Trigger.Weekly.Thrusday: JobType.WEEKLY,
+    Trigger.Weekly.Thursday: JobType.WEEKLY,
     Trigger.Weekly.Friday: JobType.WEEKLY,
     Trigger.Weekly.Saturday: JobType.WEEKLY,
     Trigger.Weekly.Sunday: JobType.WEEKLY,

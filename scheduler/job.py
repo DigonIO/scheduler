@@ -11,6 +11,7 @@ from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
+from scheduler.trigger import Trigger
 from scheduler.util import (
     TZ_ERROR_MSG,
     AbstractJob,
@@ -22,7 +23,6 @@ from scheduler.util import (
     next_daily_occurrence,
     next_hourly_occurrence,
     next_minutely_occurrence,
-    next_weekday_occurrence,
     next_weekday_time_occurrence,
     prettify_timedelta,
 )

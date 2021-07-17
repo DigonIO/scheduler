@@ -2,15 +2,15 @@ import datetime as dt
 
 import pytest
 
+from scheduler.trigger import Trigger
 from scheduler.util import (
     SchedulerError,
-    Trigger,
     days_to_weekday,
-    next_weekday_occurrence,
-    next_weekday_time_occurrence,
     next_daily_occurrence,
     next_hourly_occurrence,
     next_minutely_occurrence,
+    next_weekday_occurrence,
+    next_weekday_time_occurrence,
     str_cutoff,
 )
 
@@ -20,10 +20,10 @@ err_msg = "Weekday enumeration interval: [0,6] <=> [Monday, Sunday]"
 @pytest.mark.parametrize(
     "wkdy_src, wkdy_dest, days, err_msg",
     (
-        [Trigger.Weekly.Monday(), Trigger.Weekly.Thrusday(), 3, None],
+        [Trigger.Weekly.Monday(), Trigger.Weekly.Thursday(), 3, None],
         [Trigger.Weekly.Wednesday(), Trigger.Weekly.Sunday(), 4, None],
         [Trigger.Weekly.Friday(), Trigger.Weekly.Friday(), 7, None],
-        [Trigger.Weekly.Saturday(), Trigger.Weekly.Thrusday(), 5, None],
+        [Trigger.Weekly.Saturday(), Trigger.Weekly.Thursday(), 5, None],
         [Trigger.Weekly.Sunday(), Trigger.Weekly.Saturday(), 6, None],
         [3, 8, 0, err_msg],
         [4, -1, 0, err_msg],
@@ -55,12 +55,12 @@ def test_days_to_weekday(wkdy_src, wkdy_dest, days, err_msg):
         ],
         [
             dt.datetime(year=2021, month=5, day=27),
-            Trigger.Weekly.Thrusday(),
+            Trigger.Weekly.Thursday(),
             dt.datetime(year=2021, month=6, day=3),
         ],
         [
             dt.datetime(year=2021, month=5, day=27, tzinfo=dt.timezone.utc),
-            Trigger.Weekly.Thrusday(),
+            Trigger.Weekly.Thursday(),
             dt.datetime(year=2021, month=6, day=3, tzinfo=dt.timezone.utc),
         ],
     ),
@@ -88,7 +88,7 @@ def test_next_weekday_occurrence(now, wkdy, target):
             dt.datetime(
                 year=2021, month=5, day=26, hour=11, minute=39, tzinfo=dt.timezone.utc
             ),
-            Trigger.Weekly.Thrusday(),
+            Trigger.Weekly.Thursday(),
             dt.time(hour=12, minute=3, second=1, tzinfo=dt.timezone.utc),
             dt.datetime(
                 year=2021,

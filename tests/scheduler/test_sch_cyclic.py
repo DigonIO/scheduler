@@ -1,18 +1,10 @@
 import datetime as dt
 
 import pytest
+from helpers import CYCLIC_TYPE_ERROR_MSG, foo, samples_days, samples_seconds, utc
 
 from scheduler import Scheduler, SchedulerError
-from scheduler.job import Job
-from scheduler.util import Trigger
-
-from helpers import (
-    utc,
-    CYCLIC_TYPE_ERROR_MSG,
-    samples_seconds,
-    samples_days,
-    foo,
-)
+from scheduler.trigger import Trigger
 
 
 @pytest.mark.parametrize(

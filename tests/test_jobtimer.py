@@ -1,20 +1,11 @@
 import datetime as dt
 
 import pytest
+from helpers import CYCLIC_TYPE_ERROR_MSG, T_2021_5_26__3_55, utc
 
 from scheduler import SchedulerError
 from scheduler.job import JobTimer, JobType, JobUtil
-from scheduler.util import Trigger
-
-from helpers import (
-    utc,
-    T_2021_5_26__3_55,
-    CYCLIC_TYPE_ERROR_MSG,
-    MINUTELY_TYPE_ERROR_MSG,
-    HOURLY_TYPE_ERROR_MSG,
-    DAILY_TYPE_ERROR_MSG,
-    WEEKLY_TYPE_ERROR_MSG,
-)
+from scheduler.trigger import Trigger
 
 
 @pytest.mark.parametrize(
@@ -22,7 +13,7 @@ from helpers import (
     (
         [
             JobType.WEEKLY,
-            Trigger.Weekly.Thrusday(),
+            Trigger.Weekly.Thursday(),
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39, tzinfo=utc),
             dt.datetime(year=2021, month=5, day=27, tzinfo=utc),
             dt.datetime(year=2021, month=6, day=3, tzinfo=utc),

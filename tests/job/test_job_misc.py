@@ -1,20 +1,18 @@
 import datetime as dt
 
 import pytest
-
-from scheduler import SchedulerError
-from scheduler.job import Job, JobType
-from scheduler.util import Trigger
-
 from helpers import (
-    utc,
-    utc2,
     T_2021_5_26__3_55,
     T_2021_5_26__3_55_UTC,
+    foo,
     samples_minutes_utc,
     samples_weeks_utc,
-    foo,
+    utc,
+    utc2,
 )
+
+from scheduler.job import Job, JobType
+from scheduler.trigger import Trigger
 
 
 def test_misc_properties():
@@ -88,6 +86,7 @@ def test_job__lt__(
     assert (job_1 < job_2) == result
 
 
+@pytest.mark.skip("Currently under redesign")
 @pytest.mark.parametrize(
     "job_type, timing, base, offset, tzinfo, patch_datetime_now",
     (

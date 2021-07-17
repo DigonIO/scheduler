@@ -1,12 +1,11 @@
 import datetime as dt
 
 import pytest
+from helpers import TZ_ERROR_MSG, foo, utc
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.job import Job, JobType
 from scheduler.util import AbstractJob
-
-from helpers import utc, TZ_ERROR_MSG, foo
 
 
 def priority_function_dummy(

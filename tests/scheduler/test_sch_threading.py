@@ -1,12 +1,12 @@
 import datetime as dt
-import time
 import threading
+import time
 
 import pytest
+from helpers import foo
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.util import Weekday
-from helpers import foo
 
 
 def wrap_sleep(secs: float):

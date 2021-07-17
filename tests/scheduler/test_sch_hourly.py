@@ -1,19 +1,17 @@
 import datetime as dt
 
 import pytest
-
-from scheduler import Scheduler, SchedulerError
-from scheduler.job import Job
-from scheduler.util import Trigger
-
 from helpers import (
-    utc,
     HOURLY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
+    foo,
     samples_hours,
     samples_hours_utc,
-    foo,
+    utc,
 )
+
+from scheduler import Scheduler, SchedulerError
+from scheduler.trigger import Trigger
 
 
 @pytest.mark.parametrize(

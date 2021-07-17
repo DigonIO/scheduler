@@ -1,13 +1,11 @@
 import datetime as dt
-
-import pytest
 import pdb
 
+import pytest
+from helpers import sample_seconds_interference_lag, samples_days
 
 from scheduler import Scheduler
 from scheduler.job import Job, JobType
-
-from helpers import samples_days, sample_seconds_interference_lag
 
 
 @pytest.mark.parametrize(

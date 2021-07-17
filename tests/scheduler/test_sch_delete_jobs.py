@@ -1,13 +1,12 @@
-import random
 import datetime as dt
+import random
 
 import pytest
+from helpers import foo
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.job import Job, JobType
-from scheduler.util import Weekday, AbstractJob
-
-from helpers import foo
+from scheduler.util import AbstractJob, Weekday
 
 
 @pytest.mark.parametrize(

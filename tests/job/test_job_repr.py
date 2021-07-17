@@ -1,17 +1,12 @@
-import pytest
 import pdb
+
+import pytest
+from helpers import job_args, job_args_utc, job_reprs, job_reprs_utc
 
 from scheduler.job import Job
 
 
-from helpers import (
-    job_args,
-    job_reprs,
-    job_args_utc,
-    job_reprs_utc,
-)
-
-
+@pytest.mark.skip("Currently under redesign")
 @pytest.mark.parametrize(
     "job_kwargs, results",
     [

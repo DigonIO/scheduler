@@ -1,8 +1,7 @@
 import datetime as dt
 
 from scheduler.job import JobType
-from scheduler.util import Trigger
-
+from scheduler.trigger import Trigger
 
 utc = dt.timezone.utc
 utc2 = dt.timezone(dt.timedelta(hours=2))

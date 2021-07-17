@@ -1,5 +1,8 @@
 import doctest
 
+import pytest
+
+
 # NOTE: We cannot test for the full table, as some Jobs depend on the time of execution
 #       e.g. a Job supposed to run on Weekday.MONDAY. The ordering between the Jobs scheduled
 #       at 0:09:59 can be guaranteed though, as they differ on the milliseconds level.
@@ -8,6 +11,7 @@ import doctest
 # NOTE: The same example and doctest can be found in `doc/examples/general_job_scheduling.rst`,
 #       however here the test is more granular, wheras in `doc/examples` the focus is more on
 #       readability and additional comments.
+@pytest.mark.skip("Currently under redesign")
 def test_general_readme():
     r"""
     >>> import time

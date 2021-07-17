@@ -1,19 +1,18 @@
 import datetime as dt
 
 import pytest
-
-from scheduler import Scheduler, SchedulerError
-from scheduler.util import Trigger
-
 from helpers import (
-    utc,
-    WEEKLY_TYPE_ERROR_MSG,
     DUPLICATE_EFFECTIVE_TIME,
     TZ_ERROR_MSG,
+    WEEKLY_TYPE_ERROR_MSG,
+    foo,
     samples_weeks,
     samples_weeks_utc,
-    foo,
+    utc,
 )
+
+from scheduler import Scheduler, SchedulerError
+from scheduler.trigger import Trigger
 
 MONDAY_23_UTC = Trigger.Weekly.Monday(dt.time(hour=23, tzinfo=dt.timezone.utc))
 MONDAY_23_UTC_AS_SUNDAY = Trigger.Weekly.Sunday(
@@ -23,7 +22,7 @@ MONDAY_23_UTC_AS_SUNDAY = Trigger.Weekly.Sunday(
         tzinfo=dt.timezone(-dt.timedelta(hours=23, minutes=30)),
     )
 )
-MONDAY_23_UTC_AS_TUESDAY = Trigger.Weekly.Thrusday(
+MONDAY_23_UTC_AS_TUESDAY = Trigger.Weekly.Thursday(
     dt.time(hour=1, tzinfo=dt.timezone(dt.timedelta(hours=2))),
 )
 FRIDAY_4 = Trigger.Weekly.Friday(dt.time(hour=4, tzinfo=None))

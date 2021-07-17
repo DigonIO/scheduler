@@ -1,17 +1,14 @@
-from scheduler.core import Scheduler
 import pytest
-
-from scheduler.job import Job
-
-
 from helpers import (
     T_2021_5_26__3_55,
     T_2021_5_26__3_55_UTC,
-    utc,
     job_args,
     job_args_utc,
+    utc,
 )
 
+from scheduler.core import Scheduler
+from scheduler.job import Job
 
 patch_samples = [T_2021_5_26__3_55] * 7
 patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11
@@ -38,7 +35,7 @@ table_utc = (
 )
 
 
-@pytest.mark.skip()
+@pytest.mark.skip("Currently under redesign")
 @pytest.mark.parametrize(
     "patch_datetime_now, job_kwargs, tzinfo, res",
     [

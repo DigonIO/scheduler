@@ -1,26 +1,21 @@
 import datetime as dt
 
 import pytest
+from helpers import _TZ_ERROR_MSG, START_STOP_ERROR, TZ_ERROR_MSG, utc
 
 from scheduler import SchedulerError
 from scheduler.job import Job, JobType
-from scheduler.util import Trigger
-
-from helpers import (
-    utc,
-    _TZ_ERROR_MSG,
-    TZ_ERROR_MSG,
-    START_STOP_ERROR,
-)
+from scheduler.trigger import Trigger
 
 
+@pytest.mark.skip("Currently under redesign")
 @pytest.mark.parametrize(
     "job_type, timing, start, stop, tzinfo, err",
     (
         [JobType.WEEKLY, [Trigger.Weekly.Monday()], None, None, None, None],
         [
             JobType.WEEKLY,
-            [Trigger.Weekly.Monday(), Trigger.Weekly.Thrusday()],
+            [Trigger.Weekly.Monday(), Trigger.Weekly.Thursday()],
             None,
             None,
             None,
