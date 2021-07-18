@@ -141,28 +141,6 @@ def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datet
     return target
 
 
-def next_weekday_occurrence(now: dt.datetime, weekday: Weekday) -> dt.datetime:
-    """
-    Estimate the next occurency of a given `Weekday`.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    weekday : Weekday
-        Desired :class:`~scheduler.util.Weekday`.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` of a desired weekday.
-    """
-    days = days_to_weekday(now.weekday(), weekday.value)
-    delta = dt.timedelta(days=days)
-    target = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    return target + delta
-
-
 def next_weekday_time_occurrence(
     now: dt.datetime, weekday: Weekday, target_time: dt.time
 ) -> dt.datetime:

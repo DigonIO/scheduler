@@ -11,7 +11,6 @@ from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
-from scheduler.trigger.core import Weekday
 from scheduler.util import (
     TZ_ERROR_MSG,
     AbstractJob,
@@ -138,13 +137,6 @@ class JobTimer:
                 return
 
             if self.__job_type == JobType.WEEKLY:
-                #  check for _TimingWeekDay = Union[Weekday, tuple[Weekday, dt.time]]
-                # TODO rm
-                # if isinstance(self.__timing, Weekday):
-                #    self.__next_exec = next_weekday_occurrence(
-                #        self.__next_exec, self.__timing
-                #    )
-                # else:
                 self.__timing = cast(Weekday, self.__timing)
                 if self.__timing.time.tzinfo:
                     self.__next_exec = self.__next_exec.astimezone(
@@ -224,15 +216,14 @@ class JobUtil:
         except TypeError as err:
             raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
-    # TODO replace name and docstring
     @staticmethod
     def standardize_timing_format(
-        job_type: JobType, timing: TimingJobUnion, tzinfo: Optional[dt.tzinfo]
+        job_type: JobType, timing: TimingJobUnion
     ) -> TimingJobUnion:
         r"""
-        Return timing `Weekday`\ s in standarized form.
+        Return timings in standarized form.
 
-        Clears time positionals insignificant for `JobType`.
+        Clears irrelevant time positionals for `JobType.MINUTELY` and `JobType.HOURLY`.
         """
         if job_type is JobType.MINUTELY:
             timing = [
@@ -323,7 +314,7 @@ class Job(AbstractJob):
         Desired execution time(s).
     handle : Callable[..., None]
         Handle to a callback function.
-    argument : tuple[Any]
+    args : tuple[Any]
         Positional argument payload for the function handle within a |Job|.
     kwargs : Optional[dict[str, Any]]
         Keyword arguments payload for the function handle within a |Job|.
@@ -357,7 +348,7 @@ class Job(AbstractJob):
     __type: JobType
     __timing: TimingJobUnion
     __handle: Callable[..., None]
-    __argument: tuple[Any]
+    __args: tuple[Any]
     __kwargs: dict[str, Any]
     __max_attempts: int
     __tags: set[str]
@@ -379,7 +370,7 @@ class Job(AbstractJob):
         job_type: JobType,
         timing: TimingJobUnion,
         handle: Callable[..., None],
-        argument: tuple[Any] = None,
+        args: tuple[Any] = None,
         kwargs: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         tags: Optional[set[str]] = None,
@@ -390,9 +381,7 @@ class Job(AbstractJob):
         skip_missing: bool = False,
         tzinfo: Optional[dt.tzinfo] = None,
     ):
-        if argument is not None:
-            raise NotImplementedError
-        timing = JobUtil.standardize_timing_format(job_type, timing, tzinfo)
+        timing = JobUtil.standardize_timing_format(job_type, timing)
 
         JobUtil.sane_timing_types(job_type, timing)
         JobUtil.check_duplicate_effective_timings(job_type, timing, tzinfo)
@@ -405,7 +394,7 @@ class Job(AbstractJob):
         # NOTE: https://github.com/python/mypy/issues/708
         #       https://github.com/python/mypy/issues/2427
         self.__handle = handle  # type: ignore
-        self.__argument = () if argument is None else argument.copy()
+        self.__args = () if args is None else args
         self.__kwargs = {} if kwargs is None else kwargs.copy()
         self.__max_attempts = max_attempts
         self.__tags = set() if tags is None else tags.copy()
@@ -435,7 +424,7 @@ class Job(AbstractJob):
     def _exec(self) -> None:
         """Execute the callback function."""
         with self.__lock:
-            self.__handle(*self.__argument, **self.__kwargs)
+            self.__handle(*self.__args, **self.__kwargs)
             self.__attempts += 1
 
     def __lt__(self, other: Job):
@@ -455,7 +444,7 @@ class Job(AbstractJob):
                             self.__type,
                             self.__timing,
                             self.__handle,
-                            self.__argument,
+                            self.__args,
                             self.__kwargs,
                             self.__max_attempts,
                             self.__weight,
@@ -556,9 +545,26 @@ class Job(AbstractJob):
         return self.__handle
 
     @property
+    def args(self) -> tuple[Any]:
+        r"""
+        Get the positional arguments of the function handle within a `Job`.
+
+        .. warning:: When running |Job|\ s in parallel threads,
+            be sure to implement possible side effects of parameter accessing in a
+            thread safe manner.
+
+        Returns
+        -------
+        tuple[Any]
+            The payload arguments to pass to the function handle within a
+            |Job|.
+        """
+        return self.__args
+
+    @property
     def kwargs(self) -> dict[str, Any]:
         r"""
-        Get the payload arguments to pass to the function handle within a `Job`.
+        Get the keyword arguments of the function handle within a `Job`.
 
         .. warning:: When running |Job|\ s in parallel threads,
             be sure to implement possible side effects of parameter accessing in a

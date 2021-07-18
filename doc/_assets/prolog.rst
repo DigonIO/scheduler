@@ -8,7 +8,7 @@
 
 .. |JobTimer| replace:: :py:class:`~scheduler.job.JobTimer`
 
-.. |argument_text| replace:: Positional argument payload for the function handle |br|
+.. |args_text| replace:: Positional argument payload for the function handle |br|
    within a |Job|.
 
 .. |kwargs_text| replace:: Keyword arguments payload for the function handle |br|

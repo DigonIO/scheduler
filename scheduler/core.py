@@ -579,7 +579,7 @@ class Scheduler:
         self,
         timing: TimingOnceUnion,
         handle: Callable[..., None],
-        argument: tuple[Any] = None,
+        args: tuple[Any] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
         weight: float = 1,
@@ -593,7 +593,7 @@ class Scheduler:
             Desired execution time.
         handle : Callable[..., None]
             Handle to a callback function.
-        argument : tuple[Any]
+        args : tuple[Any]
             Positional argument payload for the function handle within a |Job|.
         kwargs : Optional[dict[str, Any]]
             Keyword arguments payload for the function handle within a |Job|.
@@ -616,7 +616,7 @@ class Scheduler:
                 job_type=JobType.CYCLIC,
                 timing=dt.timedelta(),
                 handle=handle,
-                argument=argument,
+                args=args,
                 kwargs=kwargs,
                 max_attempts=1,
                 tags=tags,
@@ -628,7 +628,7 @@ class Scheduler:
             job_type=JOB_TYPE_MAPPING[type(timing)],
             timing=timing,
             handle=handle,
-            argument=argument,
+            args=args,
             kwargs=kwargs,
             max_attempts=1,
             tags=tags,

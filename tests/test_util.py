@@ -9,7 +9,6 @@ from scheduler.util import (
     next_daily_occurrence,
     next_hourly_occurrence,
     next_minutely_occurrence,
-    next_weekday_occurrence,
     next_weekday_time_occurrence,
     str_cutoff,
 )
@@ -38,35 +37,6 @@ def test_days_to_weekday(wkdy_src, wkdy_dest, days, err_msg):
             assert err_msg == str(err.value)
     else:
         assert days_to_weekday(wkdy_src.value, wkdy_dest.value) == days
-
-
-@pytest.mark.parametrize(
-    "now, wkdy, target",
-    (
-        [
-            dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            trigger.Friday(),
-            dt.datetime(year=2021, month=5, day=28),
-        ],
-        [
-            dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            trigger.Wednesday(),
-            dt.datetime(year=2021, month=6, day=2),
-        ],
-        [
-            dt.datetime(year=2021, month=5, day=27),
-            trigger.Thursday(),
-            dt.datetime(year=2021, month=6, day=3),
-        ],
-        [
-            dt.datetime(year=2021, month=5, day=27, tzinfo=dt.timezone.utc),
-            trigger.Thursday(),
-            dt.datetime(year=2021, month=6, day=3, tzinfo=dt.timezone.utc),
-        ],
-    ),
-)
-def test_next_weekday_occurrence(now, wkdy, target):
-    assert next_weekday_occurrence(now, wkdy) == target
 
 
 @pytest.mark.parametrize(
