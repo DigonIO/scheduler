@@ -345,6 +345,7 @@ class Job(AbstractJob):
     Job
         Instance of a scheduled |Job|.
     """
+
     __type: JobType
     __timing: TimingJobUnion
     __handle: Callable[..., None]

@@ -51,6 +51,24 @@ def select_jobs_by_tag(
     tags: set[str],
     any_tag: bool,
 ) -> set[Job]:
+    r"""
+    Select |Job|\ s by matching `tags`.
+
+    Parameters
+    ----------
+    jobs : set[Job]
+        Unfiltered set of |Job|\ s.
+    tags : set[str]
+        Tags to filter |Job|\ s.
+    any_tag : bool
+        False: To match a |Job| all tags have to match.
+        True: To match a |Job| at least one tag has to match.
+
+    Returns
+    -------
+    set[Job]
+        Selected |Job|\ s.
+    """
     if any_tag:
         return {job for job in jobs if tags & job.tags}
     return {job for job in jobs if tags <= job.tags}
@@ -205,10 +223,9 @@ class Scheduler:
         ----------
         tags : Optional[set[str]]
             Set of tags to identify target |Job|\ s.
-        mode : Callable[Iterable[object], bool].
-            Tag selection mode.
-            Mode ``any`` will remove every |Job| that matchs a given tag.
-            Mode ``all`` will remove every |Job| that matchs avery given tag.
+        any_tag : bool
+            False: To delete a |Job| all tags have to match.
+            True: To deleta a |Job| at least one tag has to match.
         """
         with self.__jobs_lock:
             if tags is None or tags == {}:
@@ -323,7 +340,16 @@ class Scheduler:
         Get a set of |Job|\ s from the |Scheduler| by tags.
 
         If no tags or an empty set of tags are given defaults to returning
-        of all |Job|\ s.
+        all |Job|\ s.
+
+        Parameters
+        ----------
+        tags : set[str]
+            Tags to filter scheduled |Job|\ s.
+            If no tags are given all |Job|\ s are returned.
+        any_tag : bool
+            False: To match a |Job| all tags have to match.
+            True: To match a |Job| at least one tag has to match.
 
         Returns
         -------
