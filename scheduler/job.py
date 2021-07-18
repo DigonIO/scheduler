@@ -348,7 +348,7 @@ class Job(AbstractJob):
     __type: JobType
     __timing: TimingJobUnion
     __handle: Callable[..., None]
-    __args: tuple[Any]
+    __args: tuple[Any, ...]
     __kwargs: dict[str, Any]
     __max_attempts: int
     __tags: set[str]
@@ -370,7 +370,7 @@ class Job(AbstractJob):
         job_type: JobType,
         timing: TimingJobUnion,
         handle: Callable[..., None],
-        args: tuple[Any] = None,
+        args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         tags: Optional[set[str]] = None,
@@ -545,7 +545,7 @@ class Job(AbstractJob):
         return self.__handle
 
     @property
-    def args(self) -> tuple[Any]:
+    def args(self) -> tuple[Any, ...]:
         r"""
         Get the positional arguments of the function handle within a `Job`.
 
