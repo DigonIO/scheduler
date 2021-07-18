@@ -60,7 +60,7 @@ Schedule a job that runs every monday at ``16:30:00``:
 .. code-block:: pycon
 
     >>> schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(...WEEKLY...(<....Monday...>, datetime.time(16, 30))...bar...0, 1...)
+    scheduler.Job(...WEEKLY...[Monday(time=datetime.time(16, 30))]...bar...0, 1...)
 
 Schedule a job that runs exactly once in 10 minutes
 
@@ -74,7 +74,7 @@ Schedule a job that runs exactly once next monday at ``00:00``:
 .. code-block:: pycon
 
     >>> schedule.once(trigger.Monday(), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(...WEEKLY...Trigger.Weekly.Monday...bar...1, 1...)
+    scheduler.Job(...WEEKLY...[Monday(time=datetime.time(0, 0))]...bar...1, 1...)
 
 Schedule a job that runs exactly once at the given date at ``2022-02-15 00:45:00``:
 

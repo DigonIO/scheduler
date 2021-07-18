@@ -6,4 +6,5 @@ from scheduler.trigger.core import (
     Thursday,
     Tuesday,
     Wednesday,
+    weekday,
 )
