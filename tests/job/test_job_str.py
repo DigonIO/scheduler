@@ -4,7 +4,6 @@ from helpers import T_2021_5_26__3_55, T_2021_5_26__3_55_UTC, job_args, job_args
 from scheduler.job import Job
 
 
-@pytest.mark.skip("Currently under redesign")
 @pytest.mark.parametrize(
     "patch_datetime_now, job_kwargs, results",
     [

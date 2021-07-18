@@ -35,7 +35,6 @@ table_utc = (
 )
 
 
-@pytest.mark.skip("Currently under redesign")
 @pytest.mark.parametrize(
     "patch_datetime_now, job_kwargs, tzinfo, res",
     [

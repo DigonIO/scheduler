@@ -86,7 +86,6 @@ def test_job__lt__(
     assert (job_1 < job_2) == result
 
 
-@pytest.mark.skip("Currently under redesign")
 @pytest.mark.parametrize(
     "job_type, timing, base, offset, tzinfo, patch_datetime_now",
     (
@@ -108,7 +107,7 @@ def test_job__lt__(
         ],
         [
             JobType.WEEKLY,
-            [trigger.Sunday()],
+            [trigger.Sunday(dt.time(tzinfo=utc))],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,

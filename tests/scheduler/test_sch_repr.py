@@ -27,7 +27,6 @@ sch_repr_utc = (
 )
 
 
-@pytest.mark.skip("Currently under redesign")
 @pytest.mark.parametrize(
     "patch_datetime_now, job_kwargs, tzinfo, j_results, s_results",
     [

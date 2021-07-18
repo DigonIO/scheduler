@@ -368,7 +368,7 @@ job_args_utc = (
     {
         "job_type": JobType.WEEKLY,
         "timing": [
-            trigger.Wednesday(),
+            trigger.Wednesday(dt.time(tzinfo=utc)),
             trigger.Tuesday(dt.time(23, 45, 59, tzinfo=utc)),
         ],
         "handle": print,
@@ -400,7 +400,10 @@ job_reprs_utc = (
         )
     ],
     [
-        "scheduler.Job(<JobType.WEEKLY: 5>, [<trigger.Monday>], <function bar at 0x",
+        (
+            "scheduler.Job(<JobType.WEEKLY: 5>, [Monday(time=datetime.time(0, 0, "
+            "tzinfo=datetime.timezone.utc))], <function bar at 0x"
+        ),
         (
             ">, (), {}, 0, 1, False, datetime.datetime(2021, 5, 25, 3, 55, "
             "tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"
@@ -408,8 +411,9 @@ job_reprs_utc = (
     ],
     [
         (
-            "scheduler.Job(<JobType.WEEKLY: 5>, [<trigger.Wednesday>, (<trigger.Tuesday>,"
-            " datetime.time(23, 45, 59, tzinfo=datetime.timezone.utc))], <built-in function print>"
+            "scheduler.Job(<JobType.WEEKLY: 5>, [Wednesday(time=datetime.time(0, 0, "
+            "tzinfo=datetime.timezone.utc)), Tuesday(time=datetime.time(23, 45, 59, "
+            "tzinfo=datetime.timezone.utc))], <built-in function print>"
             ", (), {'end': 'FOO\\n'}, 1, 1, True, "
             "datetime.datetime(2021, 6, 2, 3, 55, tzinfo=datetime.timezone.utc),"
             " datetime.datetime(2021, 7, 25, 3, 55, tzinfo=datetime.timezone.utc),"
