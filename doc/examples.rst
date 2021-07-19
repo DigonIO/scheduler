@@ -7,6 +7,7 @@ Examples
 
     pages/examples/quick_start
     pages/examples/parameters
+    pages/examples/tags
     pages/examples/threading
     pages/examples/timezones
     pages/examples/job_batching

@@ -47,8 +47,8 @@ the :py:meth:`~scheduler.core.Scheduler.delete_job` method:
     <BLANKLINE>
 
 
-Delete all Jobs
----------------
+Delete Jobs
+-----------
 
 Setup a couple of |Job|\ s
 
@@ -91,3 +91,6 @@ with a single function call to :py:meth:`~scheduler.core.Scheduler.delete_jobs`.
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     <BLANKLINE>
+
+.. note:: Additionally :py:meth:`~scheduler.core.Scheduler.delete_jobs` supports the
+    tagging system described in :ref:`examples.tags`.

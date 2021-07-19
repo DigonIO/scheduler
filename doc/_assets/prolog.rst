@@ -16,6 +16,8 @@
 .. |kwargs_text| replace:: Keyword arguments payload for the function handle |br|
    within a |Job|.
 
+.. |tags_text| replace:: A `set` of `str` identifiers for a |Job|.
+
 .. |weight_text| replace:: Relative weight against other
    |Job|\ s.
 

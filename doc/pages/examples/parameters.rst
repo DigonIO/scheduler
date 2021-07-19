@@ -5,14 +5,14 @@ It is possible to forward positional and keyword arguments to the the scheduled 
 via the arguments `args` and `kwargs`. Positional arguments are passed by a `tuple`, keyword
 arguments are passed as a `dictionary` with strings referencing the callback function's
 arguments.
-Both types of argument passing are available for all of the scheduling functions in |Scheduler|:
+|Scheduler| supports both types of argument passing for all of the scheduling functions
 
 :func:`~scheduler.core.Scheduler.once`,
 :func:`~scheduler.core.Scheduler.cyclic`,
 :func:`~scheduler.core.Scheduler.minutely`,
 :func:`~scheduler.core.Scheduler.hourly`,
-:func:`~scheduler.core.Scheduler.daily`,
-:func:`~scheduler.core.Scheduler.weekly`
+:func:`~scheduler.core.Scheduler.daily` and
+:func:`~scheduler.core.Scheduler.weekly`.
 
 In the following example we schedule two |Job|\ s via
 :func:`~scheduler.core.Scheduler.once`. The first |Job| exhibits the function's default behaviour.

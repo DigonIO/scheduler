@@ -4,7 +4,7 @@ Job Batching
 It is possible to bundle a |Job| with more than one
 |JobTimer|. Except for :py:func:`~scheduler.core.Scheduler.once`
 and :func:`~scheduler.core.Scheduler.cyclic`, |Scheduler| supports
-passing of the `timing` argument via a `list` for the `scheduling` functions:
+passing of the `timing` argument via a `list` for the `scheduling` functions
 
 :py:func:`~scheduler.core.Scheduler.minutely`,
 :py:func:`~scheduler.core.Scheduler.hourly`,

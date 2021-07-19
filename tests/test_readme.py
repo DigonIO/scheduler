@@ -11,7 +11,6 @@ import doctest
 #       readability and additional comments.
 def test_general_readme():
     r"""
-    >>> import time
     >>> import datetime as dt
     >>> from scheduler import Scheduler
     >>> import scheduler.trigger as trigger
@@ -23,6 +22,7 @@ def test_general_readme():
 
     >>> schedule.cyclic(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+
 
     >>> schedule.minutely(dt.time(second=15), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.MINUTELY...>, [datetime.time(0, 0, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
@@ -39,6 +39,7 @@ def test_general_readme():
     >>> schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(16, 30))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
+
     >>> schedule.once(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None)
 
@@ -47,6 +48,7 @@ def test_general_readme():
 
     >>> schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(0)], <function foo at 0x...>, (), {}, 1, 1, False, datetime.datetime(2022, 2, 15, 0, 45), None, False, None)
+
 
     >>> print(schedule)  # doctest:+ELLIPSIS
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
@@ -57,8 +59,8 @@ def test_general_readme():
     ONCE     foo()            ... 00:45:00  ...           0/1      1...
     <BLANKLINE>
 
-    >>> schedule.exec_jobs()  # doctest:+SKIP
 
+    >>> import time
     >>> while True:  # doctest:+SKIP
     ...     schedule.exec_jobs()
     ...     time.sleep(1)

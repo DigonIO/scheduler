@@ -2,12 +2,10 @@ Quick Start
 ===========
 
 To get started with the basic functions and |Job| types of the scheduler
-module, create a |Scheduler| instance and the functions `foo` and `foo`
-to schedule:
+module, create a |Scheduler| instance and the function `foo` to schedule:
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
     >>> from scheduler import Scheduler
     >>> import scheduler.trigger as trigger
@@ -104,14 +102,12 @@ Unless |Scheduler| was given a limit on the execution count via the `max_exec` o
 the Scheduler instances :py:meth:`~scheduler.core.Scheduler.exec_jobs` function will execute every
 overdue job exactly once.
 
-.. code-block:: pycon
-
-    >>> schedule.exec_jobs()  # doctest:+SKIP
-
 For cyclic execution of |Job|\ s, the :py:meth:`~scheduler.core.Scheduler.exec_jobs` function should
 be embedded in a loop of the host program:
 
 .. code-block:: pycon
+
+    >>> import time
 
     >>> while True:  # doctest:+SKIP
     ...     schedule.exec_jobs()
