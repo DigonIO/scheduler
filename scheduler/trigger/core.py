@@ -22,6 +22,7 @@ class Weekday(ABC):
 
     @abstractmethod
     def __init__(self, time: dt.time, value: int):
+        """|Weekday| object with time."""
         self.__time = time
         self.__value = value
 
@@ -59,36 +60,50 @@ class Weekday(ABC):
 
 # NOTE: pylint missing-class-docstring is just silly here, given functionality and usuage of parent
 class Monday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
+    __doc__ = Weekday.__doc__
+
     def __init__(self, time=dt.time()):
         super().__init__(time, 0)
 
 
 class Tuesday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
+    __doc__ = Weekday.__doc__
+
     def __init__(self, time=dt.time()):
         super().__init__(time, 1)
 
 
 class Wednesday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
+    __doc__ = Weekday.__doc__
+
     def __init__(self, time=dt.time()):
         super().__init__(time, 2)
 
 
 class Thursday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
+    __doc__ = Weekday.__doc__
+
     def __init__(self, time=dt.time()):
         super().__init__(time, 3)
 
 
 class Friday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
+    __doc__ = Weekday.__doc__
+
     def __init__(self, time=dt.time()):
         super().__init__(time, 4)
 
 
 class Saturday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
+    __doc__ = Weekday.__doc__
+
     def __init__(self, time=dt.time()):
         super().__init__(time, 5)
 
 
 class Sunday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
+    __doc__ = Weekday.__doc__
+
     def __init__(self, time=dt.time()):
         super().__init__(time, 6)
 
