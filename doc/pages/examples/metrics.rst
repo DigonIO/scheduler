@@ -18,11 +18,12 @@ Starting with a |Scheduler| and two |Job|\ s:
     >>> sch = Scheduler()
     >>> job = sch.once(dt.timedelta(minutes=10), foo)
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=2
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     foo()            2021-06-21 04:53:34   0:09:59           0/1      1
+    <BLANKLINE>
 
 |Scheduler| provides access to the set of |Job|\ s stored with the `jobs`
 We can access the |Job|\ s of the scheduler via the :py:attr:`~scheduler.core.Scheduler.jobs` property.
@@ -37,7 +38,7 @@ For the |Job| with the following string representation
 .. code-block:: pycon
 
     >>> print(job)  # doctest:+SKIP
-    ONCE, foo(), at=2021-06-21 04:53:34, tz=None, in=0:09:59, #0/1, w=1.000
+    ONCE, foo(), at=2020-07-16 23:56:12, tz=None, in=0:09:59, #0/1, w=1.000
 
 The scheduled :py:attr:`~scheduler.job.Job.datetime` and :py:attr:`~scheduler.job.Job.timedelta`
 informations can directly be accessed and might look like similar to what is listed below:

@@ -81,14 +81,14 @@ Schedule a job that runs exactly once at the given date at ``2022-02-15 00:45:00
 .. code-block:: pycon
 
     >>> schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(...CYCLIC...foo...1, 1...datetime.datetime(2022, 2, 15, 0, 45)...)
+    scheduler.Job(...CYCLIC...foo...1, 1...datetime(2022, 2, 15, 0, 45)...)
 
 A human readable overview of the scheduled jobs can be created with a simple `print` statement:
 
 .. code-block:: pycon
 
     >>> print(schedule)  # doctest:+SKIP
-    max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=9
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------

@@ -22,7 +22,7 @@ Setup a couple of |Job|\ s
     >>> j2 = sch.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
     >>> j3 = sch.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=3
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -38,7 +38,7 @@ the :py:meth:`~scheduler.core.Scheduler.delete_job` method:
 
     >>> sch.delete_job(j2)
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=2
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=2
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -69,7 +69,7 @@ Setup a couple of |Job|\ s
     >>> sch.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...timedelta(seconds=3)...foo...)
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=3
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -86,7 +86,7 @@ with a single function call to :py:meth:`~scheduler.core.Scheduler.delete_jobs`.
     >>> sch.delete_jobs()
     3
     >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=0
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=0
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
