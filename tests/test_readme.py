@@ -19,34 +19,31 @@ def test_general_readme():
     >>> def foo():
     ...     print("foo")
 
-    >>> def bar(msg = "bar"):
-    ...     print(msg)
-
     >>> sch = Scheduler()
 
     >>> sch.cyclic(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.minutely(dt.time(second=15), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.MINUTELY...>, [datetime.time(0, 0, 15)], <function bar at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    >>> sch.minutely(dt.time(second=15), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.MINUTELY...>, [datetime.time(0, 0, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
     >>> sch.hourly(dt.time(minute=30, second=15), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.HOURLY...>, [datetime.time(0, 30, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.daily(dt.time(hour=16, minute=30), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.DAILY...>, [datetime.time(16, 30)], <function bar at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    >>> sch.daily(dt.time(hour=16, minute=30), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.DAILY...>, [datetime.time(16, 30)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
     >>> sch.weekly(trigger.Monday(), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.weekly(trigger.Monday(dt.time(hour=16, minute=30)), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(16, 30))], <function bar at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    >>> sch.weekly(trigger.Monday(dt.time(hour=16, minute=30)), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(16, 30))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
     >>> sch.once(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.once(trigger.Monday(), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function bar at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None)
+    >>> sch.once(trigger.Monday(), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None)
 
     >>> sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(0)], <function foo at 0x...>, (), {}, 1, 1, False, datetime.datetime(2022, 2, 15, 0, 45), None, False, None)
@@ -71,4 +68,4 @@ def test_general_readme():
         test_general_readme.__doc__, globals(), "README", None, None
     )
     DTR = doctest.DocTestRunner()
-    assert doctest.TestResults(failed=0, attempted=17) == DTR.run(dt_readme)
+    assert doctest.TestResults(failed=0, attempted=16) == DTR.run(dt_readme)

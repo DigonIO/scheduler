@@ -72,21 +72,18 @@ import scheduler.trigger as trigger
 def foo():
     print("foo")
 
-def bar(msg = "bar"):
-    print(msg)
-
 schedule = Scheduler()
 
 schedule.cyclic(dt.timedelta(minutes=10), foo)
 
-schedule.minutely(dt.time(second=15), bar)
+schedule.minutely(dt.time(second=15), foo)
 schedule.hourly(dt.time(minute=30, second=15), foo)
-schedule.daily(dt.time(hour=16, minute=30), bar)
+schedule.daily(dt.time(hour=16, minute=30), foo)
 schedule.weekly(trigger.Monday(), foo)
-schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), bar)
+schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), foo)
 
 schedule.once(dt.timedelta(minutes=10), foo)
-schedule.once(trigger.Monday(), bar)
+schedule.once(trigger.Monday(), foo)
 schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
 ```
 
@@ -97,7 +94,7 @@ print(schedule)
 ```
 
 ```text
-max_exec=inf, tzinfo=None, weight_function=linear_priority_function, #jobs=9
+max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
 
 type     function         due at                 due in      attempts weight
 -------- ---------------- ------------------- --------- ------------- ------
