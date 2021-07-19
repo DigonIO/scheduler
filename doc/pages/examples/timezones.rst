@@ -34,35 +34,35 @@ Next initialize a |Scheduler| with UTC as its reference timezone:
     >>> from scheduler import Scheduler
     >>> import scheduler.trigger as trigger
 
-    >>> sch = Scheduler(tzinfo=dt.timezone.utc)
+    >>> schedule = Scheduler(tzinfo=dt.timezone.utc)
 
 Schedule our useful function :py:func:`~scheduler.core.Scheduler.once` for the current point
 in time but using New York local time with:
 
 .. code-block:: pycon
 
-    >>> job_ny = sch.once(dt.datetime.now(tz_new_york), useful)
+    >>> job_ny = schedule.once(dt.datetime.now(tz_new_york), useful)
 
 A daily job running at ``11:45`` local time of Wuppertal can be scheduled with:
 
 .. code-block:: pycon
 
-    >>> job_wu = sch.daily(dt.time(hour=11, minute=45, tzinfo=tz_wuppertal), useful)
+    >>> job_wu = schedule.daily(dt.time(hour=11, minute=45, tzinfo=tz_wuppertal), useful)
 
 Lastly create a job running every Monday at ``10:00`` local time of Sydney as follows:
 
 .. code-block:: pycon
 
-    >>> job_sy = sch.weekly(trigger.Monday(dt.time(hour=10, tzinfo=tz_sydney)), useful)
+    >>> job_sy = schedule.weekly(trigger.Monday(dt.time(hour=10, tzinfo=tz_sydney)), useful)
 
-A simple `print(sch)` statement can be used for an overview of the scheduled
+A simple `print(schedule)` statement can be used for an overview of the scheduled
 |Job|\ s. As this |Scheduler| instance is timezone
 aware, the table contains a `tzinfo` column. Verify if the |Job|\ s are
 scheduled as expected.
 
 .. code-block:: pycon
 
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=UTC, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
     type     function         due at              tzinfo          due in      attempts weight

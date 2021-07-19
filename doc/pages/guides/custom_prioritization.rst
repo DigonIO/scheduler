@@ -70,7 +70,7 @@ Instantiate the |Scheduler| with the custom priority function.
     >>> from scheduler.util import Prioritization as Prio
 
     >>> now = dt.datetime.now()
-    >>> sch = Scheduler(max_exec=3, priority_function=Prio.constant_weight_prioritization)
+    >>> schedule = Scheduler(max_exec=3, priority_function=Prio.constant_weight_prioritization)
 
 Schedule some |Job|\ s at different points in the past with distinct weights:
 
@@ -78,7 +78,7 @@ Schedule some |Job|\ s at different points in the past with distinct weights:
 
     >>> for delayed_by, weight in ((2, 1), (3, 2), (1, 3), (4, 4)):
     ...     exec_time = now - dt.timedelta(seconds=delayed_by)
-    ...     job = sch.once(
+    ...     job = schedule.once(
     ...         exec_time,
     ...         print,
     ...         kwargs={"end": f"{weight = }; {delayed_by = }s\n"},
@@ -90,7 +90,7 @@ our |Job|\ s.
 
 .. code-block:: pycon
 
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=3, tzinfo=None, priority_function=constant_weight_prioritization, #jobs=4
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -107,7 +107,7 @@ the time delay is not taken into consideration in the execution order of the
 
 .. code-block:: pycon
 
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     weight = 4; delayed_by = 4s
     weight = 3; delayed_by = 1s
     weight = 2; delayed_by = 3s
@@ -118,7 +118,7 @@ in the |Scheduler|.
 
 .. code-block:: pycon
 
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=3, tzinfo=None, priority_function=constant_weight_prioritization, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -179,11 +179,11 @@ some generic |Job|\ s with probabilities from ``0%`` to ``100%``:
     >>> from scheduler import Scheduler
     >>> from scheduler.util import Prioritization as Prio
 
-    >>> sch = Scheduler(priority_function=Prio.random_priority_function)
+    >>> schedule = Scheduler(priority_function=Prio.random_priority_function)
 
     >>> jobs = {}
     >>> for percentage in range(0,101,10):
-    ...     jobs[percentage] = sch.cyclic(
+    ...     jobs[percentage] = schedule.cyclic(
     ...         dt.timedelta(),
     ...         lambda: None,
     ...         weight=0.01*percentage,
@@ -193,7 +193,7 @@ We can verify that the expected number of |Job|\ s with the given probabilities 
 
 .. code-block:: pycon
 
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=random_priority_function, #jobs=11
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -218,7 +218,7 @@ with the |Scheduler|.
 
     >>> total_counts = 10_000
     >>> for _ in range(total_counts):
-    ...     exec_count = sch.exec_jobs()
+    ...     exec_count = schedule.exec_jobs()
 
 Utilizing the :meth:`~scheduler.job.Job.attempts` property we can observe the number of executions. For
 direct comparision with the target probabilities we normalize the results by the total counts.

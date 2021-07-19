@@ -29,12 +29,12 @@ For function with a positional argument use the `args` tuple as follows:
     >>> def foo(msg):
     ...     print(msg)
 
-    >>> sch = Scheduler()
+    >>> schedule = Scheduler()
 
-    >>> sch.once(dt.timedelta(), foo, args=('foo',))  # doctest:+ELLIPSIS
+    >>> schedule.once(dt.timedelta(), foo, args=('foo',))  # doctest:+ELLIPSIS
     scheduler.Job(...function foo..., ('foo',)...)
 
-    >>> n_exec = sch.exec_jobs()
+    >>> n_exec = schedule.exec_jobs()
     foo
 
 Defining a function `bar` with the keyword argument `msg`, we can observe the default behaviour
@@ -46,16 +46,16 @@ observe the expected behaviour with the modified message.
     >>> def bar(msg = "bar"):
     ...     print(msg)
 
-    >>> sch.once(dt.timedelta(), bar)  # doctest:+ELLIPSIS
+    >>> schedule.once(dt.timedelta(), bar)  # doctest:+ELLIPSIS
     scheduler.Job(...bar...)
 
-    >>> n_exec = sch.exec_jobs()
+    >>> n_exec = schedule.exec_jobs()
     bar
 
-    >>> sch.once(dt.timedelta(), bar, kwargs={"msg": "Hello World"})
+    >>> schedule.once(dt.timedelta(), bar, kwargs={"msg": "Hello World"})
     scheduler.Job(...function bar...{'msg': 'Hello World'}...)
 
-    >>> n_exec = sch.exec_jobs()
+    >>> n_exec = schedule.exec_jobs()
     Hello World
 
 It is possible to schedule functions with both, positional and keyword arguments, as demonstrated
@@ -66,8 +66,8 @@ below when specifying `args` and `kwargs` together:
     >>> def foobar(foo, bar = "bar"):
     ...     print(foo, bar)
 
-    >>> sch.once(dt.timedelta(), foobar, args=("foo",), kwargs={"bar": "123"})
+    >>> schedule.once(dt.timedelta(), foobar, args=("foo",), kwargs={"bar": "123"})
     scheduler.Job(...function foobar...('foo',), {'bar': '123'}...)
 
-    >>> n_exec = sch.exec_jobs()
+    >>> n_exec = schedule.exec_jobs()
     foo 123

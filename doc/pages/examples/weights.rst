@@ -41,17 +41,17 @@ of the highest weight:
     >>> from scheduler import Scheduler
 
     >>> now = dt.datetime.now()
-    >>> sch = Scheduler(max_exec=3)
+    >>> schedule = Scheduler(max_exec=3)
 
     >>> for weight in (2, 3, 1, 4):
-    ...     job = sch.once(now, print, weight=weight, kwargs={"end": f"{weight = }\n"})
+    ...     job = schedule.once(now, print, weight=weight, kwargs={"end": f"{weight = }\n"})
 
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     weight = 4
     weight = 3
     weight = 2
 
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=3, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -73,18 +73,18 @@ If several |Job|\ s of the same weight are overdue, the
     >>> from scheduler import Scheduler
 
     >>> now = dt.datetime.now()
-    >>> sch = Scheduler(max_exec=3)
+    >>> schedule = Scheduler(max_exec=3)
 
     >>> for delayed_by in (2, 3, 1, 4):
     ...     exec_time = now - dt.timedelta(seconds=delayed_by)
-    ...     job = sch.once(exec_time, print, kwargs={"end": f"{delayed_by = }s\n"})
+    ...     job = schedule.once(exec_time, print, kwargs={"end": f"{delayed_by = }s\n"})
 
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     delayed_by = 4s
     delayed_by = 3s
     delayed_by = 2s
 
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=3, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight

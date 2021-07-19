@@ -17,11 +17,11 @@ Setup a couple of |Job|\ s
     >>> def foo():
     ...     print("foo")
 
-    >>> sch = Scheduler()
-    >>> j1 = sch.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
-    >>> j2 = sch.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
-    >>> j3 = sch.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
-    >>> print(sch)  # doctest:+SKIP
+    >>> schedule = Scheduler()
+    >>> j1 = schedule.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
+    >>> j2 = schedule.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
+    >>> j3 = schedule.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -36,8 +36,8 @@ the :py:meth:`~scheduler.core.Scheduler.delete_job` method:
 
 .. code-block:: pycon
 
-    >>> sch.delete_job(j2)
-    >>> print(sch)  # doctest:+SKIP
+    >>> schedule.delete_job(j2)
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=2
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -61,14 +61,14 @@ Setup a couple of |Job|\ s
     >>> def foo():
     ...     print("foo")
 
-    >>> sch = Scheduler()
-    >>> sch.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
+    >>> schedule = Scheduler()
+    >>> schedule.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...timedelta(seconds=1)...foo...)
-    >>> sch.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
+    >>> schedule.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...timedelta(seconds=2)...foo...)
-    >>> sch.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
+    >>> schedule.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...timedelta(seconds=3)...foo...)
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -83,9 +83,9 @@ with a single function call to :py:meth:`~scheduler.core.Scheduler.delete_jobs`.
 
 .. code-block:: pycon
 
-    >>> sch.delete_jobs()
+    >>> schedule.delete_jobs()
     3
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=0
     <BLANKLINE>
     type     function         due at                 due in      attempts weight

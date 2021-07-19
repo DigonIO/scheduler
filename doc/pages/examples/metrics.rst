@@ -15,9 +15,9 @@ Starting with a |Scheduler| and two |Job|\ s:
     >>> def foo():
     ...     print("foo")
 
-    >>> sch = Scheduler()
-    >>> job = sch.once(dt.timedelta(minutes=10), foo)
-    >>> print(sch)  # doctest:+SKIP
+    >>> schedule = Scheduler()
+    >>> job = schedule.once(dt.timedelta(minutes=10), foo)
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
@@ -30,7 +30,7 @@ We can access the |Job|\ s of the scheduler via the :py:attr:`~scheduler.core.Sc
 
 .. code-block:: pycon
 
-    >>> sch.jobs == {job}
+    >>> schedule.jobs == {job}
     True
 
 For the |Job| with the following string representation
@@ -54,7 +54,7 @@ for the :py:attr:`~scheduler.job.Job.attempts` attribute:
 
 .. code-block:: pycon
 
-    >>> job = sch.cyclic(dt.timedelta(seconds=0.1), foo, max_attempts=2, delay=False)
+    >>> job = schedule.cyclic(dt.timedelta(seconds=0.1), foo, max_attempts=2, delay=False)
     >>> print(job)  # doctest:+SKIP
     CYCLIC, foo(), at=2021-06-21 04:53:34, tz=None, in=0:00:00, #0/2, w=1.000
 
@@ -62,14 +62,14 @@ for the :py:attr:`~scheduler.job.Job.attempts` attribute:
     0 2
 
     >>> time.sleep(0.1)
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     foo
 
     >>> print(job.attempts, job.max_attempts)
     1 2
 
     >>> time.sleep(0.1)
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     foo
 
     >>> print(job.attempts, job.max_attempts)

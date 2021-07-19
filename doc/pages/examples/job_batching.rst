@@ -27,17 +27,17 @@ For :py:func:`~scheduler.core.Scheduler.daily` we can embed several timers in on
     >>> def foo():
     ...     print("foo")
 
-    >>> sch = Scheduler()
+    >>> schedule = Scheduler()
 
     >>> timings = [dt.time(hour=0), dt.time(hour=12), dt.time(hour=18)]
-    >>> sch.daily(timing=timings, handle=foo)  # doctest:+ELLIPSIS
+    >>> schedule.daily(timing=timings, handle=foo)  # doctest:+ELLIPSIS
     scheduler.Job(...DAILY..., [...time(0, 0), ...time(12, 0), ...time(18, 0)]...)
 
 In consequence, this |Scheduler| instance only contains a single |Job| instance of the `DAILY` type:
 
 .. code-block:: pycon
 
-    >>> print(sch)  # doctest:+SKIP
+    >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight

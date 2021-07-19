@@ -64,7 +64,6 @@ For advanced scheduling examples please visit the online
 [//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
 
 ```py
-import time
 import datetime as dt
 from scheduler import Scheduler
 import scheduler.trigger as trigger
@@ -112,8 +111,10 @@ ONCE     foo()            2022-02-15 00:45:00  242 days           0/1      1
 Executing pending `Job`s periodically can be achieved with a simple loop:
 
 ```py
+import time
+
 while True:
-    sch.exec_jobs()
+    schedule.exec_jobs()
     time.sleep(1)
 ```
 
