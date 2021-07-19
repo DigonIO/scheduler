@@ -1,4 +1,8 @@
-# scheduler
+<p align="center">
+  <a href="https://gitlab.com/DigonIO/scheduler"><img alt="scheduler" src="https://gitlab.com/DigonIO/scheduler/-/raw/master/doc/_assets/logo_name.svg" width="60%"></a>
+</p>
+<p>A simple in-process python scheduler library with timezone and threading support. Schedule tasks by their
+time cycles, fixed times, weekdays, dates, weights, offsets and execution counts and automate Jobs.</p>
 
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
 [![license](https://img.shields.io/badge/license-LGPLv3-orange)](https://gitlab.com/DigonIO/scheduler/-/blob/master/LICENSE)
@@ -9,9 +13,6 @@
 
 ---
 
-A simple in-process python scheduler library with seamless integration of the `datetime`
-standard library. Timezone support and planning of `Job`s depending on time cycles,
-fixed times, weekdays, dates, weights, offsets and execution counts.
 
 ## Features
 
@@ -21,7 +22,7 @@ fixed times, weekdays, dates, weights, offsets and execution counts.
   * Create recurring `Job`s with a given timedelta
   * Oneshot `Job`s
   * Passing of parameters to `Job`
-    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/params.html)
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/parameters.html)
 * Timezone compatibility
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/timezones.html)
 * Parallel `Job` execution with `threading` [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
@@ -63,39 +64,36 @@ For advanced scheduling examples please visit the online
 [//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
 
 ```py
-import time
 import datetime as dt
-from scheduler import Scheduler, Weekday
+from scheduler import Scheduler
+import scheduler.trigger as trigger
 
 def foo():
     print("foo")
 
-def bar(msg = "bar"):
-    print(msg)
+schedule = Scheduler()
 
-sch = Scheduler()
+schedule.cyclic(dt.timedelta(minutes=10), foo)
 
-sch.cyclic(dt.timedelta(minutes=10), foo)
+schedule.minutely(dt.time(second=15), foo)
+schedule.hourly(dt.time(minute=30, second=15), foo)
+schedule.daily(dt.time(hour=16, minute=30), foo)
+schedule.weekly(trigger.Monday(), foo)
+schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), foo)
 
-sch.minutely(dt.time(second=15), bar)
-sch.hourly(dt.time(minute=30, second=15), foo)
-sch.daily(dt.time(hour=16, minute=30), bar)
-sch.weekly(Weekday.MONDAY, foo)
-sch.weekly((Weekday.MONDAY, dt.time(hour=16, minute=30)), bar)
-
-sch.once(dt.timedelta(minutes=10), foo)
-sch.once(Weekday.MONDAY, bar)
-sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
+schedule.once(dt.timedelta(minutes=10), foo)
+schedule.once(trigger.Monday(), foo)
+schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
 ```
 
 A human readable overview of the scheduled jobs can be created with a simple `print` statement:
 
 ```py
-print(sch)
+print(schedule)
 ```
 
 ```text
-max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=9
+max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
 
 type     function         due at                 due in      attempts weight
 -------- ---------------- ------------------- --------- ------------- ------
@@ -113,8 +111,10 @@ ONCE     foo()            2022-02-15 00:45:00  242 days           0/1      1
 Executing pending `Job`s periodically can be achieved with a simple loop:
 
 ```py
+import time
+
 while True:
-    sch.exec_jobs()
+    schedule.exec_jobs()
     time.sleep(1)
 ```
 

@@ -1,14 +1,9 @@
 import datetime as dt
 
 import pytest
+from helpers import START_STOP_ERROR, foo, samples_seconds
 
 from scheduler import Scheduler, SchedulerError
-
-from helpers import (
-    START_STOP_ERROR,
-    samples_seconds,
-    foo,
-)
 
 # Attention: t1 will be the second datetime object in the sample
 # because with start the Job do not require a dt.datetime.now() in its init

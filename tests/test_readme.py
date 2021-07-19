@@ -1,5 +1,6 @@
 import doctest
 
+
 # NOTE: We cannot test for the full table, as some Jobs depend on the time of execution
 #       e.g. a Job supposed to run on Weekday.MONDAY. The ordering between the Jobs scheduled
 #       at 0:09:59 can be guaranteed though, as they differ on the milliseconds level.
@@ -10,47 +11,47 @@ import doctest
 #       readability and additional comments.
 def test_general_readme():
     r"""
-    >>> import time
     >>> import datetime as dt
-    >>> from scheduler import Scheduler, Weekday
+    >>> from scheduler import Scheduler
+    >>> import scheduler.trigger as trigger
 
     >>> def foo():
     ...     print("foo")
 
-    >>> def bar(msg = "bar"):
-    ...     print(msg)
+    >>> schedule = Scheduler()
 
-    >>> sch = Scheduler()
+    >>> schedule.cyclic(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.cyclic(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.CYCLIC...>, datetime.timedelta(seconds=600), <function foo at 0x...>, {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.minutely(dt.time(second=15), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.MINUTELY...>, datetime.time(0, 0, 15), <function bar at 0x...>, {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    >>> schedule.minutely(dt.time(second=15), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.MINUTELY...>, [datetime.time(0, 0, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.hourly(dt.time(minute=30, second=15), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.HOURLY...>, datetime.time(0, 30, 15), <function foo at 0x...>, {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    >>> schedule.hourly(dt.time(minute=30, second=15), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.HOURLY...>, [datetime.time(0, 30, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.daily(dt.time(hour=16, minute=30), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.DAILY...>, datetime.time(16, 30), <function bar at 0x...>, {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    >>> schedule.daily(dt.time(hour=16, minute=30), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.DAILY...>, [datetime.time(16, 30)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.weekly(Weekday.MONDAY, foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.WEEKLY...>, <Weekday.MONDAY...>, <function foo at 0x...>, {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    >>> schedule.weekly(trigger.Monday(), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.weekly((Weekday.MONDAY, dt.time(hour=16, minute=30)), bar)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.WEEKLY...>, (<Weekday.MONDAY...>, datetime.time(16, 30)), <function bar at 0x...>, {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    >>> schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(16, 30))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.once(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.CYCLIC...>, datetime.timedelta(seconds=600), <function foo at 0x...>, {}, 1, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.once(Weekday.MONDAY, bar)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.WEEKLY...>, <Weekday.MONDAY...>, <function bar at 0x...>, {}, 1, 1, True, datetime.datetime(...), None, False, None)
+    >>> schedule.once(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> sch.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.CYCLIC...>, datetime.timedelta(0), <function foo at 0x...>, {}, 1, 1, False, datetime.datetime(2022, 2, 15, 0, 45), None, False, None)
+    >>> schedule.once(trigger.Monday(), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None)
 
-    >>> print(sch)  # doctest:+ELLIPSIS
-    max_exec=inf, timezone=None, priority_function=linear_priority_function, #jobs=9
+    >>> schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
+    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(0)], <function foo at 0x...>, (), {}, 1, 1, False, datetime.datetime(2022, 2, 15, 0, 45), None, False, None)
+
+
+    >>> print(schedule)  # doctest:+ELLIPSIS
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -58,10 +59,10 @@ def test_general_readme():
     ONCE     foo()            ... 00:45:00  ...           0/1      1...
     <BLANKLINE>
 
-    >>> sch.exec_jobs()  # doctest:+SKIP
 
+    >>> import time
     >>> while True:  # doctest:+SKIP
-    ...     sch.exec_jobs()
+    ...     schedule.exec_jobs()
     ...     time.sleep(1)
     """
     DP = doctest.DocTestParser()

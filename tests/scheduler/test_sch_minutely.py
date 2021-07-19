@@ -1,21 +1,19 @@
 import datetime as dt
 
 import pytest
-
-from scheduler import Scheduler, SchedulerError
-from scheduler.job import Job
-from scheduler.util import Weekday
-
 from helpers import (
-    utc,
-    MINUTELY_TYPE_ERROR_MSG,
     DUPLICATE_EFFECTIVE_TIME,
+    MINUTELY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
-    samples_minutes,
-    samples_half_minutes,
-    samples_minutes_utc,
     foo,
+    samples_half_minutes,
+    samples_minutes,
+    samples_minutes_utc,
+    utc,
 )
+
+import scheduler.trigger as trigger
+from scheduler import Scheduler, SchedulerError
 
 
 @pytest.mark.parametrize(
@@ -45,7 +43,7 @@ from helpers import (
             None,
         ],
         [dt.time(hour=2), [], samples_minutes_utc, utc, TZ_ERROR_MSG],
-        [Weekday.MONDAY, [], samples_minutes, None, MINUTELY_TYPE_ERROR_MSG],
+        [trigger.Monday(), [], samples_minutes, None, MINUTELY_TYPE_ERROR_MSG],
     ),
     indirect=["patch_datetime_now"],
 )

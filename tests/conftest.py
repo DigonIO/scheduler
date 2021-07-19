@@ -1,5 +1,16 @@
 import datetime as dt
+
 import pytest
+
+
+@pytest.fixture
+def one():
+    return 1
+
+
+@pytest.fixture
+def two(one):
+    return one, 2
 
 
 @pytest.fixture

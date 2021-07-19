@@ -1,28 +1,28 @@
 import datetime as dt
 
 import pytest
-
-from scheduler import SchedulerError
-from scheduler.job import Job, JobType
-from scheduler.util import Weekday
-
 from helpers import (
-    utc,
-    utc2,
     T_2021_5_26__3_55,
     T_2021_5_26__3_55_UTC,
+    foo,
     samples_minutes_utc,
     samples_weeks_utc,
-    foo,
+    utc,
+    utc2,
 )
+
+import scheduler.trigger as trigger
+from scheduler.job import Job, JobType
 
 
 def test_misc_properties():
     job = Job(
         job_type=JobType.CYCLIC,
-        timing=dt.timedelta(),
+        timing=[dt.timedelta()],
         handle=foo,
-        params={"abc": 123},
+        args=(8, "bar"),
+        kwargs={"abc": 123},
+        tags={"test", "misc"},
         weight=1 / 3,
         delay=False,
         start=T_2021_5_26__3_55_UTC,
@@ -32,7 +32,9 @@ def test_misc_properties():
     )
     assert job.type == JobType.CYCLIC
     assert job.handle == foo
-    assert job.params == {"abc": 123}
+    assert job.args == (8, "bar")
+    assert job.kwargs == {"abc": 123}
+    assert job.tags == {"test", "misc"}
     assert job.weight == 1 / 3
     assert job.delay == False
     assert job.start == T_2021_5_26__3_55_UTC
@@ -71,14 +73,14 @@ def test_job__lt__(
 ):
     job_1 = Job(
         job_type=JobType.CYCLIC,
-        timing=dt.timedelta(),
+        timing=[dt.timedelta()],
         handle=lambda: None,
         start=start_1,
         tzinfo=tzinfo,
     )
     job_2 = Job(
         job_type=JobType.CYCLIC,
-        timing=dt.timedelta(),
+        timing=[dt.timedelta()],
         handle=lambda: None,
         start=start_2,
         tzinfo=tzinfo,
@@ -91,7 +93,7 @@ def test_job__lt__(
     (
         [
             JobType.CYCLIC,
-            dt.timedelta(minutes=2),
+            [dt.timedelta(minutes=2)],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
@@ -99,7 +101,7 @@ def test_job__lt__(
         ],
         [
             JobType.CYCLIC,
-            dt.timedelta(weeks=2),
+            [dt.timedelta(weeks=2)],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,
@@ -107,7 +109,7 @@ def test_job__lt__(
         ],
         [
             JobType.WEEKLY,
-            Weekday.SUNDAY,
+            [trigger.Sunday(dt.time(tzinfo=utc))],
             T_2021_5_26__3_55_UTC,
             dt.timedelta(minutes=2, seconds=8),
             utc,

@@ -2,15 +2,14 @@ import datetime as dt
 
 import pytest
 
+import scheduler.trigger as trigger
 from scheduler.util import (
     SchedulerError,
-    Weekday,
     days_to_weekday,
-    next_weekday_occurrence,
-    next_weekday_time_occurrence,
     next_daily_occurrence,
     next_hourly_occurrence,
     next_minutely_occurrence,
+    next_weekday_time_occurrence,
     str_cutoff,
 )
 
@@ -20,11 +19,11 @@ err_msg = "Weekday enumeration interval: [0,6] <=> [Monday, Sunday]"
 @pytest.mark.parametrize(
     "wkdy_src, wkdy_dest, days, err_msg",
     (
-        [Weekday.MONDAY, Weekday.THURSDAY, 3, None],
-        [Weekday.WEDNESDAY, Weekday.SUNDAY, 4, None],
-        [Weekday.FRIDAY, Weekday.FRIDAY, 7, None],
-        [Weekday.SATURDAY, Weekday.THURSDAY, 5, None],
-        [Weekday.SUNDAY, Weekday.SATURDAY, 6, None],
+        [trigger.Monday(), trigger.Thursday(), 3, None],
+        [trigger.Wednesday(), trigger.Sunday(), 4, None],
+        [trigger.Friday(), trigger.Friday(), 7, None],
+        [trigger.Saturday(), trigger.Thursday(), 5, None],
+        [trigger.Sunday(), trigger.Saturday(), 6, None],
         [3, 8, 0, err_msg],
         [4, -1, 0, err_msg],
         [8, 4, 0, err_msg],
@@ -41,46 +40,17 @@ def test_days_to_weekday(wkdy_src, wkdy_dest, days, err_msg):
 
 
 @pytest.mark.parametrize(
-    "now, wkdy, target",
-    (
-        [
-            dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            Weekday.FRIDAY,
-            dt.datetime(year=2021, month=5, day=28),
-        ],
-        [
-            dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            Weekday.WEDNESDAY,
-            dt.datetime(year=2021, month=6, day=2),
-        ],
-        [
-            dt.datetime(year=2021, month=5, day=27),
-            Weekday.THURSDAY,
-            dt.datetime(year=2021, month=6, day=3),
-        ],
-        [
-            dt.datetime(year=2021, month=5, day=27, tzinfo=dt.timezone.utc),
-            Weekday.THURSDAY,
-            dt.datetime(year=2021, month=6, day=3, tzinfo=dt.timezone.utc),
-        ],
-    ),
-)
-def test_next_weekday_occurrence(now, wkdy, target):
-    assert next_weekday_occurrence(now, wkdy) == target
-
-
-@pytest.mark.parametrize(
     "now, wkdy, timestamp, target",
     (
         [
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            Weekday.FRIDAY,
+            trigger.Friday(),
             dt.time(hour=0, minute=0),
             dt.datetime(year=2021, month=5, day=28),
         ],
         [
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39),
-            Weekday.WEDNESDAY,
+            trigger.Wednesday(),
             dt.time(hour=12, minute=3, second=1),
             dt.datetime(year=2021, month=5, day=26, hour=12, minute=3, second=1),
         ],
@@ -88,7 +58,7 @@ def test_next_weekday_occurrence(now, wkdy, target):
             dt.datetime(
                 year=2021, month=5, day=26, hour=11, minute=39, tzinfo=dt.timezone.utc
             ),
-            Weekday.THURSDAY,
+            trigger.Thursday(),
             dt.time(hour=12, minute=3, second=1, tzinfo=dt.timezone.utc),
             dt.datetime(
                 year=2021,
@@ -102,7 +72,7 @@ def test_next_weekday_occurrence(now, wkdy, target):
         ],
         [
             dt.datetime(year=2021, month=6, day=16, hour=1, minute=53, second=45),
-            Weekday.WEDNESDAY,
+            trigger.Wednesday(),
             dt.time(hour=2),
             dt.datetime(year=2021, month=6, day=16, hour=2),
         ],

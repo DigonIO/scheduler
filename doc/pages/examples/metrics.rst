@@ -15,21 +15,22 @@ Starting with a |Scheduler| and two |Job|\ s:
     >>> def foo():
     ...     print("foo")
 
-    >>> sch = Scheduler()
-    >>> job = sch.once(dt.timedelta(minutes=10), foo)
-    >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, priority_function=linear_priority_function, #jobs=2
+    >>> schedule = Scheduler()
+    >>> job = schedule.once(dt.timedelta(minutes=10), foo)
+    >>> print(schedule)  # doctest:+SKIP
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     foo()            2021-06-21 04:53:34   0:09:59           0/1      1
+    <BLANKLINE>
 
 |Scheduler| provides access to the set of |Job|\ s stored with the `jobs`
-We can access the |Job|\ s of the scheduler via the :attr:`~scheduler.core.Scheduler.jobs` property.
+We can access the |Job|\ s of the scheduler via the :py:attr:`~scheduler.core.Scheduler.jobs` property.
 
 .. code-block:: pycon
 
-    >>> sch.jobs == {job}
+    >>> schedule.jobs == {job}
     True
 
 For the |Job| with the following string representation
@@ -37,9 +38,9 @@ For the |Job| with the following string representation
 .. code-block:: pycon
 
     >>> print(job)  # doctest:+SKIP
-    ONCE, foo(), at=2021-06-21 04:53:34, tz=None, in=0:09:59, #0/1, w=1.000
+    ONCE, foo(), at=2020-07-16 23:56:12, tz=None, in=0:09:59, #0/1, w=1.000
 
-The scheduled :attr:`~scheduler.job.Job.datetime` and :attr:`~scheduler.job.Job.timedelta`
+The scheduled :py:attr:`~scheduler.job.Job.datetime` and :py:attr:`~scheduler.job.Job.timedelta`
 informations can directly be accessed and might look like similar to what is listed below:
 
 .. code-block:: pycon
@@ -49,11 +50,11 @@ informations can directly be accessed and might look like similar to what is lis
     job.timedelta() = 0:09:59.999948
 
 These metrics can change during the |Job|\ s lifetime. We can exemplify this
-for the :attr:`~scheduler.job.Job.attempts` attribute:
+for the :py:attr:`~scheduler.job.Job.attempts` attribute:
 
 .. code-block:: pycon
 
-    >>> job = sch.cyclic(dt.timedelta(seconds=0.1), foo, max_attempts=2, delay=False)
+    >>> job = schedule.cyclic(dt.timedelta(seconds=0.1), foo, max_attempts=2, delay=False)
     >>> print(job)  # doctest:+SKIP
     CYCLIC, foo(), at=2021-06-21 04:53:34, tz=None, in=0:00:00, #0/2, w=1.000
 
@@ -61,14 +62,14 @@ for the :attr:`~scheduler.job.Job.attempts` attribute:
     0 2
 
     >>> time.sleep(0.1)
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     foo
 
     >>> print(job.attempts, job.max_attempts)
     1 2
 
     >>> time.sleep(0.1)
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     foo
 
     >>> print(job.attempts, job.max_attempts)

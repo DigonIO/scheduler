@@ -1,42 +1,39 @@
 import datetime as dt
 
 import pytest
-
-from scheduler import Scheduler, SchedulerError
-from scheduler.util import Weekday
-
 from helpers import (
-    utc,
-    WEEKLY_TYPE_ERROR_MSG,
     DUPLICATE_EFFECTIVE_TIME,
     TZ_ERROR_MSG,
+    WEEKLY_TYPE_ERROR_MSG,
+    foo,
     samples_weeks,
     samples_weeks_utc,
-    foo,
+    utc,
 )
 
-MONDAY_23_UTC = (Weekday.MONDAY, dt.time(hour=23, tzinfo=dt.timezone.utc))
-MONDAY_23_UTC_AS_SUNDAY = (
-    Weekday.SUNDAY,
+import scheduler.trigger as trigger
+from scheduler import Scheduler, SchedulerError
+
+MONDAY_23_UTC = trigger.Monday(dt.time(hour=23, tzinfo=dt.timezone.utc))
+MONDAY_23_UTC_AS_SUNDAY = trigger.Sunday(
     dt.time(
         hour=23,
         minute=30,
         tzinfo=dt.timezone(-dt.timedelta(hours=23, minutes=30)),
-    ),
+    )
 )
-MONDAY_23_UTC_AS_TUESDAY = (
-    Weekday.TUESDAY,
+MONDAY_23_UTC_AS_TUESDAY = trigger.Thursday(
     dt.time(hour=1, tzinfo=dt.timezone(dt.timedelta(hours=2))),
 )
-FRIDAY_4 = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=None))
-FRIDAY_4_UTC = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc))
+FRIDAY_4 = trigger.Friday(dt.time(hour=4, tzinfo=None))
+FRIDAY_4_UTC = trigger.Friday(dt.time(hour=4, tzinfo=utc))
 
 
 @pytest.mark.parametrize(
     "timing, counts, patch_datetime_now, tzinfo, err_msg",
     (
         [
-            Weekday.FRIDAY,
+            trigger.Friday(),
             [1, 2, 2, 2, 3, 3, 4, 4],
             samples_weeks,
             None,
@@ -50,14 +47,14 @@ FRIDAY_4_UTC = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc))
             None,
         ],
         [
-            Weekday.SUNDAY,
+            trigger.Sunday(),
             [1, 1, 1, 2, 2, 3, 3, 3],
             samples_weeks,
             None,
             None,
         ],
         [
-            [Weekday.WEDNESDAY, Weekday.WEDNESDAY],
+            [trigger.Wednesday(), trigger.Wednesday()],
             [],
             samples_weeks_utc,
             None,
@@ -85,7 +82,7 @@ FRIDAY_4_UTC = (Weekday.FRIDAY, dt.time(hour=4, tzinfo=utc))
             DUPLICATE_EFFECTIVE_TIME,
         ],
         [
-            [Weekday.WEDNESDAY, Weekday.SUNDAY],
+            [trigger.Wednesday(), trigger.Sunday()],
             [1, 2, 2, 3, 4, 5, 6, 6],
             samples_weeks_utc,
             None,

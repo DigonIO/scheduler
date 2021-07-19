@@ -1,11 +1,18 @@
 from setuptools import setup
 
+with open("scheduler/__init__.py", "r") as file:
+    for line in file:
+        if "__version__" in line:
+            version = line.split('"')[1]
+        if "__author__" in line:
+            author = line.split('"')[1]
+
 with open("README.md", encoding="utf-8") as f:
     LONG_DESCRIPTION = f.read()
 
 setup(
     name="scheduler",
-    version="0.5.2",
+    version=version,
     description=(
         "A simple in-process python scheduler library with seamless integration of "
         "the `datetime` standard library. Timezone support and planning of `Job`s "
@@ -14,11 +21,12 @@ setup(
     ),
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
-    author="Jendrik A. Potyka, Fabian A. Preiss",
+    author=author,
     author_email="devops@digon.io",
     license="LGPLv3",
     packages=[
         "scheduler",
+        "scheduler.trigger",
     ],
     keywords="scheduler schedule datetime date time timedelta timezone timing",
     install_requires=[

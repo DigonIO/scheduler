@@ -10,12 +10,12 @@ execution times compared to the |Scheduler|\ s cycle length.
 The `weight` parameter is available for all scheduling functions of
 |Scheduler|:
 
-:func:`~scheduler.core.Scheduler.once`,
-:func:`~scheduler.core.Scheduler.cyclic`,
-:func:`~scheduler.core.Scheduler.minutely`,
-:func:`~scheduler.core.Scheduler.hourly`,
-:func:`~scheduler.core.Scheduler.daily`,
-:func:`~scheduler.core.Scheduler.weekly`
+:py:func:`~scheduler.core.Scheduler.once`,
+:py:func:`~scheduler.core.Scheduler.cyclic`,
+:py:func:`~scheduler.core.Scheduler.minutely`,
+:py:func:`~scheduler.core.Scheduler.hourly`,
+:py:func:`~scheduler.core.Scheduler.daily`,
+:py:func:`~scheduler.core.Scheduler.weekly`
 
 .. _examples.weights.default_behaviour:
 
@@ -23,7 +23,7 @@ Default behaviour
 -----------------
 
 By default, the |Scheduler| will prioritize using a linear function
-(:func:`~scheduler.util.linear_priority_function`) that depends on the
+(py:func:`~scheduler.util.linear_priority_function`) that depends on the
 |Job|\ s `weight` and time it is overdue.
 
 .. tip:: It is possible to change the prioritization behaviour of a
@@ -41,18 +41,18 @@ of the highest weight:
     >>> from scheduler import Scheduler
 
     >>> now = dt.datetime.now()
-    >>> sch = Scheduler(max_exec=3)
+    >>> schedule = Scheduler(max_exec=3)
 
     >>> for weight in (2, 3, 1, 4):
-    ...     job = sch.once(now, print, weight=weight, params={"end": f"{weight = }\n"})
+    ...     job = schedule.once(now, print, weight=weight, kwargs={"end": f"{weight = }\n"})
 
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     weight = 4
     weight = 3
     weight = 2
 
-    >>> print(sch)  # doctest:+SKIP
-    max_exec=3, timezone=None, priority_function=linear_priority_function, #jobs=1
+    >>> print(schedule)  # doctest:+SKIP
+    max_exec=3, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -73,19 +73,19 @@ If several |Job|\ s of the same weight are overdue, the
     >>> from scheduler import Scheduler
 
     >>> now = dt.datetime.now()
-    >>> sch = Scheduler(max_exec=3)
+    >>> schedule = Scheduler(max_exec=3)
 
     >>> for delayed_by in (2, 3, 1, 4):
     ...     exec_time = now - dt.timedelta(seconds=delayed_by)
-    ...     job = sch.once(exec_time, print, params={"end": f"{delayed_by = }s\n"})
+    ...     job = schedule.once(exec_time, print, kwargs={"end": f"{delayed_by = }s\n"})
 
-    >>> exec_count = sch.exec_jobs()
+    >>> exec_count = schedule.exec_jobs()
     delayed_by = 4s
     delayed_by = 3s
     delayed_by = 2s
 
-    >>> print(sch)  # doctest:+SKIP
-    max_exec=3, timezone=None, priority_function=linear_priority_function, #jobs=1
+    >>> print(schedule)  # doctest:+SKIP
+    max_exec=3, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------

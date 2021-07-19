@@ -21,7 +21,7 @@ When to look for other solutions?
    As of now there is neither support for asynchronous tasks nor threading. Backends for |Job|
    storing have to be implemented by the user.
 
-   When you rely on accurate timings within a few microseconds (TODO: specify).
+   When you rely on accurate timings within a few microseconds.
 
 Implementation details
 ----------------------

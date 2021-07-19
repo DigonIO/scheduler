@@ -1,28 +1,29 @@
 import datetime as dt
 
 import pytest
+from helpers import _TZ_ERROR_MSG, START_STOP_ERROR, TZ_ERROR_MSG, utc
 
+import scheduler.trigger as trigger
 from scheduler import SchedulerError
 from scheduler.job import Job, JobType
-from scheduler.util import Weekday
-
-from helpers import (
-    utc,
-    _TZ_ERROR_MSG,
-    TZ_ERROR_MSG,
-    START_STOP_ERROR,
-)
 
 
 @pytest.mark.parametrize(
     "job_type, timing, start, stop, tzinfo, err",
     (
-        [JobType.WEEKLY, Weekday.MONDAY, None, None, None, None],
-        [JobType.WEEKLY, [Weekday.MONDAY, Weekday.TUESDAY], None, None, None, None],
-        [JobType.WEEKLY, Weekday.MONDAY, None, None, utc, None],
+        [JobType.WEEKLY, [trigger.Monday()], None, None, None, None],
+        [
+            JobType.WEEKLY,
+            [trigger.Monday(), trigger.Thursday()],
+            None,
+            None,
+            None,
+            None,
+        ],
+        [JobType.WEEKLY, [trigger.Monday(dt.time(tzinfo=utc))], None, None, utc, None],
         [
             JobType.DAILY,
-            dt.time(tzinfo=utc),
+            [dt.time(tzinfo=utc)],
             dt.datetime.now(utc),
             None,
             utc,
@@ -30,7 +31,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(tzinfo=utc),
+            [dt.time(tzinfo=utc)],
             dt.datetime.now(utc),
             None,
             utc,
@@ -38,7 +39,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(tzinfo=None),
+            [dt.time(tzinfo=None)],
             dt.datetime.now(utc),
             None,
             utc,
@@ -46,7 +47,15 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(tzinfo=None),
+            [dt.time(tzinfo=None)],
+            None,
+            None,
+            utc,
+            TZ_ERROR_MSG,
+        ],
+        [
+            JobType.DAILY,
+            [dt.time(tzinfo=None)],
             None,
             dt.datetime.now(utc),
             utc,
@@ -54,7 +63,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(),
+            [dt.time()],
             dt.datetime.now(utc),
             None,
             None,
@@ -62,7 +71,7 @@ from helpers import (
         ],
         [
             JobType.DAILY,
-            dt.time(),
+            [dt.time()],
             None,
             dt.datetime.now(utc),
             None,
@@ -70,7 +79,7 @@ from helpers import (
         ],
         [
             JobType.WEEKLY,
-            Weekday.MONDAY,
+            [trigger.Monday(dt.time(tzinfo=utc))],
             dt.datetime.now(utc),
             dt.datetime.now(utc) - dt.timedelta(hours=1),
             utc,
@@ -92,7 +101,7 @@ def test_job_init(
                 job_type=job_type,
                 timing=timing,
                 handle=lambda: None,
-                params={},
+                kwargs={},
                 max_attempts=1,
                 weight=20,
                 start=start,
@@ -104,7 +113,7 @@ def test_job_init(
             job_type=job_type,
             timing=timing,
             handle=lambda: None,
-            params={},
+            kwargs={},
             max_attempts=1,
             weight=20,
             start=start,

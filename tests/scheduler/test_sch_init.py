@@ -1,12 +1,11 @@
 import datetime as dt
 
 import pytest
+from helpers import TZ_ERROR_MSG, foo, utc
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.job import Job, JobType
-from scheduler.util import Weekday, AbstractJob
-
-from helpers import utc, TZ_ERROR_MSG, foo
+from scheduler.util import AbstractJob
 
 
 def priority_function_dummy(
@@ -29,14 +28,14 @@ def priority_function_dummy(
             1,
             utc,
             priority_function_dummy,
-            {Job(JobType.CYCLIC, dt.timedelta(seconds=1), foo, tzinfo=utc)},
+            {Job(JobType.CYCLIC, [dt.timedelta(seconds=1)], foo, tzinfo=utc)},
             None,
         ],
         [
             1,
             utc,
             priority_function_dummy,
-            {Job(JobType.CYCLIC, dt.timedelta(seconds=1), foo, tzinfo=None)},
+            {Job(JobType.CYCLIC, [dt.timedelta(seconds=1)], foo, tzinfo=None)},
             TZ_ERROR_MSG,
         ],
     ),
@@ -57,47 +56,3 @@ def test_sch_init(max_exec, tzinfo, priority_function, jobs, err):
             priority_function=priority_function,
             jobs=jobs,
         )
-
-
-@pytest.mark.parametrize(
-    "n_jobs",
-    [
-        0,
-        1,
-        2,
-        3,
-        10,
-    ],
-)
-def test_exec_all_jobs_and_jobs(n_jobs):
-    sch = Scheduler()
-
-    assert len(sch.jobs) == 0
-    for _ in range(n_jobs):
-        sch.once(dt.datetime.now(), foo)
-    assert len(sch.jobs) == n_jobs
-
-    exec_job_count = sch.exec_jobs(force_exec_all=True)
-    assert exec_job_count == n_jobs
-    assert len(sch.jobs) == 0
-
-
-@pytest.mark.parametrize(
-    "n_jobs",
-    [
-        0,
-        1,
-        2,
-        3,
-        10,
-    ],
-)
-def test_delete_all_jobs(n_jobs):
-    sch = Scheduler()
-
-    assert len(sch.jobs) == 0
-    for _ in range(n_jobs):
-        sch.once(dt.datetime.now(), foo)
-    assert len(sch.jobs) == n_jobs
-    sch.delete_all_jobs()
-    assert len(sch.jobs) == 0

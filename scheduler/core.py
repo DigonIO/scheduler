@@ -4,39 +4,74 @@ Scheduler implementation for job based callback function execution.
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import datetime as dt
-import threading
 import queue
-from typing import Callable, Optional, Any
+import threading
+from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
+import scheduler.trigger as trigger
 from scheduler.job import (
-    TimingTypeCyclic,
-    TimingTypeDaily,
-    TimingTypeWeekly,
-    TimingJobUnion,
-    TimingTypeOnce,
     CYCLIC_TYPE_ERROR_MSG,
-    MINUTELY_TYPE_ERROR_MSG,
-    HOURLY_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
-    WEEKLY_TYPE_ERROR_MSG,
+    HOURLY_TYPE_ERROR_MSG,
+    MINUTELY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
-    JobType,
+    WEEKLY_TYPE_ERROR_MSG,
     Job,
+    JobType,
+    TimingCyclic,
+    TimingDailyUnion,
+    TimingJobUnion,
+    TimingOnceUnion,
+    TimingWeeklyUnion,
 )
-from scheduler.util import (
-    SchedulerError,
-    AbstractJob,
-    Weekday,
-    Prioritization,
-    str_cutoff,
-)
+from scheduler.util import AbstractJob, Prioritization, SchedulerError, str_cutoff
 
 ONCE_TYPE_ERROR_MSG = (
     "Wrong input for Once! Select one of the following input types:\n"
-    + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
+    + "dt.datetime | dt.timedelta | Weekday | dt.time"
 )
+
+JOB_TYPE_MAPPING = {
+    dt.timedelta: JobType.CYCLIC,
+    dt.time: JobType.DAILY,
+    trigger.Monday: JobType.WEEKLY,
+    trigger.Tuesday: JobType.WEEKLY,
+    trigger.Wednesday: JobType.WEEKLY,
+    trigger.Thursday: JobType.WEEKLY,
+    trigger.Friday: JobType.WEEKLY,
+    trigger.Saturday: JobType.WEEKLY,
+    trigger.Sunday: JobType.WEEKLY,
+}
+
+
+def select_jobs_by_tag(
+    jobs: set[Job],
+    tags: set[str],
+    any_tag: bool,
+) -> set[Job]:
+    r"""
+    Select |Job|\ s by matching `tags`.
+
+    Parameters
+    ----------
+    jobs : set[Job]
+        Unfiltered set of |Job|\ s.
+    tags : set[str]
+        Tags to filter |Job|\ s.
+    any_tag : bool
+        False: To match a |Job| all tags have to match.
+        True: To match a |Job| at least one tag has to match.
+
+    Returns
+    -------
+    set[Job]
+        Selected |Job|\ s.
+    """
+    if any_tag:
+        return {job for job in jobs if tags & job.tags}
+    return {job for job in jobs if tags <= job.tags}
 
 
 class Scheduler:
@@ -53,7 +88,7 @@ class Scheduler:
 
     Parameters
     ----------
-    tzinfo : datetime.timezone
+    tzinfo : datetime.tzinfo
         Set the timezone of the |Scheduler|.
     max_exec : int
         Limits the number of overdue |Job|\ s that can be executed
@@ -71,7 +106,7 @@ class Scheduler:
     def __init__(
         self,
         max_exec: int = 0,
-        tzinfo: Optional[dt.timezone] = None,
+        tzinfo: Optional[dt.tzinfo] = None,
         priority_function: Callable[
             [float, AbstractJob, int, int],
             float,
@@ -112,7 +147,7 @@ class Scheduler:
         with self.__lock, self.__jobs_lock:
             headings = [
                 f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
-                f"timezone={self.__tz_str}",
+                f"tzinfo={self.__tz_str}",
                 f"priority_function={self.__priority_function.__name__}",
                 f"#jobs={len(self.__jobs)}",
             ]
@@ -131,7 +166,7 @@ class Scheduler:
                 "type",
                 "function",
                 "due at",
-                "timezone",
+                "tzinfo",
                 "due in",
                 "attempts",
                 "weight",
@@ -173,10 +208,35 @@ class Scheduler:
         with self.__jobs_lock:
             self.__jobs.remove(job)
 
-    def delete_all_jobs(self) -> None:
-        r"""Delete all `Job`\ s from the `Scheduler`."""
+    def delete_jobs(
+        self,
+        tags: Optional[set[str]] = None,
+        any_tag: bool = False,
+    ) -> int:
+        r"""
+        Delete a set of |Job|\ s from the |Scheduler| by tags.
+
+        If no tags or an empty set of tags are given defaults to the deletion
+        of all |Job|\ s.
+
+        Parameters
+        ----------
+        tags : Optional[set[str]]
+            Set of tags to identify target |Job|\ s.
+        any_tag : bool
+            False: To delete a |Job| all tags have to match.
+            True: To deleta a |Job| at least one tag has to match.
+        """
         with self.__jobs_lock:
-            self.__jobs = set()
+            if tags is None or tags == {}:
+                n_jobs = len(self.__jobs)
+                self.__jobs = set()
+                return n_jobs
+
+            to_delete = select_jobs_by_tag(self.__jobs, tags, any_tag)
+
+            self.__jobs = self.__jobs - to_delete
+            return len(to_delete)
 
     @staticmethod
     def __exec_job_worker(que: queue.Queue[Job]):
@@ -271,6 +331,36 @@ class Scheduler:
             ]
             return self.__exec_jobs(filtered_jobs, ref_dt)
 
+    def get_jobs(
+        self,
+        tags: Optional[set[str]] = None,
+        any_tag: bool = False,
+    ) -> set[Job]:
+        r"""
+        Get a set of |Job|\ s from the |Scheduler| by tags.
+
+        If no tags or an empty set of tags are given defaults to returning
+        all |Job|\ s.
+
+        Parameters
+        ----------
+        tags : set[str]
+            Tags to filter scheduled |Job|\ s.
+            If no tags are given all |Job|\ s are returned.
+        any_tag : bool
+            False: To match a |Job| all tags have to match.
+            True: To match a |Job| at least one tag has to match.
+
+        Returns
+        -------
+        set[Job]
+            Currently scheduled |Job|\ s.
+        """
+        with self.__lock:
+            if tags is None or tags == {}:
+                return self.__jobs.copy()
+            return select_jobs_by_tag(self.__jobs, tags, any_tag)
+
     @property
     def jobs(self) -> set[Job]:
         r"""
@@ -287,14 +377,19 @@ class Scheduler:
     def __schedule(
         self,
         job_type: JobType,
-        timing: TimingJobUnion,
+        timing: Union[TimingCyclic, TimingDailyUnion, TimingWeeklyUnion],
         handle: Callable[..., None],
         **kwargs,
     ) -> Job:
         """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
+        if not isinstance(timing, list):
+            timing_list = cast(TimingJobUnion, [timing])
+        else:
+            timing_list = cast(TimingJobUnion, timing)
+
         job = Job(
             job_type=job_type,
-            timing=timing,
+            timing=timing_list,
             handle=handle,
             tzinfo=self.__tzinfo,
             **kwargs,
@@ -304,7 +399,7 @@ class Scheduler:
                 self.__jobs.add(job)
         return job
 
-    def cyclic(self, timing: TimingTypeCyclic, handle: Callable[..., None], **kwargs):
+    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a cyclic `Job`.
 
@@ -314,7 +409,7 @@ class Scheduler:
         Parameters
         ----------
         timing : TimingTypeCyclic
-            Desired execution time(s).
+            Desired execution time.
         handle : Callable[..., None]
             Handle to a callback function.
 
@@ -335,14 +430,14 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeCyclic)
+            tg.check_type("timing", timing, TimingCyclic)
         except TypeError as err:
             raise SchedulerError(CYCLIC_TYPE_ERROR_MSG) from err
         return self.__schedule(
             job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs
         )
 
-    def minutely(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
+    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a minutely `Job`.
 
@@ -356,7 +451,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeDaily
+        timing : TimingDailyUnion
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -378,14 +473,14 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeDaily)
+            tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(MINUTELY_TYPE_ERROR_MSG) from err
         return self.__schedule(
             job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs
         )
 
-    def hourly(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
+    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
         r"""
         Schedule an hourly `Job`.
 
@@ -399,7 +494,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeDaily
+        timing : TimingDailyUnion
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -421,14 +516,14 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeDaily)
+            tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(HOURLY_TYPE_ERROR_MSG) from err
         return self.__schedule(
             job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs
         )
 
-    def daily(self, timing: TimingTypeDaily, handle: Callable[..., None], **kwargs):
+    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a daily `Job`.
 
@@ -437,7 +532,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeDaily
+        timing : TimingDailyUnion
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -459,14 +554,14 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeDaily)
+            tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(DAILY_TYPE_ERROR_MSG) from err
         return self.__schedule(
             job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs
         )
 
-    def weekly(self, timing: TimingTypeWeekly, handle: Callable[..., None], **kwargs):
+    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs):
         r"""
         Schedule a weekly `Job`.
 
@@ -477,7 +572,7 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeWeekly
+        timing : TimingWeeklyUnion
             Desired execution time(s).
         handle : Callable[..., None]
             Handle to a callback function.
@@ -499,7 +594,7 @@ class Scheduler:
             .. include:: ../_assets/kwargs.rst
         """
         try:
-            tg.check_type("timing", timing, TimingTypeWeekly)
+            tg.check_type("timing", timing, TimingWeeklyUnion)
         except TypeError as err:
             raise SchedulerError(WEEKLY_TYPE_ERROR_MSG) from err
         return self.__schedule(
@@ -508,9 +603,11 @@ class Scheduler:
 
     def once(
         self,
-        timing: TimingTypeOnce,
+        timing: TimingOnceUnion,
         handle: Callable[..., None],
-        params: Optional[dict[str, Any]] = None,
+        args: tuple[Any] = None,
+        kwargs: Optional[dict[str, Any]] = None,
+        tags: Optional[list[str]] = None,
         weight: float = 1,
     ):
         r"""
@@ -518,13 +615,16 @@ class Scheduler:
 
         Parameters
         ----------
-        timing : TimingTypeOnce
+        timing : TimingOnceUnion
             Desired execution time.
         handle : Callable[..., None]
             Handle to a callback function.
-        params : dict[str, Any]
-            The payload arguments to pass to the function handle within a
-            |Job|.
+        args : tuple[Any]
+            Positional argument payload for the function handle within a |Job|.
+        kwargs : Optional[dict[str, Any]]
+            Keyword arguments payload for the function handle within a |Job|.
+        tags : Optional[set[str]]
+            The tags of the |Job|.
         weight : float
             Relative weight against other |Job|\ s.
 
@@ -534,41 +634,29 @@ class Scheduler:
             Instance of a scheduled |Job|.
         """
         try:
-            tg.check_type("timing", timing, TimingTypeOnce)
+            tg.check_type("timing", timing, TimingOnceUnion)
         except TypeError as err:
             raise SchedulerError(ONCE_TYPE_ERROR_MSG) from err
         if isinstance(timing, dt.datetime):
-            job = self.__schedule(
+            return self.__schedule(
                 job_type=JobType.CYCLIC,
                 timing=dt.timedelta(),
                 handle=handle,
-                params=params,
+                args=args,
+                kwargs=kwargs,
                 max_attempts=1,
+                tags=tags,
                 weight=weight,
                 delay=False,
                 start=timing,
-                stop=None,
-                skip_missing=False,
             )
-        else:
-            mapping = {
-                dt.timedelta: JobType.CYCLIC,
-                Weekday: JobType.WEEKLY,
-                tuple: JobType.WEEKLY,
-                dt.time: JobType.DAILY,
-            }
-            for timing_type, job_type in mapping.items():
-                if isinstance(timing, timing_type):
-                    job = self.__schedule(
-                        job_type=job_type,
-                        timing=timing,  # type: ignore
-                        handle=handle,
-                        params=params,
-                        max_attempts=1,
-                        weight=weight,
-                        delay=True,
-                        start=None,
-                        stop=None,
-                        skip_missing=False,
-                    )
-        return job
+        return self.__schedule(
+            job_type=JOB_TYPE_MAPPING[type(timing)],
+            timing=timing,
+            handle=handle,
+            args=args,
+            kwargs=kwargs,
+            max_attempts=1,
+            tags=tags,
+            weight=weight,
+        )

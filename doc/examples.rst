@@ -6,7 +6,8 @@ Examples
     :caption: Table of Contents
 
     pages/examples/quick_start
-    pages/examples/params
+    pages/examples/parameters
+    pages/examples/tags
     pages/examples/threading
     pages/examples/timezones
     pages/examples/job_batching

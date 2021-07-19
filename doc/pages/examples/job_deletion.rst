@@ -17,12 +17,12 @@ Setup a couple of |Job|\ s
     >>> def foo():
     ...     print("foo")
 
-    >>> sch = Scheduler()
-    >>> j1 = sch.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
-    >>> j2 = sch.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
-    >>> j3 = sch.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
-    >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=3
+    >>> schedule = Scheduler()
+    >>> j1 = schedule.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
+    >>> j2 = schedule.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
+    >>> j3 = schedule.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
+    >>> print(schedule)  # doctest:+SKIP
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -32,13 +32,13 @@ Setup a couple of |Job|\ s
     <BLANKLINE>
 
 Remove the specified |Job| `j2` from the |Scheduler| via
-the :meth:`~scheduler.core.Scheduler.delete_job` method:
+the :py:meth:`~scheduler.core.Scheduler.delete_job` method:
 
 .. code-block:: pycon
 
-    >>> sch.delete_job(j2)
-    >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=2
+    >>> schedule.delete_job(j2)
+    >>> print(schedule)  # doctest:+SKIP
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=2
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -47,8 +47,8 @@ the :meth:`~scheduler.core.Scheduler.delete_job` method:
     <BLANKLINE>
 
 
-Delete all Jobs
----------------
+Delete Jobs
+-----------
 
 Setup a couple of |Job|\ s
 
@@ -61,15 +61,15 @@ Setup a couple of |Job|\ s
     >>> def foo():
     ...     print("foo")
 
-    >>> sch = Scheduler()
-    >>> sch.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
+    >>> schedule = Scheduler()
+    >>> schedule.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...timedelta(seconds=1)...foo...)
-    >>> sch.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
+    >>> schedule.cyclic(dt.timedelta(seconds=2), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...timedelta(seconds=2)...foo...)
-    >>> sch.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
+    >>> schedule.cyclic(dt.timedelta(seconds=3), foo)  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...timedelta(seconds=3)...foo...)
-    >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=3
+    >>> print(schedule)  # doctest:+SKIP
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -79,14 +79,18 @@ Setup a couple of |Job|\ s
     <BLANKLINE>
 
 Clear the |Scheduler| from |Job|\ s
-with a single function call to :meth:`~scheduler.core.Scheduler.delete_all_jobs`.
+with a single function call to :py:meth:`~scheduler.core.Scheduler.delete_jobs`.
 
 .. code-block:: pycon
 
-    >>> sch.delete_all_jobs()
-    >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=0
+    >>> schedule.delete_jobs()
+    3
+    >>> print(schedule)  # doctest:+SKIP
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=0
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     <BLANKLINE>
+
+.. note:: Additionally :py:meth:`~scheduler.core.Scheduler.delete_jobs` supports the
+    tagging system described in :ref:`examples.tags`.

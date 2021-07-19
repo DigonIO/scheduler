@@ -11,3 +11,4 @@ API Reference
     core
     job
     util
+    trigger

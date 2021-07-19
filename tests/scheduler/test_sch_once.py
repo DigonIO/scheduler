@@ -1,12 +1,10 @@
 import datetime as dt
 
 import pytest
+from helpers import ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples, samples_utc, utc
 
+import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
-from scheduler.job import Job
-from scheduler.util import Weekday
-
-from helpers import utc, ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, samples, samples_utc, foo
 
 
 @pytest.mark.parametrize(
@@ -34,7 +32,7 @@ from helpers import utc, ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, samples, samples_utc
             None,
         ],
         [
-            Weekday.THURSDAY,
+            trigger.Thursday(),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples,
             None,
@@ -48,14 +46,14 @@ from helpers import utc, ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, samples, samples_utc
             None,
         ],
         [
-            (Weekday.THURSDAY, dt.time(hour=3, minute=57, tzinfo=utc)),
+            trigger.Thursday(dt.time(hour=3, minute=57, tzinfo=utc)),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples_utc,
             utc,
             None,
         ],
         [
-            (Weekday.THURSDAY, dt.time(hour=3, minute=57, tzinfo=None)),
+            trigger.Thursday(dt.time(hour=3, minute=57, tzinfo=None)),
             [0, 0, 0, 0, 0, 1, 1, 1],
             samples_utc,
             utc,

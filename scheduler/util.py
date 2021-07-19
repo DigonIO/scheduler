@@ -7,9 +7,11 @@ from __future__ import annotations
 
 import datetime as dt
 import random
-from abc import ABC, abstractproperty
-from enum import Enum
-from typing import Optional
+from abc import ABC, abstractmethod
+from enum import Enum, auto
+from typing import Any, Callable, Optional
+
+from scheduler.trigger.core import Weekday
 
 TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
 
@@ -18,23 +20,14 @@ class SchedulerError(Exception):
     """Generic Scheduler exception."""
 
 
-class Weekday(Enum):
-    """
-    Enum representation of weekdays.
+class JobType(Enum):
+    """Indicate the `JobType` of a |Job|."""
 
-    Notes
-    -----
-    The :class:`~scheduler.util.Weekday` enumeration is based on the enumeration of
-    weekdays in the `datetime` standard library.
-    """
-
-    MONDAY = 0
-    TUESDAY = 1
-    WEDNESDAY = 2
-    THURSDAY = 3
-    FRIDAY = 4
-    SATURDAY = 5
-    SUNDAY = 6
+    CYCLIC = auto()
+    MINUTELY = auto()
+    HOURLY = auto()
+    DAILY = auto()
+    WEEKLY = auto()
 
 
 def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
@@ -58,21 +51,17 @@ def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
     int
         Days to the destination :class:`~scheduler.util.Weekday`.
     """
-    if wkdy_src > 6 or wkdy_src < 0 or wkdy_dest > 6 or wkdy_dest < 0:
+    if not (0 <= wkdy_src <= 6 and 0 <= wkdy_dest <= 6):
         raise SchedulerError("Weekday enumeration interval: [0,6] <=> [Monday, Sunday]")
 
-    if wkdy_src == wkdy_dest:
-        return 7
-    if wkdy_dest < wkdy_src:
-        return wkdy_dest - wkdy_src + 7
-    return wkdy_dest - wkdy_src
+    return (wkdy_dest - wkdy_src - 1) % 7 + 1
 
 
 def next_daily_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetime:
     """
     Estimate the next daily occurency of a given time.
 
-    .. warning:: Both arguments are expected to have the same timezone, no internal checks.
+    .. warning:: Both arguments are expected to have the same tzinfo, no internal checks.
 
     Parameters
     ----------
@@ -101,7 +90,7 @@ def next_hourly_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datetim
     """
     Estimate the next hourly occurency of a given time.
 
-    .. warning:: Both arguments are expected to have the same timezone, no internal checks.
+    .. warning:: Both arguments are expected to have the same tzinfo, no internal checks.
 
     Parameters
     ----------
@@ -129,7 +118,7 @@ def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datet
     """
     Estimate the next weekly occurency of a given time.
 
-    .. warning:: Both arguments are expected to have the same timezone, no internal checks.
+    .. warning:: Both arguments are expected to have the same tzinfo, no internal checks.
 
     Parameters
     ----------
@@ -148,30 +137,8 @@ def next_minutely_occurrence(now: dt.datetime, target_time: dt.time) -> dt.datet
         microsecond=target_time.microsecond,
     )
     if (target - now).total_seconds() <= 0:
-        target = target + dt.timedelta(minutes=1)
+        return target + dt.timedelta(minutes=1)
     return target
-
-
-def next_weekday_occurrence(now: dt.datetime, weekday: Weekday) -> dt.datetime:
-    """
-    Estimate the next occurency of a given `Weekday`.
-
-    Parameters
-    ----------
-    now : datetime.datetime
-        `datetime.datetime` object of today
-    weekday : Weekday
-        Desired :class:`~scheduler.util.Weekday`.
-
-    Returns
-    -------
-    datetime.datetime
-        Next `datetime.datetime` of a desired weekday.
-    """
-    days = days_to_weekday(now.weekday(), weekday.value)
-    delta = dt.timedelta(days=days)
-    target = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    return target + delta
 
 
 def next_weekday_time_occurrence(
@@ -180,7 +147,7 @@ def next_weekday_time_occurrence(
     """
     Estimate the next occurency of a given weekday and time.
 
-    .. warning:: Arguments `now` and `target_time` are expected to have the same timezone,
+    .. warning:: Arguments `now` and `target_time` are expected to have the same tzinfo,
        no internal checks.
 
     Parameters
@@ -227,7 +194,7 @@ def are_times_unique(
     Returns
     -------
     boolean
-        ``True`` if list entries are not equivalent with timezone offset.
+        ``True`` if list entries are not equivalent with tzinfo offset.
     """
     ref = dt.datetime(year=1970, month=1, day=1)
     collection = {
@@ -244,7 +211,7 @@ def are_times_unique(
 
 
 def are_weekday_times_unique(
-    timelist: list[tuple[Weekday, dt.time]], timezone: Optional[dt.timezone]
+    weekday_list: list[Weekday], tzinfo: Optional[dt.tzinfo]
 ) -> bool:
     """
     Check if list contains distinct weekday times.
@@ -254,20 +221,20 @@ def are_weekday_times_unique(
 
     Parameters
     ----------
-    timelist : list[tuple[Weekday, datetime.time]]
-        List of ``tuple[Weekday, datetime.time]`` objects.
+    weekday_list : list[Weekday]
+        List of weekday objects.
 
     Returns
     -------
     boolean
         ``True`` if list entries are not equivalent with timezone offset.
     """
-    ref = dt.datetime(year=1970, month=1, day=1, tzinfo=timezone)
+    ref = dt.datetime(year=1970, month=1, day=1, tzinfo=tzinfo)
     collection = {
-        next_weekday_time_occurrence(ref.astimezone(time.tzinfo), day, time)
-        for day, time in timelist
+        next_weekday_time_occurrence(ref.astimezone(day.time.tzinfo), day, day.time)
+        for day in weekday_list
     }
-    return len(collection) == len(timelist)
+    return len(collection) == len(weekday_list)
 
 
 class AbstractJob(ABC):
@@ -279,9 +246,79 @@ class AbstractJob(ABC):
     Needed to provide linting and typing in the :mod:`~scheduler.util` module.
     """
 
-    @abstractproperty
+    @property
+    @abstractmethod
+    def type(self) -> JobType:
+        """Return the `JobType` of the `Job` instance."""
+
+    @property
+    @abstractmethod
+    def handle(self) -> Callable[..., None]:
+        """Get the callback function handle."""
+
+    @property
+    @abstractmethod
+    def kwargs(self) -> dict[str, Any]:
+        r"""Get the payload arguments to pass to the function handle within a `Job`."""
+
+    @property
+    @abstractmethod
     def weight(self) -> float:
-        """Abstract weight."""
+        """Return the weight of the `Job` instance."""
+
+    @property
+    @abstractmethod
+    def delay(self) -> bool:
+        """Return ``True`` if the first `Job` execution will wait for the next scheduled time."""
+
+    @property
+    @abstractmethod
+    def start(self) -> Optional[dt.datetime]:
+        """Get the timestamp at which the `JobTimer` starts."""
+
+    @property
+    @abstractmethod
+    def stop(self) -> Optional[dt.datetime]:
+        """Get the timestamp after which no more executions of the `Job` should be scheduled."""
+
+    @property
+    @abstractmethod
+    def max_attempts(self) -> int:
+        """Get the execution limit for a `Job`."""
+
+    @property
+    @abstractmethod
+    def skip_missing(self) -> bool:
+        """Return ``True`` if `Job` will only schedule it's newest planned execution."""
+
+    @property
+    @abstractmethod
+    def tzinfo(self) -> Optional[dt.tzinfo]:
+        r"""Get the timezone of the `Job`'s next execution."""
+
+    @property
+    @abstractmethod
+    def _tzinfo(self) -> Optional[dt.tzinfo]:
+        """Get the timezone of the `Scheduler` in which the `Job` is living."""
+
+    @property
+    @abstractmethod
+    def has_attempts_remaining(self) -> bool:
+        """Check if a `Job` has remaining attempts."""
+
+    @property
+    @abstractmethod
+    def attempts(self) -> int:
+        """Get the number of executions for a `Job`."""
+
+    @property
+    @abstractmethod
+    def datetime(self) -> dt.datetime:
+        """Give the `datetime.datetime` object for the planed execution."""
+
+    @abstractmethod
+    def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
+        """Get the `datetime.timedelta` until the next execution of this `Job`."""
 
 
 class Prioritization:
@@ -421,9 +458,8 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
 
     if len(string) > max_length:
         pos = max_length - 1
-        if cut_tail:
-            return string[:pos] + "#"
-        return "#" + string[-pos:]
+        return string[:pos] + "#" if cut_tail else "#" + string[-pos:]
+
     return string
 
 

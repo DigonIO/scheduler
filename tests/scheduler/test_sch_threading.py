@@ -1,12 +1,12 @@
 import datetime as dt
-import time
 import threading
+import time
 
 import pytest
+from helpers import foo
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.util import Weekday
-from helpers import foo
 
 
 def wrap_sleep(secs: float):
@@ -24,7 +24,7 @@ def wrap_sleep(secs: float):
 )
 def test_thread_safety(duration):
     sch = Scheduler()
-    sch.cyclic(dt.timedelta(), wrap_sleep, params={"secs": duration}, skip_missing=True)
+    sch.cyclic(dt.timedelta(), wrap_sleep, kwargs={"secs": duration}, skip_missing=True)
     thread_1 = threading.Thread(target=sch.exec_jobs)
     thread_2 = threading.Thread(target=sch.exec_jobs)
     thread_1.daemon = True
@@ -59,4 +59,31 @@ def test_worker_count(n_threads, max_exec, n_jobs, res_n_exec):
     for _ in range(len(res_n_exec)):
         results.append(sch.exec_jobs())
 
+    assert results == res_n_exec
+
+
+@pytest.mark.parametrize(
+    "job_sleep, n_threads, max_exec, n_jobs, res_n_exec",
+    [
+        (0.0005, 1, 0, 2, [2, 2, 2, 2]),  # simple case: no threading
+        (0.0005, 2, 0, 2, [2, 2, 2, 2]),  # simple case: 2 threads, 2 slow jobs
+        (0.0005, 2, 0, 4, [4, 4, 4, 4]),  # 2 threads, 4 slow jobs
+        (0.0005, 4, 0, 2, [2, 2, 2, 2]),  # 4 threads, 2 slow jobs
+        (0.0005, 4, 2, 3, [2, 2, 2, 2]),  # 4 threads, exec limit, 3 slow jobs
+        (0.0005, 4, 4, 3, [3, 3, 3, 3]),  # 4 threads, exec limit, 3 slow jobs
+    ],
+)
+def test_threading_slow_jobs(job_sleep, n_threads, max_exec, n_jobs, res_n_exec):
+    sch = Scheduler(n_threads=n_threads, max_exec=max_exec)
+
+    for _ in range(n_jobs):
+        sch.cyclic(
+            dt.timedelta(),
+            wrap_sleep,
+            kwargs={"secs": job_sleep},
+            delay=False,
+        )
+    results = []
+    for _ in range(len(res_n_exec)):
+        results.append(sch.exec_jobs())
     assert results == res_n_exec

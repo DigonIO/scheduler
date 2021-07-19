@@ -1,8 +1,7 @@
 import datetime as dt
 
+import scheduler.trigger as trigger
 from scheduler.job import JobType
-from scheduler.util import Weekday
-
 
 utc = dt.timezone.utc
 utc2 = dt.timezone(dt.timedelta(hours=2))
@@ -22,12 +21,12 @@ DAILY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Daily")
 WEEKLY_TYPE_ERROR_MSG = (
     "Wrong input for Weekly! Select one of the following input types:\n"
     + "DAY | list[DAY]\n"
-    + "where `DAY = Weekday | tuple[Weekday, dt.time]`"
+    + "where `DAY = Weekday`"
 )
 
 ONCE_TYPE_ERROR_MSG = (
     "Wrong input for Once! Select one of the following input types:\n"
-    + "dt.datetime | dt.timedelta | Weekday | dt.time | tuple[Weekday, dt.time]"
+    + "dt.datetime | dt.timedelta | Weekday | dt.time"
 )
 
 DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
@@ -269,9 +268,9 @@ def bar(msg="bar"):
 job_args = (
     {
         "job_type": JobType.CYCLIC,
-        "timing": dt.timedelta(hours=1),
+        "timing": [dt.timedelta(hours=1)],
         "handle": foo,
-        "params": None,
+        "kwargs": None,
         "max_attempts": 1,
         "weight": 1,
         "delay": True,
@@ -282,9 +281,9 @@ job_args = (
     },
     {
         "job_type": JobType.MINUTELY,
-        "timing": dt.time(second=20),
+        "timing": [dt.time(second=20)],
         "handle": bar,
-        "params": {"msg": "foobar"},
+        "kwargs": {"msg": "foobar"},
         "max_attempts": 20,
         "weight": 0,
         "delay": False,
@@ -295,9 +294,9 @@ job_args = (
     },
     {
         "job_type": JobType.DAILY,
-        "timing": dt.time(hour=7, minute=5),
+        "timing": [dt.time(hour=7, minute=5)],
         "handle": foo,
-        "params": None,
+        "kwargs": None,
         "max_attempts": 7,
         "weight": 1,
         "delay": True,
@@ -310,28 +309,28 @@ job_args = (
 
 job_reprs = (
     [
-        "scheduler.Job(<JobType.CYCLIC: 1>, datetime.timedelta(seconds=3600), <function foo at 0x",
-        ">, {}, 1, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None)",
+        "scheduler.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
+        ">, (), {}, 1, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None)",
     ],
     [
-        "scheduler.Job(<JobType.MINUTELY: 2>, datetime.time(0, 0, 20), <function bar at 0x",
+        "scheduler.Job(<JobType.MINUTELY: 2>, [datetime.time(0, 0, 20)], <function bar at 0x",
         (
-            ">, {'msg': 'foobar'}, 20, 0, False, datetime.datetime(2021, 5, 26, 3, 54, 15),"
+            ">, (), {'msg': 'foobar'}, 20, 0, False, datetime.datetime(2021, 5, 26, 3, 54, 15),"
             " datetime.datetime(2021, 5, 26, 4, 5), False, None)"
         ),
     ],
     [
-        "scheduler.Job(<JobType.DAILY: 4>, datetime.time(7, 5), <function foo at 0x",
-        ">, {}, 7, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None)",
+        "scheduler.Job(<JobType.DAILY: 4>, [datetime.time(7, 5)], <function foo at 0x",
+        ">, (), {}, 7, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None)",
     ],
 )
 
 job_args_utc = (
     {
         "job_type": JobType.CYCLIC,
-        "timing": dt.timedelta(hours=1),
+        "timing": [dt.timedelta(hours=1)],
         "handle": foo,
-        "params": None,
+        "kwargs": None,
         "max_attempts": 0,
         "weight": 1 / 3,
         "delay": False,
@@ -342,9 +341,9 @@ job_args_utc = (
     },
     {
         "job_type": JobType.HOURLY,
-        "timing": dt.time(hour=7, minute=5, tzinfo=utc),
+        "timing": [dt.time(hour=7, minute=5, tzinfo=utc)],
         "handle": print,
-        "params": None,
+        "kwargs": None,
         "max_attempts": 0,
         "weight": 20,
         "delay": False,
@@ -355,9 +354,9 @@ job_args_utc = (
     },
     {
         "job_type": JobType.WEEKLY,
-        "timing": Weekday.MONDAY,
+        "timing": [trigger.Monday(dt.time(tzinfo=utc))],
         "handle": bar,
-        "params": None,
+        "kwargs": None,
         "max_attempts": 0,
         "weight": 1,
         "delay": False,
@@ -369,11 +368,11 @@ job_args_utc = (
     {
         "job_type": JobType.WEEKLY,
         "timing": [
-            Weekday.WEDNESDAY,
-            (Weekday.TUESDAY, dt.time(23, 45, 59, tzinfo=utc)),
+            trigger.Wednesday(dt.time(tzinfo=utc)),
+            trigger.Tuesday(dt.time(23, 45, 59, tzinfo=utc)),
         ],
         "handle": print,
-        "params": {"end": "FOO\n"},
+        "kwargs": {"end": "FOO\n"},
         "max_attempts": 1,
         "weight": 1,
         "delay": True,
@@ -386,32 +385,36 @@ job_args_utc = (
 
 job_reprs_utc = (
     [
-        "scheduler.Job(<JobType.CYCLIC: 1>, datetime.timedelta(seconds=3600), <function foo at 0x",
+        "scheduler.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
         (
-            ">, {}, 0, 0.3333333333333333, False, datetime.datetime(2021, 5, 26, 3, 54, 59, 999990"
+            ">, (), {}, 0, 0.3333333333333333, False, datetime.datetime(2021, 5, 26, 3, 54, 59, 999990"
             ", tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"
         ),
     ],
     [
         (
-            "scheduler.Job(<JobType.HOURLY: 3>, datetime.time(0, 5, tzinfo=datetime.timezone.utc),"
-            " <built-in function print>, {}, 0, 20, False, datetime.datetime(2021, 5, 26, 3, 55,"
+            "scheduler.Job(<JobType.HOURLY: 3>, [datetime.time(0, 5, tzinfo=datetime.timezone.utc)],"
+            " <built-in function print>, (), {}, 0, 20, False, datetime.datetime(2021, 5, 26, 3, 55,"
             " tzinfo=datetime.timezone.utc), datetime.datetime(2021, 5, 26, 23, 55, "
             "tzinfo=datetime.timezone.utc), False, datetime.timezone.utc)"
         )
     ],
     [
-        "scheduler.Job(<JobType.WEEKLY: 5>, <Weekday.MONDAY: 0>, <function bar at 0x",
         (
-            ">, {}, 0, 1, False, datetime.datetime(2021, 5, 25, 3, 55, "
+            "scheduler.Job(<JobType.WEEKLY: 5>, [Monday(time=datetime.time(0, 0, "
+            "tzinfo=datetime.timezone.utc))], <function bar at 0x"
+        ),
+        (
+            ">, (), {}, 0, 1, False, datetime.datetime(2021, 5, 25, 3, 55, "
             "tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"
         ),
     ],
     [
         (
-            "scheduler.Job(<JobType.WEEKLY: 5>, [<Weekday.WEDNESDAY: 2>, (<Weekday.TUESDAY: 1>,"
-            " datetime.time(23, 45, 59, tzinfo=datetime.timezone.utc))], <built-in function print>"
-            ", {'end': 'FOO\\n'}, 1, 1, True, "
+            "scheduler.Job(<JobType.WEEKLY: 5>, [Wednesday(time=datetime.time(0, 0, "
+            "tzinfo=datetime.timezone.utc)), Tuesday(time=datetime.time(23, 45, 59, "
+            "tzinfo=datetime.timezone.utc))], <built-in function print>"
+            ", (), {'end': 'FOO\\n'}, 1, 1, True, "
             "datetime.datetime(2021, 6, 2, 3, 55, tzinfo=datetime.timezone.utc),"
             " datetime.datetime(2021, 7, 25, 3, 55, tzinfo=datetime.timezone.utc),"
             " False, datetime.timezone.utc)"

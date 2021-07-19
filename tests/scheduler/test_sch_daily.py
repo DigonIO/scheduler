@@ -1,18 +1,17 @@
 import datetime as dt
 
 import pytest
-
-from scheduler import Scheduler, SchedulerError
-from scheduler.util import Weekday
-
 from helpers import (
-    utc,
     DAILY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
+    foo,
     samples_days,
     samples_days_utc,
-    foo,
+    utc,
 )
+
+import scheduler.trigger as trigger
+from scheduler import Scheduler, SchedulerError
 
 
 @pytest.mark.parametrize(
@@ -40,7 +39,7 @@ from helpers import (
             None,
         ],
         [dt.time(hour=2), [], samples_days_utc, utc, TZ_ERROR_MSG],
-        [Weekday.MONDAY, [], samples_days, None, DAILY_TYPE_ERROR_MSG],
+        [trigger.Monday(), [], samples_days, None, DAILY_TYPE_ERROR_MSG],
     ),
     indirect=["patch_datetime_now"],
 )

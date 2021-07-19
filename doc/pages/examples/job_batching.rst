@@ -2,21 +2,21 @@ Job Batching
 ============
 
 It is possible to bundle a |Job| with more than one
-|JobTimer|. Except for :func:`~scheduler.core.Scheduler.once`
+|JobTimer|. Except for :py:func:`~scheduler.core.Scheduler.once`
 and :func:`~scheduler.core.Scheduler.cyclic`, |Scheduler| supports
-passing of the `timing` argument via a `list` for the `scheduling` functions:
+passing of the `timing` argument via a `list` for the `scheduling` functions
 
-:func:`~scheduler.core.Scheduler.minutely`,
-:func:`~scheduler.core.Scheduler.hourly`,
-:func:`~scheduler.core.Scheduler.daily` and
-:func:`~scheduler.core.Scheduler.weekly`.
+:py:func:`~scheduler.core.Scheduler.minutely`,
+:py:func:`~scheduler.core.Scheduler.hourly`,
+:py:func:`~scheduler.core.Scheduler.daily` and
+:py:func:`~scheduler.core.Scheduler.weekly`.
 
 .. warning:: When bundling multiple times in a single |Job|, they
     are required to be distinct within the given context. Note that mixing of timezones
     can lead to indistinguishable times. If indistinguishable times are used, a
-    :exc:`~scheduler.util.SchedulerError` will be raised.
+    :py:exc:`~scheduler.util.SchedulerError` will be raised.
 
-For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one |Job| as follows:
+For :py:func:`~scheduler.core.Scheduler.daily` we can embed several timers in one |Job| as follows:
 
 .. code-block:: pycon
 
@@ -27,18 +27,18 @@ For :func:`~scheduler.core.Scheduler.daily` we can embed several timers in one |
     >>> def foo():
     ...     print("foo")
 
-    >>> sch = Scheduler()
+    >>> schedule = Scheduler()
 
     >>> timings = [dt.time(hour=0), dt.time(hour=12), dt.time(hour=18)]
-    >>> sch.daily(timing=timings, handle=foo)  # doctest:+ELLIPSIS
+    >>> schedule.daily(timing=timings, handle=foo)  # doctest:+ELLIPSIS
     scheduler.Job(...DAILY..., [...time(0, 0), ...time(12, 0), ...time(18, 0)]...)
 
 In consequence, this |Scheduler| instance only contains a single |Job| instance of the `DAILY` type:
 
 .. code-block:: pycon
 
-    >>> print(sch)  # doctest:+SKIP
-    max_exec=inf, timezone=None, weight_function=linear_priority_function, #jobs=1
+    >>> print(schedule)  # doctest:+SKIP
+    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
     type     function         due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
@@ -46,5 +46,5 @@ In consequence, this |Scheduler| instance only contains a single |Job| instance 
     <BLANKLINE>
 
 In the given example, the job will be scheduled three times a day. Note that each call to
-:meth:`~scheduler.core.Scheduler.exec_jobs` will only call the function handle
+:py:meth:`~scheduler.core.Scheduler.exec_jobs` will only call the function handle
 of the |Job| once, even if several timers are overdue.
