@@ -4,20 +4,46 @@ Trigger implementations.
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import datetime as dt
-from dataclasses import dataclass
+from abc import ABC, abstractmethod
 
 
-@dataclass(frozen=True)
-class Weekday:
-    """Weekday object with time."""
+class Weekday(ABC):
+    """
+    |Weekday| object with time.
 
-    __value = -1
-    time: dt.time
+    Parameters
+    ----------
+    time : datetime.time
+        Time on the clock at the specific |Weekday|.
+    """
+
+    __value: int
+    __time: dt.time
+
+    @abstractmethod
+    def __init__(self, time: dt.time, value: int):
+        self.__time = time
+        self.__value = value
+
+    def __repr__(self):
+        return f"{self.__class__.__qualname__}(time={self.time!r})"
+
+    @property
+    def time(self) -> dt.time:
+        """
+        Return time of the |Weekday|.
+
+        Returns
+        -------
+        datetime.time
+            Time on the clock at the specific |Weekday|.
+        """
+        return self.__time
 
     @property
     def value(self) -> int:
         """
-        Return value of the given Weekday.
+        Return value of the given |Weekday|.
 
         Notes
         -----
@@ -31,63 +57,40 @@ class Weekday:
         return self.__value
 
 
-# NOTE: pylint too-few-public-methods does not see the time property of the dataclass
 # NOTE: pylint missing-class-docstring is just silly here, given functionality and usuage of parent
-# NOTE: pylint invalid-name is our simple hack to avoid lots of boilerplate and external access
-class Monday(
-    Weekday
-):  # pylint: disable=missing-class-docstring, too-few-public-methods  # noqa: D101
+class Monday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
     def __init__(self, time=dt.time()):
-        super().__init__(time)
-        self._Weekday__value = 0  # pylint: disable=invalid-name
+        super().__init__(time, 0)
 
 
-class Tuesday(
-    Weekday
-):  # pylint: disable=missing-class-docstring, too-few-public-methods  # noqa: D101
+class Tuesday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
     def __init__(self, time=dt.time()):
-        super().__init__(time)
-        self._Weekday__value = 1  # pylint: disable=invalid-name
+        super().__init__(time, 1)
 
 
-class Wednesday(
-    Weekday
-):  # pylint: disable=missing-class-docstring, too-few-public-methods  # noqa: D101
+class Wednesday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
     def __init__(self, time=dt.time()):
-        super().__init__(time)
-        self._Weekday__value = 2  # pylint: disable=invalid-name, too-few-public-methods
+        super().__init__(time, 2)
 
 
-class Thursday(
-    Weekday
-):  # pylint: disable=missing-class-docstring, too-few-public-methods  # noqa: D101
+class Thursday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
     def __init__(self, time=dt.time()):
-        super().__init__(time)
-        self._Weekday__value = 3  # pylint: disable=invalid-name
+        super().__init__(time, 3)
 
 
-class Friday(
-    Weekday
-):  # pylint: disable=missing-class-docstring, too-few-public-methods  # noqa: D101
+class Friday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
     def __init__(self, time=dt.time()):
-        super().__init__(time)
-        self._Weekday__value = 4  # pylint: disable=invalid-name
+        super().__init__(time, 4)
 
 
-class Saturday(
-    Weekday
-):  # pylint: disable=missing-class-docstring, too-few-public-methods  # noqa: D101
+class Saturday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
     def __init__(self, time=dt.time()):
-        super().__init__(time)
-        self._Weekday__value = 5  # pylint: disable=invalid-name
+        super().__init__(time, 5)
 
 
-class Sunday(
-    Weekday
-):  # pylint: disable=missing-class-docstring, too-few-public-methods  # noqa: D101
+class Sunday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
     def __init__(self, time=dt.time()):
-        super().__init__(time)
-        self._Weekday__value = 6  # pylint: disable=invalid-name
+        super().__init__(time, 6)
 
 
 _weekday_mapping = {
@@ -103,7 +106,7 @@ _weekday_mapping = {
 
 def weekday(value: int, time=dt.time()) -> Weekday:
     """
-    Return Weekday from given value with optional time.
+    Return |Weekday| from given value with optional time.
 
     Notes
     -----
@@ -112,13 +115,13 @@ def weekday(value: int, time=dt.time()) -> Weekday:
     Parameters
     ----------
     value : int
-        Integer representation of Weekday
+        Integer representation of |Weekday|
     time : datetime.time
         Time on the clock at the specific weekday.
 
     Returns
     -------
     Weekday
-        Weekday object with given time.
+        |Weekday| object with given time.
     """
-    return _weekday_mapping[value](time)
+    return _weekday_mapping[value](time)  # type: ignore

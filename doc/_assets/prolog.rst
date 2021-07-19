@@ -8,6 +8,8 @@
 
 .. |JobTimer| replace:: :py:class:`~scheduler.job.JobTimer`
 
+.. |Weekday| replace:: :py:class:`~scheduler.trigger.core.Weekday`
+
 .. |args_text| replace:: Positional argument payload for the function handle |br|
    within a |Job|.
 
