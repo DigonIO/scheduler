@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitlab.com/DigonIO/scheduler"><img alt="scheduler" src="https://gitlab.com/DigonIO/scheduler/-/raw/logo/doc/_assets/logo_name.svg" width="60%"></a>
+  <a href="https://gitlab.com/DigonIO/scheduler"><img alt="scheduler" src="https://gitlab.com/DigonIO/scheduler/-/raw/master/doc/_assets/logo_name.svg" width="60%"></a>
 </p>
 <p>A simple in-process python scheduler library with timezone and threading support. Schedule tasks by their
 time cycles, fixed times, weekdays, dates, weights, offsets and execution counts and automate Jobs.</p>

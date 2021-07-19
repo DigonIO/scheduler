@@ -2,12 +2,24 @@
 
 ## 0.6.0
 
-    TODO
+### Features
+
++ `Job`s can be tagged and filtered by sets of string identifiers
 
 ### API changes
 
 + `Job`: `params` renamed to `kwargs` and introduced `args` keyword analog to
   `sched` library
++ `delete_all_jobs` replaced and implemented within `delete_jobs`
++ `Weekday` implemented as abstract class in `scheduler.trigger.core` instead of
+  `Enum` in `scheduler.util`. Now with `time` attribute.
++ `Scheduler.once` and `Scheduler.weekly` no longer accept a tuple of `Weekday, datetime.time`
+  for the timing argument.
+
+### Misc
+
++ `Job` refactoring
++ Documentation updated
 
 ## 0.5.2
 
