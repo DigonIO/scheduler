@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.1
+
+### Misc
+
++ Revision of the README.md for the first release on PyPI.org
+
 ## 0.6.0
 
 ### Features
