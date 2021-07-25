@@ -11,6 +11,10 @@ time cycles, fixed times, weekdays, dates, weights, offsets and execution counts
 [![Documentation Status](https://readthedocs.org/projects/python-scheduler/badge/?version=latest)](https://python-scheduler.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+[![pkgversion](https://img.shields.io/pypi/v/scheduler)](https://pypi.org/project/scheduler/)
+[![versionsupport](https://img.shields.io/pypi/pyversions/scheduler)](https://pypi.org/project/scheduler/)
+[![Downloads Week](https://pepy.tech/badge/scheduler/week)](https://pepy.tech/project/scheduler)
+[![Downloads Total](https://pepy.tech/badge/scheduler)](https://pepy.tech/project/scheduler)
 ---
 
 
@@ -31,6 +35,8 @@ time cycles, fixed times, weekdays, dates, weights, offsets and execution counts
     [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/weights.html)
   * User definable prioritization functions
     [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/custom_prioritization.html)
+* `Job` tagging
+  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/tags.html)
 * `Job` batching
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/job_batching.html)
 * `Job` metadata
@@ -44,7 +50,7 @@ time cycles, fixed times, weekdays, dates, weights, offsets and execution counts
 `scheduler` can be installed using pip with the following command:
 
 ```bash
-pip install git+https://gitlab.com/DigonIO/scheduler.git
+pip install scheduler
 ```
 
 Alternatively clone the [repository](https://gitlab.com/DigonIO/scheduler) and install with:
