@@ -336,6 +336,8 @@ class Job(AbstractJob):
     skip_missing : Optional[bool]
         If ``True`` a |Job| will only schedule it's newest planned
         execution and drop older ones.
+    alias : Optional[str]
+        Overwrites the function handle name in the string representation.
     tzinfo : Optional[datetime.tzinfo]
         Set the timezone of the |Scheduler| the |Job|
         is scheduled in.
@@ -358,6 +360,7 @@ class Job(AbstractJob):
     __start: Optional[dt.datetime]
     __stop: Optional[dt.datetime]
     __skip_missing: bool
+    __alias: Optional[str]
     __tzinfo: Optional[dt.tzinfo]
 
     __lock: threading.RLock
@@ -371,6 +374,7 @@ class Job(AbstractJob):
         job_type: JobType,
         timing: TimingJobUnion,
         handle: Callable[..., None],
+        *,
         args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
@@ -380,6 +384,7 @@ class Job(AbstractJob):
         start: Optional[dt.datetime] = None,
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
+        alias: str = None,
         tzinfo: Optional[dt.tzinfo] = None,
     ):
         timing = JobUtil.standardize_timing_format(job_type, timing)
@@ -403,6 +408,7 @@ class Job(AbstractJob):
         self.__delay = delay
         self.__stop = stop
         self.__skip_missing = skip_missing
+        self.__alias = alias
         self.__tzinfo = tzinfo
 
         self.__lock = threading.RLock()
@@ -453,6 +459,7 @@ class Job(AbstractJob):
                             self.__start,
                             self.__stop,
                             self.__skip_missing,
+                            self.__alias,
                             self.tzinfo,
                         )
                     )
@@ -477,13 +484,15 @@ class Job(AbstractJob):
         """Return the objects relevant for readable string representation."""
         with self.__lock:
             dt_timedelta = self.timedelta(dt.datetime.now(self.__tzinfo))
-            if hasattr(self.handle, "__code__"):
+            if self.__alias is not None:
+                f_args = ""
+            elif hasattr(self.handle, "__code__"):
                 f_args = "(..)" if self.handle.__code__.co_nlocals else "()"
             else:
                 f_args = "(?)"
             return (
                 self.__type.name if self.max_attempts != 1 else "ONCE",
-                self.handle.__qualname__,
+                self.handle.__qualname__ if self.__alias is None else self.__alias,
                 f_args,
                 self.datetime,
                 str(self.datetime)[:19],

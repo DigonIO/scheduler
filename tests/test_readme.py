@@ -21,39 +21,38 @@ def test_general_readme():
     >>> schedule = Scheduler()
 
     >>> schedule.cyclic(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
-
+    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.minutely(dt.time(second=15), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.MINUTELY...>, [datetime.time(0, 0, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    scheduler.Job(<JobType.MINUTELY...>, [datetime.time(0, 0, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.hourly(dt.time(minute=30, second=15), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.HOURLY...>, [datetime.time(0, 30, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    scheduler.Job(<JobType.HOURLY...>, [datetime.time(0, 30, 15)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.daily(dt.time(hour=16, minute=30), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.DAILY...>, [datetime.time(16, 30)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    scheduler.Job(<JobType.DAILY...>, [datetime.time(16, 30)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.weekly(trigger.Monday(), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(16, 30))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None)
+    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(16, 30))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
 
     >>> schedule.once(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None)
+    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.once(trigger.Monday(), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None)
+    scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
-    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(0)], <function foo at 0x...>, (), {}, 1, 1, False, datetime.datetime(2022, 2, 15, 0, 45), None, False, None)
+    scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(0)], <function foo at 0x...>, (), {}, 1, 1, False, datetime.datetime(2022, 2, 15, 0, 45), None, False, None, None)
 
 
     >>> print(schedule)  # doctest:+ELLIPSIS
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ...
     ONCE     foo()            ... 00:45:00  ...           0/1      1...

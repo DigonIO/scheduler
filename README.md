@@ -101,7 +101,7 @@ print(schedule)
 ```text
 max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
 
-type     function         due at                 due in      attempts weight
+type     function / alias due at                 due in      attempts weight
 -------- ---------------- ------------------- --------- ------------- ------
 MINUTELY bar(..)          2021-06-18 00:37:15   0:00:14         0/inf      1
 CYCLIC   foo()            2021-06-18 00:46:58   0:09:58         0/inf      1

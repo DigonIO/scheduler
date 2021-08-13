@@ -310,18 +310,18 @@ job_args = (
 job_reprs = (
     [
         "scheduler.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
-        ">, (), {}, 1, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None)",
+        ">, (), {}, 1, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None, None)",
     ],
     [
         "scheduler.Job(<JobType.MINUTELY: 2>, [datetime.time(0, 0, 20)], <function bar at 0x",
         (
             ">, (), {'msg': 'foobar'}, 20, 0, False, datetime.datetime(2021, 5, 26, 3, 54, 15),"
-            " datetime.datetime(2021, 5, 26, 4, 5), False, None)"
+            " datetime.datetime(2021, 5, 26, 4, 5), False, None, None)"
         ),
     ],
     [
         "scheduler.Job(<JobType.DAILY: 4>, [datetime.time(7, 5)], <function foo at 0x",
-        ">, (), {}, 7, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None)",
+        ">, (), {}, 7, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None, None)",
     ],
 )
 
@@ -388,7 +388,7 @@ job_reprs_utc = (
         "scheduler.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
         (
             ">, (), {}, 0, 0.3333333333333333, False, datetime.datetime(2021, 5, 26, 3, 54, 59, 999990"
-            ", tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"
+            ", tzinfo=datetime.timezone.utc), None, True, None, datetime.timezone.utc)"
         ),
     ],
     [
@@ -396,7 +396,7 @@ job_reprs_utc = (
             "scheduler.Job(<JobType.HOURLY: 3>, [datetime.time(0, 5, tzinfo=datetime.timezone.utc)],"
             " <built-in function print>, (), {}, 0, 20, False, datetime.datetime(2021, 5, 26, 3, 55,"
             " tzinfo=datetime.timezone.utc), datetime.datetime(2021, 5, 26, 23, 55, "
-            "tzinfo=datetime.timezone.utc), False, datetime.timezone.utc)"
+            "tzinfo=datetime.timezone.utc), False, None, datetime.timezone.utc)"
         )
     ],
     [
@@ -406,7 +406,7 @@ job_reprs_utc = (
         ),
         (
             ">, (), {}, 0, 1, False, datetime.datetime(2021, 5, 25, 3, 55, "
-            "tzinfo=datetime.timezone.utc), None, True, datetime.timezone.utc)"
+            "tzinfo=datetime.timezone.utc), None, True, None, datetime.timezone.utc)"
         ),
     ],
     [
@@ -417,7 +417,7 @@ job_reprs_utc = (
             ", (), {'end': 'FOO\\n'}, 1, 1, True, "
             "datetime.datetime(2021, 6, 2, 3, 55, tzinfo=datetime.timezone.utc),"
             " datetime.datetime(2021, 7, 25, 3, 55, tzinfo=datetime.timezone.utc),"
-            " False, datetime.timezone.utc)"
+            " False, None, datetime.timezone.utc)"
         )
     ],
 )

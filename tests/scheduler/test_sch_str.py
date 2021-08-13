@@ -16,7 +16,7 @@ patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11
 table = (
     "max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3\n"
     "\n"
-    "type     function         due at                 due in      attempts weight\n"
+    "type     function / alias due at                 due in      attempts weight\n"
     "-------- ---------------- ------------------- --------- ------------- ------\n"
     "MINUTELY bar(..)          2021-05-26 03:54:15  -0:00:45          0/20      0\n"
     "ONCE     foo()            2021-05-26 04:55:00   1:00:00           0/1      1\n"
@@ -26,7 +26,7 @@ table = (
 table_utc = (
     "max_exec=inf, tzinfo=UTC, priority_function=linear_priority_function, #jobs=4\n"
     "\n"
-    "type     function         due at              tzinfo          due in      attempts weight\n"
+    "type     function / alias due at              tzinfo          due in      attempts weight\n"
     "-------- ---------------- ------------------- ------------ --------- ------------- ------\n"
     "WEEKLY   bar(..)          2021-05-25 03:55:00 UTC             -1 day         0/inf      1\n"
     "CYCLIC   foo()            2021-05-26 03:54:59 UTC           -0:00:00         0/inf 0.333#\n"
