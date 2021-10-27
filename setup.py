@@ -43,6 +43,7 @@ setup(
         "Operating System :: OS Independent",
         "Typing :: Typed",
     ],
+    python_requires='>=3.9',
     url="https://gitlab.com/DigonIO/scheduler",
     project_urls={
         "Documentation": "https://python-scheduler.readthedocs.io/en/latest/",
