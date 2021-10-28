@@ -105,6 +105,7 @@ class Scheduler:
 
     def __init__(
         self,
+        *,
         max_exec: int = 0,
         tzinfo: Optional[dt.tzinfo] = None,
         priority_function: Callable[
@@ -164,7 +165,7 @@ class Scheduler:
             c_width = (8, 16, 19, 12, 9, 13, 6)
             c_name = (
                 "type",
-                "function",
+                "function / alias",
                 "due at",
                 "tzinfo",
                 "due in",
@@ -605,6 +606,7 @@ class Scheduler:
         self,
         timing: TimingOnceUnion,
         handle: Callable[..., None],
+        *,
         args: tuple[Any] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,

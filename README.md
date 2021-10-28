@@ -5,6 +5,7 @@
 time cycles, fixed times, weekdays, dates, weights, offsets and execution counts and automate Jobs.</p>
 
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
+[![mirror](https://img.shields.io/badge/mirror-GitHub-orange)](https://github.com/DigonIO/scheduler)
 [![license](https://img.shields.io/badge/license-LGPLv3-orange)](https://gitlab.com/DigonIO/scheduler/-/blob/master/LICENSE)
 [![pipeline status](https://gitlab.com/DigonIO/scheduler/badges/master/pipeline.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![coverage report](https://gitlab.com/DigonIO/scheduler/badges/master/coverage.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
@@ -101,7 +102,7 @@ print(schedule)
 ```text
 max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
 
-type     function         due at                 due in      attempts weight
+type     function / alias due at                 due in      attempts weight
 -------- ---------------- ------------------- --------- ------------- ------
 MINUTELY bar(..)          2021-06-18 00:37:15   0:00:14         0/inf      1
 CYCLIC   foo()            2021-06-18 00:46:58   0:09:58         0/inf      1

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.2
+
+### API changes
+
++ `Scheduler` instanciation and `Scheduler.once` arguments are now keyword only.
+
+### Features
+
++ `Job`s can be given a string alias for identification instead of defaulting to function name.
+
+### Misc
+
++ Python version requirements added to `setup.py`
+
 ## 0.6.1
 
 ### Misc
