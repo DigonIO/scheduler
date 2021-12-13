@@ -8,4 +8,5 @@ __version__ = "0.7.0"
 __author__ = "Jendrik A. Potyka, Fabian A. Preiss"
 
 from scheduler.core import Scheduler
+from scheduler.core_asyncio import AioScheduler
 from scheduler.util import SchedulerError
