@@ -6,9 +6,13 @@ For compatibility with the |Scheduler|, the prioritization
 functions have to be of type ``Callable[[float, Job, int, int], float]``.
 """
 
+import random
+
+from scheduler.job_threading import Job
+
 @staticmethod
 def constant_weight_prioritization(
-    time_delta: float, job: AbstractJob, max_exec: int, job_count: int
+    time_delta: float, job: Job, max_exec: int, job_count: int
 ) -> float:  # pragma: no cover
     r"""
     Interprete the `Job`'s weight as its priority.
@@ -47,7 +51,7 @@ def constant_weight_prioritization(
 
 @staticmethod
 def linear_priority_function(
-    time_delta: float, job: AbstractJob, max_exec: int, job_count: int
+    time_delta: float, job: Job, max_exec: int, job_count: int
 ) -> float:
     r"""
     Compute the |Job|\ s default linear priority.
@@ -91,7 +95,7 @@ def linear_priority_function(
 
 @staticmethod
 def random_priority_function(
-    time: float, job: AbstractJob, max_exec: int, job_count: int
+    time: float, job: Job, max_exec: int, job_count: int
 ) -> float:  # pragma: no cover
     """
     Generate random priority values from weigths.

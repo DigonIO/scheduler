@@ -1,6 +1,8 @@
 from typing import Union
 import datetime as dt
 
+from scheduler.trigger.core import Weekday
+
 # execution interval
 TimingCyclic = dt.timedelta  # Scheduler
 _TimingCyclicList = list[TimingCyclic]
