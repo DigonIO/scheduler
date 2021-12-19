@@ -3,10 +3,25 @@ from abc import ABC, abstractmethod
 from enum import Enum, auto
 from typing import Any, Callable, Optional
 
-import scheduler.messages as messages
-import scheduler.timing_types as timing_types
 import scheduler.trigger as trigger
 import scheduler.util as util
+from scheduler.message import (
+    CYCLIC_TYPE_ERROR_MSG,
+    DAILY_TYPE_ERROR_MSG,
+    HOURLY_TYPE_ERROR_MSG,
+    MINUTELY_TYPE_ERROR_MSG,
+    WEEKLY_TYPE_ERROR_MSG,
+)
+from scheduler.timing_type import (
+    TimingCyclic,
+    TimingDailyUnion,
+    TimingJobUnion,
+    TimingOnceUnion,
+    TimingWeeklyUnion,
+    _TimingCyclicList,
+    _TimingDailyList,
+    _TimingWeeklyList,
+)
 
 
 class JobType(Enum):
@@ -33,24 +48,24 @@ JOB_TYPE_MAPPING = {
 
 JOB_TIMING_TYPE_MAPPING = {
     JobType.CYCLIC: {
-        "type": timing_types._TimingCyclicList,
-        "err": messages.CYCLIC_TYPE_ERROR_MSG,
+        "type": _TimingCyclicList,
+        "err": CYCLIC_TYPE_ERROR_MSG,
     },
     JobType.MINUTELY: {
-        "type": timing_types._TimingDailyList,
-        "err": messages.MINUTELY_TYPE_ERROR_MSG,
+        "type": _TimingDailyList,
+        "err": MINUTELY_TYPE_ERROR_MSG,
     },
     JobType.HOURLY: {
-        "type": timing_types._TimingDailyList,
-        "err": messages.HOURLY_TYPE_ERROR_MSG,
+        "type": _TimingDailyList,
+        "err": HOURLY_TYPE_ERROR_MSG,
     },
     JobType.DAILY: {
-        "type": timing_types._TimingDailyList,
-        "err": messages.DAILY_TYPE_ERROR_MSG,
+        "type": _TimingDailyList,
+        "err": DAILY_TYPE_ERROR_MSG,
     },
     JobType.WEEKLY: {
-        "type": timing_types._TimingWeeklyList,
-        "err": messages.WEEKLY_TYPE_ERROR_MSG,
+        "type": _TimingWeeklyList,
+        "err": WEEKLY_TYPE_ERROR_MSG,
     },
 }
 
@@ -63,7 +78,7 @@ JOB_NEXT_DAYLIKE_MAPPING = {
 
 class BaseJob(ABC):
     """
-    Abstract definition of the `Job` class.
+    Abstract definition basic interface for a job class.
 
     Notes
     -----
@@ -73,7 +88,7 @@ class BaseJob(ABC):
     @property
     @abstractmethod
     def type(self) -> JobType:
-        """Return the `JobType` of the `Job` instance."""
+        """Return the `JobType` of the `BaseJob` instance."""
 
     @property
     @abstractmethod
@@ -83,12 +98,12 @@ class BaseJob(ABC):
     @property
     @abstractmethod
     def kwargs(self) -> dict[str, Any]:
-        r"""Get the payload arguments to pass to the function handle within a `Job`."""
+        r"""Get the payload arguments to pass to the function handle within a `BaseJob`."""
 
     @property
     @abstractmethod
     def delay(self) -> bool:
-        """Return ``True`` if the first `Job` execution will wait for the next scheduled time."""
+        """Return ``True`` if the first `BaseJob` execution will wait for the next scheduled time."""
 
     @property
     @abstractmethod
@@ -98,37 +113,37 @@ class BaseJob(ABC):
     @property
     @abstractmethod
     def stop(self) -> Optional[dt.datetime]:
-        """Get the timestamp after which no more executions of the `Job` should be scheduled."""
+        """Get the timestamp after which no more executions of the `BaseJob` should be scheduled."""
 
     @property
     @abstractmethod
     def max_attempts(self) -> int:
-        """Get the execution limit for a `Job`."""
+        """Get the execution limit for a `BaseJob`."""
 
     @property
     @abstractmethod
     def skip_missing(self) -> bool:
-        """Return ``True`` if `Job` will only schedule it's newest planned execution."""
+        """Return ``True`` if `BaseJob` will only schedule it's newest planned execution."""
 
     @property
     @abstractmethod
     def tzinfo(self) -> Optional[dt.tzinfo]:
-        r"""Get the timezone of the `Job`'s next execution."""
+        r"""Get the timezone of the `BaseJob`'s next execution."""
 
     @property
     @abstractmethod
     def _tzinfo(self) -> Optional[dt.tzinfo]:
-        """Get the timezone of the `Scheduler` in which the `Job` is living."""
+        """Get the timezone of the `Scheduler` in which the `BaseJob` is living."""
 
     @property
     @abstractmethod
     def has_attempts_remaining(self) -> bool:
-        """Check if a `Job` has remaining attempts."""
+        """Check if a `BaseJob` has remaining attempts."""
 
     @property
     @abstractmethod
     def attempts(self) -> int:
-        """Get the number of executions for a `Job`."""
+        """Get the number of executions for a `BaseJob`."""
 
     @property
     @abstractmethod
@@ -137,8 +152,63 @@ class BaseJob(ABC):
 
     @abstractmethod
     def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
-        """Get the `datetime.timedelta` until the next execution of this `Job`."""
+        """Get the `datetime.timedelta` until the next execution of this `BaseJob`."""
 
 
 class BaseScheduler(ABC):
-    pass
+    @abstractmethod
+    def delete_job(self, job: BaseJob) -> None:
+        """Delete a `BaseJob` from the `BaseScheduler`."""
+
+    @abstractmethod
+    def delete_jobs(
+        self,
+        tags: Optional[set[str]] = None,
+        any_tag: bool = False,
+    ) -> int:
+        """Delete a set of `BaseJob`\ s from the `BaseScheduler` by tags."""
+
+    @abstractmethod
+    def get_jobs(
+        self,
+        tags: Optional[set[str]] = None,
+        any_tag: bool = False,
+    ) -> set[BaseJob]:
+        """Get a set of `BaseJob`\ s from the `BaseScheduler` by tags."""
+
+    @property
+    @abstractmethod
+    def jobs(self) -> set[BaseJob]:
+        """Get the set of all `BaseJob`\ s."""
+
+    @abstractmethod
+    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs):
+        """Schedule a cyclic `BaseJob`."""
+
+    @abstractmethod
+    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+        """Schedule a minutely `BaseJob`."""
+
+    @abstractmethod
+    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+        """Schedule an hourly `BaseJob`."""
+
+    @abstractmethod
+    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+        """Schedule a daily `BaseJob`."""
+
+    @abstractmethod
+    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs):
+        """Schedule a weekly `BaseJob`."""
+
+    @abstractmethod
+    def once(
+        self,
+        timing: TimingOnceUnion,
+        handle: Callable[..., None],
+        *,
+        args: tuple[Any] = None,
+        kwargs: Optional[dict[str, Any]] = None,  # TODO check collision with **kwargs
+        tags: Optional[list[str]] = None,
+    ):
+        """Schedule a oneshot `BaseJob`."""
