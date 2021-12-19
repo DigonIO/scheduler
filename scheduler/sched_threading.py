@@ -33,46 +33,6 @@ ONCE_TYPE_ERROR_MSG = (
     + "dt.datetime | dt.timedelta | Weekday | dt.time"
 )
 
-JOB_TYPE_MAPPING = {
-    dt.timedelta: JobType.CYCLIC,
-    dt.time: JobType.DAILY,
-    trigger.Monday: JobType.WEEKLY,
-    trigger.Tuesday: JobType.WEEKLY,
-    trigger.Wednesday: JobType.WEEKLY,
-    trigger.Thursday: JobType.WEEKLY,
-    trigger.Friday: JobType.WEEKLY,
-    trigger.Saturday: JobType.WEEKLY,
-    trigger.Sunday: JobType.WEEKLY,
-}
-
-
-def select_jobs_by_tag(
-    jobs: set[Job],
-    tags: set[str],
-    any_tag: bool,
-) -> set[Job]:
-    r"""
-    Select |Job|\ s by matching `tags`.
-
-    Parameters
-    ----------
-    jobs : set[Job]
-        Unfiltered set of |Job|\ s.
-    tags : set[str]
-        Tags to filter |Job|\ s.
-    any_tag : bool
-        False: To match a |Job| all tags have to match.
-        True: To match a |Job| at least one tag has to match.
-
-    Returns
-    -------
-    set[Job]
-        Selected |Job|\ s.
-    """
-    if any_tag:
-        return {job for job in jobs if tags & job.tags}
-    return {job for job in jobs if tags <= job.tags}
-
 
 class Scheduler:
     r"""

@@ -9,8 +9,9 @@ import datetime as dt
 from typing import Optional
 
 from scheduler.error import SchedulerError
-from scheduler.trigger.core import Weekday
 from scheduler.message import TZ_ERROR_MSG
+from scheduler.trigger.core import Weekday
+
 
 def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
     """
@@ -217,6 +218,7 @@ def are_weekday_times_unique(
         for day in weekday_list
     }
     return len(collection) == len(weekday_list)
+
 
 def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
     """

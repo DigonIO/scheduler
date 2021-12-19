@@ -4,40 +4,26 @@ from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
-from scheduler.core import JOB_TYPE_MAPPING, ONCE_TYPE_ERROR_MSG, select_jobs_by_tag
-from scheduler.job import (
-    CYCLIC_TYPE_ERROR_MSG,
-    DAILY_TYPE_ERROR_MSG,
-    HOURLY_TYPE_ERROR_MSG,
-    MINUTELY_TYPE_ERROR_MSG,
-    TZ_ERROR_MSG,
-    WEEKLY_TYPE_ERROR_MSG,
-    JobType,
-    TimingCyclic,
-    TimingDailyUnion,
-    TimingJobUnion,
-    TimingOnceUnion,
-    TimingWeeklyUnion,
-)
-from scheduler.util import JobType
+from scheduler.base import BaseScheduler, JobType
+from scheduler.job_asyncio import AsyncJob
+from scheduler.timing_type import TimingCyclic, TimingDailyUnion, TimingWeeklyUnion
 
-from scheduler.job_asyncio import AioJob
 
-class AioScheduler:
+class AsyncScheduler:
     def __init__(
         self,
         *,
-        loop: aio.unix_events._UnixSelectorEventLoop = None, # TODO verify typing
+        loop: aio.unix_events._UnixSelectorEventLoop = None,  # TODO verify typing
         tzinfo: Optional[dt.tzinfo] = None,
     ):
         self.__loop = loop if loop else aio.get_event_loop()
         self.__tzinfo = tzinfo
         self.__tz_str = dt.datetime.now(tzinfo).tzname()
 
-        self.__jobs: dict[AioJob, aio.Task] = dict()
-        self.__update_jobs= aio.Event()
+        self.__jobs: dict[AsyncJob, aio.Task] = dict()
+        self.__update_jobs = aio.Event()
 
-    async def __supervise_job(self, job: AioJob) -> None:
+    async def __supervise_job(self, job: AsyncJob) -> None:
         try:
             while job.has_attempts_remaining:
                 sleep_seconds: float = job.timedelta().total_seconds()
@@ -49,20 +35,20 @@ class AioScheduler:
                 job._calc_next_exec(reference_dt)
 
         except aio.CancelledError:
-            pass # NOTE will be called if the job will be deleted by the public library API
+            pass  # NOTE will be called if the job will be deleted by the public library API
 
         else:
             self.delete_job(job)
 
     @property
-    def jobs(self) -> set[AioJob]:
+    def jobs(self) -> set[AsyncJob]:
         r"""
-        Get the set of all `AioJob`\ s.
+        Get the set of all `AsyncJob`\ s.
 
         Returns
         -------
         set[Job]
-            Currently scheduled |AioJob|\ s.
+            Currently scheduled |AsyncJob|\ s.
         """
         return set(self.__jobs.keys())
 
@@ -72,14 +58,14 @@ class AioScheduler:
         timing: Union[TimingCyclic, TimingDailyUnion, TimingWeeklyUnion],
         handle: Callable[..., None],
         **kwargs,
-    ) -> AioJob:
-        """Encapsulate the `AioJob` and add the `AioScheduler`'s timezone."""
+    ) -> AsyncJob:
+        """Encapsulate the `AsyncJob` and add the `AioScheduler`'s timezone."""
         if not isinstance(timing, list):
             timing_list = cast(TimingJobUnion, [timing])
         else:
             timing_list = cast(TimingJobUnion, timing)
 
-        job = AioJob(
+        job = AsyncJob(
             job_type=job_type,
             timing=timing_list,
             handle=handle,
@@ -92,14 +78,14 @@ class AioScheduler:
 
         return job
 
-    def delete_job(self, job: AioJob) -> None:
+    def delete_job(self, job: AsyncJob) -> None:
         """
-        Delete a `AioJob` from the `AioScheduler`.
+        Delete a `AsyncJob` from the `AioScheduler`.
 
         Parameters
         ----------
-        job : AioJob
-            |AioJob| instance to delete.
+        job : AsyncJob
+            |AsyncJob| instance to delete.
 
         Returns
         -------
@@ -107,7 +93,7 @@ class AioScheduler:
             True if deleted
         """
         task = self.__jobs.pop(job)
-        _ = task.cancel() # has to be true, because pop should raise
+        _ = task.cancel()  # has to be true, because pop should raise
 
     def delete_jobs(
         self,
@@ -115,21 +101,21 @@ class AioScheduler:
         any_tag: bool = False,
     ) -> int:
         r"""
-        Delete a set of |AioJob|\ s from the |AioScheduler| by tags.
+        Delete a set of |AsyncJob|\ s from the |AioScheduler| by tags.
 
         If no tags or an empty set of tags are given defaults to the deletion
-        of all |AioJob|\ s.
+        of all |AsyncJob|\ s.
 
         Parameters
         ----------
         tags : Optional[set[str]]
-            Set of tags to identify target |AioJob|\ s.
+            Set of tags to identify target |AsyncJob|\ s.
         any_tag : bool
-            False: To delete a |AioJob| all tags have to match.
-            True: To delete a |AioJob| at least one tag has to match.
+            False: To delete a |AsyncJob| all tags have to match.
+            True: To delete a |AsyncJob| at least one tag has to match.
         """
-        all_jobs: set[AoiJob] = set(self.__jobs.keys())
-        jobs_to_delete: set[AoiJob]
+        all_jobs: set[AsyncJob] = set(self.__jobs.keys())
+        jobs_to_delete: set[AsyncJob]
 
         if tags is None or tags == {}:
             jobs_to_delete = all_jobs
@@ -140,7 +126,6 @@ class AioScheduler:
             self.delete_job(job)
 
         return len(jobs_to_delete)
-
 
     def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs):
         try:

@@ -11,12 +11,27 @@ from typing import Any, Optional, Union, cast
 
 import typeguard as tg
 
-from scheduler.base import JobType, BaseJob, JOB_NEXT_DAYLIKE_MAPPING, JOB_TIMING_TYPE_MAPPING
-from scheduler.trigger.core import Weekday
-from scheduler.timing_type import TimingJobTimerUnion, TimingJobUnion
-from scheduler.util import next_weekday_time_occurrence, are_weekday_times_unique, are_times_unique
+from scheduler.base import (
+    JOB_NEXT_DAYLIKE_MAPPING,
+    JOB_TIMING_TYPE_MAPPING,
+    BaseJob,
+    JobType,
+)
 from scheduler.error import SchedulerError
-from scheduler.message import TZ_ERROR_MSG, _TZ_ERROR_MSG, DUPLICATE_EFFECTIVE_TIME, START_STOP_ERROR
+from scheduler.message import (
+    _TZ_ERROR_MSG,
+    DUPLICATE_EFFECTIVE_TIME,
+    START_STOP_ERROR,
+    TZ_ERROR_MSG,
+)
+from scheduler.timing_type import TimingJobTimerUnion, TimingJobUnion
+from scheduler.trigger.core import Weekday
+from scheduler.util import (
+    are_times_unique,
+    are_weekday_times_unique,
+    next_weekday_time_occurrence,
+)
+
 
 @staticmethod
 def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
@@ -41,6 +56,7 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
     except TypeError as err:
         raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
+
 @staticmethod
 def standardize_timing_format(
     job_type: JobType, timing: TimingJobUnion
@@ -57,6 +73,7 @@ def standardize_timing_format(
         timing = [time.replace(hour=0) for time in cast(list[dt.time], timing)]
     return timing
 
+
 @staticmethod
 def check_timing_tzinfo(
     job_type: JobType,
@@ -72,6 +89,7 @@ def check_timing_tzinfo(
         for time in cast(list[dt.time], timing):
             if bool(time.tzinfo) ^ bool(tzinfo):
                 raise SchedulerError(TZ_ERROR_MSG)
+
 
 @staticmethod
 def check_duplicate_effective_timings(
@@ -90,6 +108,7 @@ def check_duplicate_effective_timings(
     ):
         if not are_times_unique(cast(list[dt.time], timing)):
             raise SchedulerError(DUPLICATE_EFFECTIVE_TIME)
+
 
 @staticmethod
 def set_start_check_stop_tzinfo(
@@ -111,6 +130,7 @@ def set_start_check_stop_tzinfo(
             raise SchedulerError(START_STOP_ERROR)
     return start
 
+
 @staticmethod
 def get_pending_timer(timers: list[JobTimer]) -> JobTimer:
     """Get the the timer with the largest overdue time."""
@@ -122,6 +142,7 @@ def get_pending_timer(timers: list[JobTimer]) -> JobTimer:
         key=unsorted_timer_datetimes.get,  # type: ignore
     )
     return sorted_timers[0]
+
 
 def select_jobs_by_tag(
     jobs: set[BaseJob],
@@ -149,6 +170,7 @@ def select_jobs_by_tag(
     if any_tag:
         return {job for job in jobs if tags & job.tags}
     return {job for job in jobs if tags <= job.tags}
+
 
 class JobTimer:
     """

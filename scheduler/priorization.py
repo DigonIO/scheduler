@@ -1,4 +1,3 @@
-
 """
 Collection of prioritization functions.
 
@@ -9,6 +8,7 @@ functions have to be of type ``Callable[[float, Job, int, int], float]``.
 import random
 
 from scheduler.job_threading import Job
+
 
 @staticmethod
 def constant_weight_prioritization(
@@ -48,6 +48,7 @@ def constant_weight_prioritization(
     if time_delta < 0:
         return 0
     return job.weight
+
 
 @staticmethod
 def linear_priority_function(
@@ -92,6 +93,7 @@ def linear_priority_function(
     if time_delta < 0:
         return 0
     return (time_delta + 1) * job.weight
+
 
 @staticmethod
 def random_priority_function(
