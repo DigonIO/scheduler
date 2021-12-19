@@ -20,3 +20,8 @@ TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
 _TZ_ERROR_MSG = TZ_ERROR_MSG[:-1] + " for {0}."
 
 START_STOP_ERROR = "Start argument must be smaller than the stop argument."
+
+ONCE_TYPE_ERROR_MSG = (
+    "Wrong input for Once! Select one of the following input types:\n"
+    + "dt.datetime | dt.timedelta | Weekday | dt.time"
+)

@@ -4,9 +4,25 @@ from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
-from scheduler.base import BaseScheduler, JobType
+from scheduler.base import JOB_TYPE_MAPPING, BaseScheduler, JobType
+from scheduler.error import SchedulerError
 from scheduler.job_asyncio import AsyncJob
-from scheduler.timing_type import TimingCyclic, TimingDailyUnion, TimingWeeklyUnion
+from scheduler.message import (
+    CYCLIC_TYPE_ERROR_MSG,
+    DAILY_TYPE_ERROR_MSG,
+    HOURLY_TYPE_ERROR_MSG,
+    MINUTELY_TYPE_ERROR_MSG,
+    ONCE_TYPE_ERROR_MSG,
+    WEEKLY_TYPE_ERROR_MSG,
+)
+from scheduler.timing_type import (
+    TimingCyclic,
+    TimingDailyUnion,
+    TimingJobUnion,
+    TimingOnceUnion,
+    TimingWeeklyUnion,
+)
+from scheduler.util_job import select_jobs_by_tag
 
 
 class AsyncScheduler:
@@ -80,7 +96,7 @@ class AsyncScheduler:
 
     def delete_job(self, job: AsyncJob) -> None:
         """
-        Delete a `AsyncJob` from the `AioScheduler`.
+        Delete a `AsyncJob` from the `AsyncScheduler`.
 
         Parameters
         ----------

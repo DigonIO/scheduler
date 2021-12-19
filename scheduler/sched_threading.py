@@ -10,28 +10,28 @@ from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
-import scheduler.trigger as trigger
-from scheduler.job import (
+from scheduler.base import JOB_TYPE_MAPPING, BaseJob, BaseScheduler, JobType
+from scheduler.error import SchedulerError
+from scheduler.job_threading import Job
+from scheduler.message import (
     CYCLIC_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
     HOURLY_TYPE_ERROR_MSG,
     MINUTELY_TYPE_ERROR_MSG,
+    ONCE_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
-    Job,
-    JobType,
+)
+from scheduler.prioritization import linear_priority_function
+from scheduler.timing_type import (
     TimingCyclic,
     TimingDailyUnion,
     TimingJobUnion,
     TimingOnceUnion,
     TimingWeeklyUnion,
 )
-from scheduler.util import AbstractJob, Prioritization, SchedulerError, str_cutoff
-
-ONCE_TYPE_ERROR_MSG = (
-    "Wrong input for Once! Select one of the following input types:\n"
-    + "dt.datetime | dt.timedelta | Weekday | dt.time"
-)
+from scheduler.util import str_cutoff
+from scheduler.util_job import select_jobs_by_tag
 
 
 class Scheduler:
@@ -69,9 +69,9 @@ class Scheduler:
         max_exec: int = 0,
         tzinfo: Optional[dt.tzinfo] = None,
         priority_function: Callable[
-            [float, AbstractJob, int, int],
+            [float, BaseJob, int, int],
             float,
-        ] = Prioritization.linear_priority_function,
+        ] = linear_priority_function,
         jobs: Optional[set[Job]] = None,
         n_threads: int = 1,
     ):
