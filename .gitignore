@@ -6,6 +6,8 @@ __pycache__
 # testing
 .coverage*
 *htmlcov/
+.mypy_cache/
+.pytest_cache/
 
 # sphinx-build
 doc/_build/
