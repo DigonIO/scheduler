@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 import datetime as dt
-from typing import Any, Callable, Optional, Union, cast
+from typing import Optional, Callable, Any, cast
 
-from scheduler.job import (
-    TimingDailyUnion,
-    TimingJobUnion,
-    JobTimer,
-    JobUtil,
-)
-from scheduler.util import AbstractJob, JobType
+from scheduler.base import JobType, BaseJob
+from scheduler.timing_type import TimingJobUnion
+from scheduler.util_job import JobTimer, standardize_timing_format, sane_timing_types, check_duplicate_effective_timings, set_start_check_stop_tzinfo, check_timing_tzinfo, get_pending_timer
 
-class AioJob(AbstractJob):
+
+class AsyncJob(BaseJob):
 
     __type: JobType
     __timing: TimingJobUnion
@@ -49,13 +46,13 @@ class AioJob(AbstractJob):
         alias: str = None,
         tzinfo: Optional[dt.tzinfo] = None,
     ):
-        timing = JobUtil.standardize_timing_format(job_type, timing)
+        timing = standardize_timing_format(job_type, timing)
 
-        JobUtil.sane_timing_types(job_type, timing)
-        JobUtil.check_duplicate_effective_timings(job_type, timing, tzinfo)
-        JobUtil.check_timing_tzinfo(job_type, timing, tzinfo)
+        sane_timing_types(job_type, timing)
+        check_duplicate_effective_timings(job_type, timing, tzinfo)
+        check_timing_tzinfo(job_type, timing, tzinfo)
 
-        self.__start = JobUtil.set_start_check_stop_tzinfo(start, stop, tzinfo)
+        self.__start = set_start_check_stop_tzinfo(start, stop, tzinfo)
 
         self.__type = job_type
         self.__timing = timing
@@ -81,13 +78,13 @@ class AioJob(AbstractJob):
         self.__timers = [
             JobTimer(job_type, tim, self.__start, skip_missing) for tim in timing
         ]
-        self.__pending_timer = JobUtil.get_pending_timer(self.__timers)
+        self.__pending_timer = get_pending_timer(self.__timers)
 
         if self.__stop is not None:
             if self.__pending_timer.datetime > self.__stop:
                 self.__mark_delete = True
 
-    def __lt__(self, other: AioJob):
+    def __lt__(self, other: AsyncJob):
         dt_stamp = dt.datetime.now(self.__tzinfo)
         return (
             self.timedelta(dt_stamp).total_seconds()
@@ -115,7 +112,7 @@ class AioJob(AbstractJob):
                     timer.calc_next_exec(ref_dt)
         else:
             self.__pending_timer.calc_next_exec(ref_dt)
-        self.__pending_timer = JobUtil.get_pending_timer(self.__timers)
+        self.__pending_timer = get_pending_timer(self.__timers)
         if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
             self.__mark_delete = True
 

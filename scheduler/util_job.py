@@ -11,7 +11,7 @@ from typing import Any, Optional, Union, cast
 
 import typeguard as tg
 
-from scheduler.base import JobType, JobBase, JOB_NEXT_DAYLIKE_MAPPING, JOB_TIMING_TYPE_MAPPING
+from scheduler.base import JobType, BaseJob, JOB_NEXT_DAYLIKE_MAPPING, JOB_TIMING_TYPE_MAPPING
 from scheduler.trigger.core import Weekday
 from scheduler.timing_type import TimingJobTimerUnion, TimingJobUnion
 from scheduler.util import next_weekday_time_occurrence, are_weekday_times_unique, are_times_unique
@@ -124,10 +124,10 @@ def get_pending_timer(timers: list[JobTimer]) -> JobTimer:
     return sorted_timers[0]
 
 def select_jobs_by_tag(
-    jobs: set[JobBase],
+    jobs: set[BaseJob],
     tags: set[str],
     any_tag: bool,
-) -> set[JobBase]:
+) -> set[BaseJob]:
     r"""
     Select |Job|\ s by matching `tags`.
 
