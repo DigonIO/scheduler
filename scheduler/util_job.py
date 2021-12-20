@@ -11,10 +11,9 @@ from typing import Any, Optional, Union, cast
 
 import typeguard as tg
 
-from scheduler.base import (
+from scheduler.base.definition import (
     JOB_NEXT_DAYLIKE_MAPPING,
     JOB_TIMING_TYPE_MAPPING,
-    BaseJob,
     JobType,
 )
 from scheduler.error import SchedulerError

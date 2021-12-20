@@ -7,7 +7,7 @@ functions have to be of type ``Callable[[float, Job, int, int], float]``.
 
 import random
 
-from scheduler.job_threading import Job
+from scheduler.threading.job import Job
 
 
 @staticmethod

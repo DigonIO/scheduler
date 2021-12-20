@@ -10,9 +10,10 @@ from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
-from scheduler.base import JOB_TYPE_MAPPING, BaseJob, BaseScheduler, JobType
+from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
+from scheduler.base.job import BaseJob
+from scheduler.base.scheduler import BaseScheduler
 from scheduler.error import SchedulerError
-from scheduler.job_threading import Job
 from scheduler.message import (
     CYCLIC_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
@@ -23,6 +24,7 @@ from scheduler.message import (
     WEEKLY_TYPE_ERROR_MSG,
 )
 from scheduler.prioritization import linear_priority_function
+from scheduler.threading.job import Job
 from scheduler.timing_type import (
     TimingCyclic,
     TimingDailyUnion,
@@ -34,7 +36,7 @@ from scheduler.util import str_cutoff
 from scheduler.util_job import select_jobs_by_tag
 
 
-class Scheduler:
+class Scheduler(BaseScheduler):
     r"""
     Implementation of a scheduler for callback functions.
 

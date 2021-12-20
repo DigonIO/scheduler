@@ -10,16 +10,7 @@ from scheduler.message import (
     MINUTELY_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
 )
-from scheduler.timing_type import (
-    TimingCyclic,
-    TimingDailyUnion,
-    TimingJobUnion,
-    TimingOnceUnion,
-    TimingWeeklyUnion,
-    _TimingCyclicList,
-    _TimingDailyList,
-    _TimingWeeklyList,
-)
+from scheduler.timing_type import _TimingCyclicList, _TimingDailyList, _TimingWeeklyList
 
 
 class JobType(Enum):
