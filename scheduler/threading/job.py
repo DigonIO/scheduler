@@ -114,16 +114,16 @@ class Job(BaseJob):
             job_type,
             timing,
             handle,
-            args,
-            kwargs,
-            max_attempts,
-            tags,
-            delay,
-            start,
-            stop,
-            skip_missing,
-            alias,
-            tzinfo,
+            args=args,
+            kwargs=kwargs,
+            max_attempts=max_attempts,
+            tags=tags,
+            delay=delay,
+            start=start,
+            stop=stop,
+            skip_missing=skip_missing,
+            alias=alias,
+            tzinfo=tzinfo,
         )
         self.__lock = threading.RLock()
         self.__weight = weight
@@ -221,12 +221,12 @@ class Job(BaseJob):
     @property
     def has_attempts_remaining(self) -> bool:
         with self.__lock:
-            return super().has_attempts_remaining()
+            return super().has_attempts_remaining
 
     @property
     def datetime(self) -> dt.datetime:
         with self.__lock:
-            return super().datetime()
+            return super().datetime
 
     def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
         with self.__lock:
