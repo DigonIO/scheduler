@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional
 
 from scheduler.base.job import BaseJob
-from scheduler.timing_type import (
+from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
     TimingOnceUnion,

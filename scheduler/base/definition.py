@@ -3,6 +3,11 @@ from enum import Enum, auto
 
 import scheduler.trigger as trigger
 import scheduler.util as util
+from scheduler.base.timingtype import (
+    _TimingCyclicList,
+    _TimingDailyList,
+    _TimingWeeklyList,
+)
 from scheduler.message import (
     CYCLIC_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
@@ -10,7 +15,6 @@ from scheduler.message import (
     MINUTELY_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
 )
-from scheduler.timing_type import _TimingCyclicList, _TimingDailyList, _TimingWeeklyList
 
 
 class JobType(Enum):

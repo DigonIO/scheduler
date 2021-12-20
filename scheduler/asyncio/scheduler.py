@@ -10,6 +10,13 @@ from scheduler.asyncio.job import AsyncJob
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.job import BaseJob
 from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag
+from scheduler.base.timingtype import (
+    TimingCyclic,
+    TimingDailyUnion,
+    TimingJobUnion,
+    TimingOnceUnion,
+    TimingWeeklyUnion,
+)
 from scheduler.error import SchedulerError
 from scheduler.message import (
     CYCLIC_TYPE_ERROR_MSG,
@@ -18,13 +25,6 @@ from scheduler.message import (
     MINUTELY_TYPE_ERROR_MSG,
     ONCE_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
-)
-from scheduler.timing_type import (
-    TimingCyclic,
-    TimingDailyUnion,
-    TimingJobUnion,
-    TimingOnceUnion,
-    TimingWeeklyUnion,
 )
 
 

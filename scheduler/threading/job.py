@@ -12,7 +12,7 @@ import typeguard as tg
 
 from scheduler.base.definition import JobType
 from scheduler.base.job import BaseJob
-from scheduler.timing_type import TimingJobUnion
+from scheduler.base.timingtype import TimingJobUnion
 from scheduler.util import prettify_timedelta
 from scheduler.util_job import JobTimer
 

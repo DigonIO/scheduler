@@ -16,6 +16,7 @@ from scheduler.base.definition import (
     JOB_TIMING_TYPE_MAPPING,
     JobType,
 )
+from scheduler.base.timingtype import TimingJobTimerUnion, TimingJobUnion
 from scheduler.error import SchedulerError
 from scheduler.message import (
     _TZ_ERROR_MSG,
@@ -23,7 +24,6 @@ from scheduler.message import (
     START_STOP_ERROR,
     TZ_ERROR_MSG,
 )
-from scheduler.timing_type import TimingJobTimerUnion, TimingJobUnion
 from scheduler.trigger.core import Weekday
 from scheduler.util import (
     are_times_unique,
