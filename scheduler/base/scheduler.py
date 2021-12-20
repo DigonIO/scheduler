@@ -6,10 +6,37 @@ from scheduler.base.job import BaseJob
 from scheduler.timing_type import (
     TimingCyclic,
     TimingDailyUnion,
-    TimingJobUnion,
     TimingOnceUnion,
     TimingWeeklyUnion,
 )
+
+
+def select_jobs_by_tag(
+    jobs: set[BaseJob],
+    tags: set[str],
+    any_tag: bool,
+) -> set[BaseJob]:
+    r"""
+    Select |BaseJob|\ s by matching `tags`.
+
+    Parameters
+    ----------
+    jobs : set[BaseJob]
+        Unfiltered set of |BaseJob|\ s.
+    tags : set[str]
+        Tags to filter |BaseJob|\ s.
+    any_tag : bool
+        False: To match a |BaseJob| all tags have to match.
+        True: To match a |BaseJob| at least one tag has to match.
+
+    Returns
+    -------
+    set[BaseJob]
+        Selected |BaseJob|\ s.
+    """
+    if any_tag:
+        return {job for job in jobs if tags & job.tags}
+    return {job for job in jobs if tags <= job.tags}
 
 
 class BaseScheduler(ABC):

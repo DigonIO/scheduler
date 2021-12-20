@@ -17,14 +17,8 @@ from scheduler.util_job import (
 )
 
 
-class BaseJob:
-    """
-    Abstract definition basic interface for a job class.
-
-    Notes
-    -----
-    Needed to provide linting and typing in the :mod:`~scheduler.util` module.
-    """
+class BaseJob(ABC):
+    """Abstract definition basic interface for a job class."""
 
     __type: JobType
     __timing: TimingJobUnion

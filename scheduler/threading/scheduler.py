@@ -12,7 +12,7 @@ import typeguard as tg
 
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.job import BaseJob
-from scheduler.base.scheduler import BaseScheduler
+from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag
 from scheduler.error import SchedulerError
 from scheduler.message import (
     CYCLIC_TYPE_ERROR_MSG,
@@ -33,7 +33,6 @@ from scheduler.timing_type import (
     TimingWeeklyUnion,
 )
 from scheduler.util import str_cutoff
-from scheduler.util_job import select_jobs_by_tag
 
 
 class Scheduler(BaseScheduler):

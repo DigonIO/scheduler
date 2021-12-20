@@ -143,34 +143,6 @@ def get_pending_timer(timers: list[JobTimer]) -> JobTimer:
     return sorted_timers[0]
 
 
-def select_jobs_by_tag(
-    jobs: set[BaseJob],
-    tags: set[str],
-    any_tag: bool,
-) -> set[BaseJob]:
-    r"""
-    Select |Job|\ s by matching `tags`.
-
-    Parameters
-    ----------
-    jobs : set[Job]
-        Unfiltered set of |Job|\ s.
-    tags : set[str]
-        Tags to filter |Job|\ s.
-    any_tag : bool
-        False: To match a |Job| all tags have to match.
-        True: To match a |Job| at least one tag has to match.
-
-    Returns
-    -------
-    set[Job]
-        Selected |Job|\ s.
-    """
-    if any_tag:
-        return {job for job in jobs if tags & job.tags}
-    return {job for job in jobs if tags <= job.tags}
-
-
 class JobTimer:
     """
     The class provides the internal `datetime.datetime` calculations for a `Job`.
