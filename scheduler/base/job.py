@@ -5,8 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional, cast
 
 from scheduler.base.definition import JobType
-from scheduler.base.timingtype import TimingJobUnion
-from scheduler.util_job import (
+from scheduler.base.job_util import (
     JobTimer,
     check_duplicate_effective_timings,
     check_timing_tzinfo,
@@ -15,6 +14,7 @@ from scheduler.util_job import (
     set_start_check_stop_tzinfo,
     standardize_timing_format,
 )
+from scheduler.base.timingtype import TimingJobUnion
 
 
 class BaseJob(ABC):
