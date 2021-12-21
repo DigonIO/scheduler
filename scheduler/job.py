@@ -168,7 +168,8 @@ class JobTimer:
         datetime.datetime
             Execution `datetime.datetime` stamp.
         """
-        return self.__next_exec
+        with self.__lock:
+            return self.__next_exec
 
     def timedelta(self, dt_stamp: dt.datetime) -> dt.timedelta:
         """
@@ -185,7 +186,8 @@ class JobTimer:
         datetime.timedelta
             `datetime.timedelta` to the execution.
         """
-        return self.__next_exec - dt_stamp
+        with self.__lock:
+            return self.__next_exec - dt_stamp
 
 
 class JobUtil:
