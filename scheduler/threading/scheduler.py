@@ -13,6 +13,7 @@ import typeguard as tg
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.job import BaseJob
 from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag
+from scheduler.base.scheduler_util import str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
@@ -32,7 +33,6 @@ from scheduler.message import (
 )
 from scheduler.prioritization import linear_priority_function
 from scheduler.threading.job import Job
-from scheduler.util import str_cutoff
 
 
 class Scheduler(BaseScheduler):

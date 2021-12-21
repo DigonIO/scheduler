@@ -1,5 +1,5 @@
 """
-Collection of mostly date and time related utility functions.
+Collection of datetime and trigger related utility functions.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
@@ -218,56 +218,3 @@ def are_weekday_times_unique(
         for day in weekday_list
     }
     return len(collection) == len(weekday_list)
-
-
-def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
-    """
-    Abbreviate a string to a given length.
-
-    The resulting string will carry an indicator if it's abbreviated,
-    like ``stri#``.
-
-    Parameters
-    ----------
-    string : str
-        String which is to be cut.
-    max_length : int
-        Max resulting string length.
-    cut_tail : bool
-        ``False`` for string abbreviation from the front, else ``True``.
-
-    Returns
-    -------
-    str
-        Resulting string
-    """
-    if max_length < 1:
-        raise ValueError("max_length < 1 not allowed")
-
-    if len(string) > max_length:
-        pos = max_length - 1
-        return string[:pos] + "#" if cut_tail else "#" + string[-pos:]
-
-    return string
-
-
-def prettify_timedelta(timedelta: dt.timedelta) -> str:
-    """
-    Humanize timedelta string readibility for negative values.
-
-    Parameters
-    ----------
-    timedelta : datetime.timedelta
-        datetime instance
-
-    Returns
-    -------
-    str
-        Human readable string representation rounded to seconds
-    """
-    seconds = timedelta.total_seconds()
-    if seconds < 0:
-        res = f"-{-timedelta}"
-    else:
-        res = str(timedelta)
-    return res.split(",")[0].split(".")[0]

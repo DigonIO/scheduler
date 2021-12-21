@@ -131,7 +131,28 @@ class JobTimer:
         return self.__next_exec - dt_stamp
 
 
-@staticmethod
+def prettify_timedelta(timedelta: dt.timedelta) -> str:
+    """
+    Humanize timedelta string readibility for negative values.
+
+    Parameters
+    ----------
+    timedelta : datetime.timedelta
+        datetime instance
+
+    Returns
+    -------
+    str
+        Human readable string representation rounded to seconds
+    """
+    seconds = timedelta.total_seconds()
+    if seconds < 0:
+        res = f"-{-timedelta}"
+    else:
+        res = str(timedelta)
+    return res.split(",")[0].split(".")[0]
+
+
 def get_pending_timer(timers: list[JobTimer]) -> JobTimer:
     """Get the the timer with the largest overdue time."""
     unsorted_timer_datetimes: dict[JobTimer, dt.datetime] = {}
@@ -144,7 +165,6 @@ def get_pending_timer(timers: list[JobTimer]) -> JobTimer:
     return sorted_timers[0]
 
 
-@staticmethod
 def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
     """
     Determine if the `JobType` is fulfilled by the type of the specified `timing`.
@@ -168,7 +188,6 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
         raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
 
-@staticmethod
 def standardize_timing_format(
     job_type: JobType, timing: TimingJobUnion
 ) -> TimingJobUnion:
@@ -185,7 +204,6 @@ def standardize_timing_format(
     return timing
 
 
-@staticmethod
 def check_timing_tzinfo(
     job_type: JobType,
     timing: TimingJobUnion,
@@ -202,7 +220,6 @@ def check_timing_tzinfo(
                 raise SchedulerError(TZ_ERROR_MSG)
 
 
-@staticmethod
 def check_duplicate_effective_timings(
     job_type: JobType,
     timing: TimingJobUnion,
@@ -221,7 +238,6 @@ def check_duplicate_effective_timings(
             raise SchedulerError(DUPLICATE_EFFECTIVE_TIME)
 
 
-@staticmethod
 def set_start_check_stop_tzinfo(
     start: Optional[dt.datetime],
     stop: Optional[dt.datetime],
