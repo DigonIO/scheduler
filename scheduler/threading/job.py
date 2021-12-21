@@ -1,5 +1,5 @@
 """
-Implementation of a `Job` as callback function represention.
+Implementation of job for the `threading` scheduler.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """

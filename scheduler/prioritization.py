@@ -3,6 +3,8 @@ Collection of prioritization functions.
 
 For compatibility with the |Scheduler|, the prioritization
 functions have to be of type ``Callable[[float, Job, int, int], float]``.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 
 import random

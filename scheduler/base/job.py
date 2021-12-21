@@ -1,3 +1,9 @@
+"""
+Implementation of a `BaseJob`.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
+"""
+
 from __future__ import annotations
 
 import datetime as dt

@@ -1,8 +1,9 @@
 """
-Scheduler implementation for job based callback function execution.
+Implementation of a `threading` compatible in-process scheduler.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
+
 import datetime as dt
 import queue
 import threading

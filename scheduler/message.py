@@ -1,3 +1,9 @@
+"""
+Information and error messages.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
+"""
+
 DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
 
 CYCLIC_TYPE_ERROR_MSG = (

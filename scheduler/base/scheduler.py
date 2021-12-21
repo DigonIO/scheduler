@@ -1,3 +1,9 @@
+"""
+Implementation of a `BaseScheduler`.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
+"""
+
 import datetime as dt
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional

@@ -1,3 +1,12 @@
+"""
+Defines the typing for all trigger objects.
+
+Combines custom trigger objects like Weekday with the python in build
+types for the datetime library.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
+"""
+
 import datetime as dt
 from typing import Union
 

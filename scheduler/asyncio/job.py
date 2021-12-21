@@ -1,3 +1,9 @@
+"""
+Implementation of job for the `asyncio` scheduler.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
+"""
+
 from __future__ import annotations
 
 import asyncio as aio

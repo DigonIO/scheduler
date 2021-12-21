@@ -1,3 +1,9 @@
+"""
+Basic definitions for a abstract `BaseJob` and `BaseScheduler`.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
+"""
+
 import datetime as dt
 from enum import Enum, auto
 
@@ -18,7 +24,7 @@ from scheduler.message import (
 
 
 class JobType(Enum):
-    """Indicate the `JobType` of a |Job|."""
+    """Indicate the `JobType` of a |BaseJob|."""
 
     CYCLIC = auto()
     MINUTELY = auto()

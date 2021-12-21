@@ -1,3 +1,10 @@
+"""
+Implementation of essential functions and components for a `BaseJob`.
+
+Author: Jendrik A. Potyka, Fabian A. Preiss
+"""
+
+
 def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
     """
     Abbreviate a string to a given length.
