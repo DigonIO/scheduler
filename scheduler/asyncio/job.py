@@ -6,12 +6,6 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 from __future__ import annotations
 
-import asyncio as aio
-import datetime as dt
-from typing import Any, Callable, Optional, Union, cast
-
-import typeguard as tg
-
 from scheduler.base.job import BaseJob
 
 
@@ -59,7 +53,11 @@ class AsyncJob(BaseJob):
         Instance of a scheduled |AsyncJob|.
     """
 
+    # pylint: disable=no-member invalid-name
+
     async def _exec(self):
         coroutine = self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)
         await coroutine
         self._BaseJob__attempts += 1
+
+    # pylint: enable=no-member invalid-name

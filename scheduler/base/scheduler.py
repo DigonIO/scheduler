@@ -4,7 +4,6 @@ Implementation of a `BaseScheduler`.
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 
-import datetime as dt
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional
 
@@ -45,7 +44,15 @@ def select_jobs_by_tag(
     return {job for job in jobs if tags <= job.tags}
 
 
-class BaseScheduler(ABC):
+class BaseScheduler(
+    ABC
+):  # NOTE maybe a typing Protocol class is better than an ABC class
+    """
+    Interface definition of an abstract scheduler.
+
+    Author: Jendrik A. Potyka, Fabian A. Preiss
+    """
+
     @abstractmethod
     def delete_job(self, job: BaseJob) -> None:
         """Delete a |BaseJob| from the `BaseScheduler`."""
@@ -56,7 +63,7 @@ class BaseScheduler(ABC):
         tags: Optional[set[str]] = None,
         any_tag: bool = False,
     ) -> int:
-        """Delete a set of |BaseJob|\ s from the `BaseScheduler` by tags."""
+        r"""Delete a set of |BaseJob|\ s from the `BaseScheduler` by tags."""
 
     @abstractmethod
     def get_jobs(
@@ -64,12 +71,12 @@ class BaseScheduler(ABC):
         tags: Optional[set[str]] = None,
         any_tag: bool = False,
     ) -> set[BaseJob]:
-        """Get a set of |BaseJob|\ s from the `BaseScheduler` by tags."""
+        r"""Get a set of |BaseJob|\ s from the `BaseScheduler` by tags."""
 
     @property
     @abstractmethod
     def jobs(self) -> set[BaseJob]:
-        """Get the set of all |BaseJob|\ s."""
+        r"""Get the set of all |BaseJob|\ s."""
 
     @abstractmethod
     def cyclic(
@@ -108,7 +115,7 @@ class BaseScheduler(ABC):
         handle: Callable[..., None],
         *,
         args: tuple[Any] = None,
-        kwargs: Optional[dict[str, Any]] = None,  # TODO check collision with **kwargs
+        kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
     ) -> BaseJob:
         """Schedule a oneshot |BaseJob|."""

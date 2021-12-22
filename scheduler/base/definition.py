@@ -7,8 +7,6 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 from enum import Enum, auto
 
-import scheduler.trigger as trigger
-import scheduler.util as util
 from scheduler.base.timingtype import (
     _TimingCyclicList,
     _TimingDailyList,
@@ -20,6 +18,20 @@ from scheduler.message import (
     HOURLY_TYPE_ERROR_MSG,
     MINUTELY_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
+)
+from scheduler.trigger import (
+    Friday,
+    Monday,
+    Saturday,
+    Sunday,
+    Thursday,
+    Tuesday,
+    Wednesday,
+)
+from scheduler.util import (
+    next_daily_occurrence,
+    next_hourly_occurrence,
+    next_minutely_occurrence,
 )
 
 
@@ -36,13 +48,13 @@ class JobType(Enum):
 JOB_TYPE_MAPPING = {
     dt.timedelta: JobType.CYCLIC,
     dt.time: JobType.DAILY,
-    trigger.Monday: JobType.WEEKLY,
-    trigger.Tuesday: JobType.WEEKLY,
-    trigger.Wednesday: JobType.WEEKLY,
-    trigger.Thursday: JobType.WEEKLY,
-    trigger.Friday: JobType.WEEKLY,
-    trigger.Saturday: JobType.WEEKLY,
-    trigger.Sunday: JobType.WEEKLY,
+    Monday: JobType.WEEKLY,
+    Tuesday: JobType.WEEKLY,
+    Wednesday: JobType.WEEKLY,
+    Thursday: JobType.WEEKLY,
+    Friday: JobType.WEEKLY,
+    Saturday: JobType.WEEKLY,
+    Sunday: JobType.WEEKLY,
 }
 
 JOB_TIMING_TYPE_MAPPING = {
@@ -69,7 +81,7 @@ JOB_TIMING_TYPE_MAPPING = {
 }
 
 JOB_NEXT_DAYLIKE_MAPPING = {
-    JobType.MINUTELY: util.next_minutely_occurrence,
-    JobType.HOURLY: util.next_hourly_occurrence,
-    JobType.DAILY: util.next_daily_occurrence,
+    JobType.MINUTELY: next_minutely_occurrence,
+    JobType.HOURLY: next_hourly_occurrence,
+    JobType.DAILY: next_daily_occurrence,
 }

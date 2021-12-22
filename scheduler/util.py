@@ -9,7 +9,6 @@ import datetime as dt
 from typing import Optional
 
 from scheduler.error import SchedulerError
-from scheduler.message import TZ_ERROR_MSG
 from scheduler.trigger.core import Weekday
 
 

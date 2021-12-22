@@ -7,7 +7,6 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 from __future__ import annotations
 
 import datetime as dt
-from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional, cast
 
 from scheduler.base.definition import JobType
@@ -23,7 +22,7 @@ from scheduler.base.job_util import (
 from scheduler.base.timingtype import TimingJobUnion
 
 
-class BaseJob(ABC):
+class BaseJob:
     """Abstract definition basic interface for a job class."""
 
     __type: JobType
@@ -106,10 +105,6 @@ class BaseJob(ABC):
             self.timedelta(dt_stamp).total_seconds()
             < other.timedelta(dt_stamp).total_seconds()
         )
-
-    @abstractmethod
-    def _exec(self) -> None:
-        ...
 
     def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
         """

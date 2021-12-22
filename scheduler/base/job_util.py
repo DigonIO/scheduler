@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import datetime as dt
 import threading
-from typing import Any, Optional, Union, cast
+from typing import Optional, cast
 
 import typeguard as tg
 

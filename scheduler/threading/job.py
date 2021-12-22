@@ -6,9 +6,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import datetime as dt
 import threading
-from typing import Any, Callable, Optional, Union, cast
-
-import typeguard as tg
+from typing import Any, Callable, Optional, Union
 
 from scheduler.base.definition import JobType
 from scheduler.base.job import BaseJob
@@ -119,11 +117,15 @@ class Job(BaseJob):
         self.__lock = threading.RLock()
         self.__weight = weight
 
+    # pylint: disable=no-member invalid-name
+
     def _exec(self) -> None:
         """Execute the callback function."""
         with self.__lock:
             self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)
             self._BaseJob__attempts += 1
+
+    # pylint: enable=no-member invalid-name
 
     def __repr__(self) -> str:
         with self.__lock:

@@ -210,7 +210,7 @@ class Scheduler(BaseScheduler):
             except queue.Empty:
                 running = False
             else:
-                job._exec()
+                job._exec()  # pylint: disable=protected-access
                 que.task_done()
 
     def __exec_jobs(self, jobs: list[Job], ref_dt: dt.datetime) -> int:
@@ -218,7 +218,7 @@ class Scheduler(BaseScheduler):
 
         if self.__n_threads == 1:
             for job in jobs:
-                job._exec()
+                job._exec()  # pylint: disable=protected-access
 
         else:
             que: queue.Queue[Job] = queue.Queue()
@@ -237,7 +237,7 @@ class Scheduler(BaseScheduler):
                 worker.join()
 
         for job in jobs:
-            job._calc_next_exec(ref_dt)
+            job._calc_next_exec(ref_dt)  # pylint: disable=protected-access
             if not job.has_attempts_remaining:
                 self.delete_job(job)
 

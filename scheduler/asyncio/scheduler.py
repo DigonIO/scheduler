@@ -14,7 +14,6 @@ import typeguard as tg
 
 from scheduler.asyncio.job import AsyncJob
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
-from scheduler.base.job import BaseJob
 from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag
 from scheduler.base.timingtype import (
     TimingCyclic,
@@ -34,11 +33,30 @@ from scheduler.message import (
 )
 
 
-class AsyncScheduler:
+class AsyncScheduler(BaseScheduler):
+    r"""
+    Implementation of an asyncio scheduler.
+
+    This implementation enables the planning of |AsyncJob|\ s depending on time
+    cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
+
+    Notes
+    -----
+    Due to the support of `datetime` objects, the |AsyncScheduler| is able to work
+    with timezones.
+
+    Parameters
+    ----------
+    loop : asyncio.selector_events.BaseSelectorEventLoop
+        Set a AsyncIO event loop, default is the global event loop
+    tzinfo : datetime.tzinfo
+        Set the timezone of the |Scheduler|.
+    """
+
     def __init__(
         self,
         *,
-        loop: aio.unix_events._UnixSelectorEventLoop = None,  # TODO verify typing
+        loop: Optional[aio.selector_events.BaseSelectorEventLoop] = None,
         tzinfo: Optional[dt.tzinfo] = None,
     ):
         self.__loop = loop if loop else aio.get_event_loop()
@@ -54,13 +72,13 @@ class AsyncScheduler:
                 sleep_seconds: float = job.timedelta().total_seconds()
                 await aio.sleep(sleep_seconds)
 
-                await job._exec()
+                await job._exec()  # pylint: disable=protected-access
 
                 reference_dt = dt.datetime.now(tz=self.__tzinfo)
-                job._calc_next_exec(reference_dt)
+                job._calc_next_exec(reference_dt)  # pylint: disable=protected-access
 
         except aio.CancelledError:
-            pass  # NOTE will be called if the job will be deleted by the public library API
+            pass
 
         else:
             self.delete_job(job)
