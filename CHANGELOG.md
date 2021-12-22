@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.3
+
+### Bugfixes
+
++ Fix the missing lock acquiring in the `JobTimer` described as bug in the [issue #10](https://gitlab.com/DigonIO/scheduler/-/issues/10).
+
+### Misc
+
++ Fix the version of `mistune` in the `requirement.txt` to prevent pipeline failure  (`m2r2` dependency, not fixed there).
+
 ## 0.6.2
 
 ### API changes
