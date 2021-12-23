@@ -259,6 +259,18 @@ class BaseJob:
         return self.__skip_missing
 
     @property
+    def alias(self) -> Optional[dt.tzinfo]:
+        r"""
+        Get the alias of the `Job`.
+
+        Returns
+        -------
+        Optional[str]
+            Alias of the |BaseJob|.
+        """
+        return self.__alias
+
+    @property
     def tzinfo(self) -> Optional[dt.tzinfo]:
         r"""
         Get the timezone of the `Job`'s next execution.

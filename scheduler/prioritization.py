@@ -12,7 +12,6 @@ import random
 from scheduler.threading.job import Job
 
 
-@staticmethod
 def constant_weight_prioritization(
     time_delta: float, job: Job, max_exec: int, job_count: int
 ) -> float:  # pragma: no cover
@@ -52,7 +51,6 @@ def constant_weight_prioritization(
     return job.weight
 
 
-@staticmethod
 def linear_priority_function(
     time_delta: float, job: Job, max_exec: int, job_count: int
 ) -> float:

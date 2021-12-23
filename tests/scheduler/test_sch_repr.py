@@ -16,12 +16,12 @@ patch_samples = [T_2021_5_26__3_55] * 7
 patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11
 
 sch_repr = (
-    "scheduler.Scheduler(0, None, <function Prioritization.linear_priority_function at 0x",
+    "scheduler.Scheduler(0, None, <function linear_priority_function at 0x",
     ">, jobs={",
     "})",
 )
 sch_repr_utc = (
-    "scheduler.Scheduler(0, datetime.timezone.utc, <function Prioritization.linear_priority_function at 0x",
+    "scheduler.Scheduler(0, datetime.timezone.utc, <function linear_priority_function at 0x",
     ">, jobs={",
     "})",
 )

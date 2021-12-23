@@ -136,7 +136,7 @@ class JobTimer:
 
 def prettify_timedelta(timedelta: dt.timedelta) -> str:
     """
-    Humanize timedelta string readibility for negative values.
+    Humanize timedelta string readability for negative values.
 
     Parameters
     ----------

@@ -134,18 +134,18 @@ class Job(BaseJob):
                     (
                         repr(elem)
                         for elem in (
-                            self.__type,
-                            self.__timing,
-                            self.__handle,
-                            self.__args,
-                            self.__kwargs,
-                            self.__max_attempts,
+                            self.type,
+                            self._BaseJob__timing,  # pylint: disable=invalid-name
+                            self.handle,
+                            self.args,
+                            self.kwargs,
+                            self.max_attempts,
                             self.__weight,
-                            self.__delay,
-                            self.__start,
-                            self.__stop,
-                            self.__skip_missing,
-                            self.__alias,
+                            self.delay,
+                            self.start,
+                            self.stop,
+                            self.skip_missing,
+                            self.alias,
                             self.tzinfo,
                         )
                     )
@@ -169,16 +169,16 @@ class Job(BaseJob):
     ]:
         """Return the objects relevant for readable string representation."""
         with self.__lock:
-            dt_timedelta = self.timedelta(dt.datetime.now(self.__tzinfo))
-            if self.__alias is not None:
+            dt_timedelta = self.timedelta(dt.datetime.now(self.tzinfo))
+            if self.alias is not None:
                 f_args = ""
             elif hasattr(self.handle, "__code__"):
                 f_args = "(..)" if self.handle.__code__.co_nlocals else "()"
             else:
                 f_args = "(?)"
             return (
-                self.__type.name if self.max_attempts != 1 else "ONCE",
-                self.handle.__qualname__ if self.__alias is None else self.__alias,
+                self.type.name if self.max_attempts != 1 else "ONCE",
+                self.handle.__qualname__ if self.alias is None else self.alias,
                 f_args,
                 self.datetime,
                 str(self.datetime)[:19],
