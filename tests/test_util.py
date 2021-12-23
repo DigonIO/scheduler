@@ -3,15 +3,15 @@ import datetime as dt
 import pytest
 
 import scheduler.trigger as trigger
+from scheduler.error import SchedulerError
 from scheduler.util import (
-    SchedulerError,
     days_to_weekday,
     next_daily_occurrence,
     next_hourly_occurrence,
     next_minutely_occurrence,
     next_weekday_time_occurrence,
-    str_cutoff,
 )
+from scheduler.base.scheduler_util import str_cutoff
 
 err_msg = "Weekday enumeration interval: [0,6] <=> [Monday, Sunday]"
 

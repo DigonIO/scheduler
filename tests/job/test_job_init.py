@@ -5,7 +5,8 @@ from helpers import _TZ_ERROR_MSG, START_STOP_ERROR, TZ_ERROR_MSG, utc
 
 import scheduler.trigger as trigger
 from scheduler import SchedulerError
-from scheduler.job import Job, JobType
+from scheduler.base.definition import JobType
+from scheduler.threading.job import Job
 
 
 @pytest.mark.parametrize(

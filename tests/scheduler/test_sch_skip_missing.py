@@ -4,8 +4,9 @@ import pdb
 import pytest
 from helpers import sample_seconds_interference_lag, samples_days
 
-from scheduler import Scheduler
-from scheduler.job import Job, JobType
+from scheduler.threading.scheduler import Scheduler
+from scheduler.base.definition import JobType
+from scheduler.threading.job import Job
 
 
 @pytest.mark.parametrize(

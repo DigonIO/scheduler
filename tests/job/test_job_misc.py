@@ -12,7 +12,8 @@ from helpers import (
 )
 
 import scheduler.trigger as trigger
-from scheduler.job import Job, JobType
+from scheduler.base.definition import JobType
+from scheduler.threading.job import Job
 
 
 def test_misc_properties():

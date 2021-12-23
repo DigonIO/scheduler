@@ -6,7 +6,7 @@ import pytest
 from helpers import foo
 
 from scheduler import Scheduler, SchedulerError
-from scheduler.util import Weekday
+from scheduler.trigger.core import Weekday
 
 
 def wrap_sleep(secs: float):

@@ -5,8 +5,8 @@ import pytest
 from helpers import foo
 
 from scheduler import Scheduler, SchedulerError
-from scheduler.job import Job, JobType
-from scheduler.util import AbstractJob, Weekday
+from scheduler.base.definition import JobType
+from scheduler.threading.job import Job
 
 
 @pytest.mark.parametrize(
