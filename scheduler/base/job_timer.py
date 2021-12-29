@@ -66,9 +66,7 @@ class JobTimer:
             if self.__job_type == JobType.WEEKLY:
                 self.__timing = cast(Weekday, self.__timing)
                 if self.__timing.time.tzinfo:
-                    self.__next_exec = self.__next_exec.astimezone(
-                        self.__timing.time.tzinfo
-                    )
+                    self.__next_exec = self.__next_exec.astimezone(self.__timing.time.tzinfo)
                 self.__next_exec = next_weekday_time_occurrence(
                     self.__next_exec, self.__timing, self.__timing.time
                 )

@@ -84,18 +84,14 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
         raise SchedulerError(JOB_TIMING_TYPE_MAPPING[job_type]["err"]) from err
 
 
-def standardize_timing_format(
-    job_type: JobType, timing: TimingJobUnion
-) -> TimingJobUnion:
+def standardize_timing_format(job_type: JobType, timing: TimingJobUnion) -> TimingJobUnion:
     r"""
     Return timings in standarized form.
 
     Clears irrelevant time positionals for `JobType.MINUTELY` and `JobType.HOURLY`.
     """
     if job_type is JobType.MINUTELY:
-        timing = [
-            time.replace(hour=0, minute=0) for time in cast(list[dt.time], timing)
-        ]
+        timing = [time.replace(hour=0, minute=0) for time in cast(list[dt.time], timing)]
     elif job_type is JobType.HOURLY:
         timing = [time.replace(hour=0) for time in cast(list[dt.time], timing)]
     return timing

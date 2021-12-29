@@ -170,60 +170,40 @@ class AsyncScheduler(BaseScheduler):
 
         return len(jobs_to_delete)
 
-    def cyclic(
-        self, timing: TimingCyclic, handle: Callable[..., None], **kwargs
-    ) -> AsyncJob:
+    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> AsyncJob:
         try:
             tg.check_type("timing", timing, TimingCyclic)
         except TypeError as err:
             raise SchedulerError(CYCLIC_TYPE_ERROR_MSG) from err
-        return self.__schedule(
-            job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs
-        )
+        return self.__schedule(job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs)
 
-    def minutely(
-        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
-    ) -> AsyncJob:
+    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> AsyncJob:
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(MINUTELY_TYPE_ERROR_MSG) from err
-        return self.__schedule(
-            job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs
-        )
+        return self.__schedule(job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs)
 
-    def hourly(
-        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
-    ) -> AsyncJob:
+    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> AsyncJob:
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(HOURLY_TYPE_ERROR_MSG) from err
-        return self.__schedule(
-            job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs
-        )
+        return self.__schedule(job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs)
 
-    def daily(
-        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
-    ) -> AsyncJob:
+    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> AsyncJob:
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
             raise SchedulerError(DAILY_TYPE_ERROR_MSG) from err
-        return self.__schedule(
-            job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs
-        )
+        return self.__schedule(job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs)
 
-    def weekly(
-        self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs
-    ) -> AsyncJob:
+    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> AsyncJob:
         try:
             tg.check_type("timing", timing, TimingWeeklyUnion)
         except TypeError as err:
             raise SchedulerError(WEEKLY_TYPE_ERROR_MSG) from err
-        return self.__schedule(
-            job_type=JobType.WEEKLY, timing=timing, handle=handle, **kwargs
-        )
+        return self.__schedule(job_type=JobType.WEEKLY, timing=timing, handle=handle, **kwargs)
 
     def once(
         self,

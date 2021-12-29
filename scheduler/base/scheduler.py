@@ -44,9 +44,7 @@ def select_jobs_by_tag(
     return {job for job in jobs if tags <= job.tags}
 
 
-class BaseScheduler(
-    ABC
-):  # NOTE maybe a typing Protocol class is better than an ABC class
+class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than an ABC class
     """
     Interface definition of an abstract scheduler.
 
@@ -79,33 +77,23 @@ class BaseScheduler(
         r"""Get the set of all |BaseJob|\ s."""
 
     @abstractmethod
-    def cyclic(
-        self, timing: TimingCyclic, handle: Callable[..., None], **kwargs
-    ) -> BaseJob:
+    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> BaseJob:
         """Schedule a cyclic |BaseJob|."""
 
     @abstractmethod
-    def minutely(
-        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
-    ) -> BaseJob:
+    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> BaseJob:
         """Schedule a minutely |BaseJob|."""
 
     @abstractmethod
-    def hourly(
-        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
-    ) -> BaseJob:
+    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> BaseJob:
         """Schedule an hourly |BaseJob|."""
 
     @abstractmethod
-    def daily(
-        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
-    ) -> BaseJob:
+    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> BaseJob:
         """Schedule a daily |BaseJob|."""
 
     @abstractmethod
-    def weekly(
-        self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs
-    ) -> BaseJob:
+    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> BaseJob:
         """Schedule a weekly |BaseJob|."""
 
     @abstractmethod

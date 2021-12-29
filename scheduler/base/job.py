@@ -70,7 +70,7 @@ class BaseJob:
         self.__start = set_start_check_stop_tzinfo(start, stop, tzinfo)
 
         self.__type = job_type
-        self.__timing = timing
+        self.__timing = timing  # pylint: disable=unused-private-member
         # NOTE: https://github.com/python/mypy/issues/708
         #       https://github.com/python/mypy/issues/2427
         self.__handle = handle  # type: ignore
@@ -90,9 +90,7 @@ class BaseJob:
         self.__attempts = 0
 
         # create JobTimers
-        self.__timers = [
-            JobTimer(job_type, tim, self.__start, skip_missing) for tim in timing
-        ]
+        self.__timers = [JobTimer(job_type, tim, self.__start, skip_missing) for tim in timing]
         self.__pending_timer = get_pending_timer(self.__timers)
 
         if self.__stop is not None:
@@ -101,10 +99,7 @@ class BaseJob:
 
     def __lt__(self, other: BaseJob):
         dt_stamp = dt.datetime.now(self.__tzinfo)
-        return (
-            self.timedelta(dt_stamp).total_seconds()
-            < other.timedelta(dt_stamp).total_seconds()
-        )
+        return self.timedelta(dt_stamp).total_seconds() < other.timedelta(dt_stamp).total_seconds()
 
     def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
         """

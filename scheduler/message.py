@@ -6,9 +6,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
 
-CYCLIC_TYPE_ERROR_MSG = (
-    "Wrong input for Cyclic! Expected input type:\n" + "datetime.timedelta"
-)
+CYCLIC_TYPE_ERROR_MSG = "Wrong input for Cyclic! Expected input type:\n" + "datetime.timedelta"
 _DAILY_TYPE_ERROR_MSG = (
     "Wrong input for {0}! Select one of the following input types:\n"
     + "datetime.time | list[datetime.time]"

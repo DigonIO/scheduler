@@ -30,6 +30,4 @@ TimingWeeklyUnion = Union[_TimingWeekly, _TimingWeeklyList]  # Scheduler
 TimingJobTimerUnion = Union[TimingCyclic, _TimingDaily, _TimingWeekly]  # JobTimer
 TimingJobUnion = Union[_TimingCyclicList, _TimingDailyList, _TimingWeeklyList]  # Job
 
-TimingOnceUnion = Union[
-    dt.datetime, TimingCyclic, _TimingWeekly, _TimingDaily
-]  # Scheduler.once
+TimingOnceUnion = Union[dt.datetime, TimingCyclic, _TimingWeekly, _TimingDaily]  # Scheduler.once

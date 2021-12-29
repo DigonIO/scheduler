@@ -135,7 +135,7 @@ class Job(BaseJob):
                         repr(elem)
                         for elem in (
                             self.type,
-                            self._BaseJob__timing,  # pylint: disable=invalid-name
+                            self._BaseJob__timing,  # pylint: disable=no-member
                             self.handle,
                             self.args,
                             self.kwargs,
@@ -191,9 +191,7 @@ class Job(BaseJob):
             )
 
     def __str__(self) -> str:
-        return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}, w={10:.3f}".format(
-            *self._str()
-        )
+        return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}, w={10:.3f}".format(*self._str())
 
     @property
     def weight(self) -> float:

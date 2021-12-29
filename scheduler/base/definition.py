@@ -7,11 +7,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 from enum import Enum, auto
 
-from scheduler.base.timingtype import (
-    _TimingCyclicList,
-    _TimingDailyList,
-    _TimingWeeklyList,
-)
+from scheduler.base.timingtype import _TimingCyclicList, _TimingDailyList, _TimingWeeklyList
 from scheduler.message import (
     CYCLIC_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
@@ -19,20 +15,8 @@ from scheduler.message import (
     MINUTELY_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
 )
-from scheduler.trigger import (
-    Friday,
-    Monday,
-    Saturday,
-    Sunday,
-    Thursday,
-    Tuesday,
-    Wednesday,
-)
-from scheduler.util import (
-    next_daily_occurrence,
-    next_hourly_occurrence,
-    next_minutely_occurrence,
-)
+from scheduler.trigger import Friday, Monday, Saturday, Sunday, Thursday, Tuesday, Wednesday
+from scheduler.util import next_daily_occurrence, next_hourly_occurrence, next_minutely_occurrence
 
 
 class JobType(Enum):

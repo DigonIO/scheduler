@@ -192,9 +192,7 @@ def are_times_unique(
     return len(collection) == len(timelist)
 
 
-def are_weekday_times_unique(
-    weekday_list: list[Weekday], tzinfo: Optional[dt.tzinfo]
-) -> bool:
+def are_weekday_times_unique(weekday_list: list[Weekday], tzinfo: Optional[dt.tzinfo]) -> bool:
     """
     Check if list contains distinct weekday times.
 

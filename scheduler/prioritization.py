@@ -51,9 +51,7 @@ def constant_weight_prioritization(
     return job.weight
 
 
-def linear_priority_function(
-    time_delta: float, job: Job, max_exec: int, job_count: int
-) -> float:
+def linear_priority_function(time_delta: float, job: Job, max_exec: int, job_count: int) -> float:
     r"""
     Compute the |Job|\ s default linear priority.
 
