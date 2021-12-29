@@ -1,0 +1,20 @@
+[tool.black]
+line-length = 100
+target-version = ['py39']
+
+[tool.isort]
+py_version = 39
+
+[tool.pydocstyle]
+convention = "numpy"
+add-ignore = ["D105"]
+
+[tool.mypy]
+python_version = 3.9
+warn_return_any = true
+warn_unused_configs = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+
+[tool.pytest]
+addopts = "-ra -vv"
