@@ -10,8 +10,8 @@ import datetime as dt
 from typing import Any, Callable, Optional, cast
 
 from scheduler.base.definition import JobType
+from scheduler.base.job_timer import JobTimer
 from scheduler.base.job_util import (
-    JobTimer,
     check_duplicate_effective_timings,
     check_timing_tzinfo,
     get_pending_timer,
