@@ -10,7 +10,7 @@ from typing import Any, Callable, Optional, Union
 
 from scheduler.base.definition import JobType
 from scheduler.base.job import BaseJob
-from scheduler.base.job_util import JobTimer, prettify_timedelta
+from scheduler.base.job_timer import JobTimer
 from scheduler.base.timingtype import TimingJobUnion
 
 
@@ -169,26 +169,7 @@ class Job(BaseJob):
     ]:
         """Return the objects relevant for readable string representation."""
         with self.__lock:
-            dt_timedelta = self.timedelta(dt.datetime.now(self.tzinfo))
-            if self.alias is not None:
-                f_args = ""
-            elif hasattr(self.handle, "__code__"):
-                f_args = "(..)" if self.handle.__code__.co_nlocals else "()"
-            else:
-                f_args = "(?)"
-            return (
-                self.type.name if self.max_attempts != 1 else "ONCE",
-                self.handle.__qualname__ if self.alias is None else self.alias,
-                f_args,
-                self.datetime,
-                str(self.datetime)[:19],
-                self.datetime.tzname(),
-                dt_timedelta,
-                prettify_timedelta(dt_timedelta),
-                self.attempts,
-                float("inf") if self.max_attempts == 0 else self.max_attempts,
-                self.weight,
-            )
+            return super()._str() + (self.__weight,)
 
     def __str__(self) -> str:
         return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}, w={10:.3f}".format(*self._str())

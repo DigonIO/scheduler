@@ -7,7 +7,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 from __future__ import annotations
 
 import datetime as dt
-from typing import Any, Callable, Optional, cast
+from typing import Any, Callable, Optional, Union, cast
 
 from scheduler.base.definition import JobType
 from scheduler.base.job_timer import JobTimer
@@ -15,6 +15,7 @@ from scheduler.base.job_util import (
     check_duplicate_effective_timings,
     check_timing_tzinfo,
     get_pending_timer,
+    prettify_timedelta,
     sane_timing_types,
     set_start_check_stop_tzinfo,
     standardize_timing_format,
@@ -120,6 +121,44 @@ class BaseJob:
         self.__pending_timer = get_pending_timer(self.__timers)
         if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
             self.__mark_delete = True
+
+    def _str(
+        self,
+    ) -> tuple[
+        str,
+        str,
+        str,
+        dt.datetime,
+        str,
+        Optional[str],
+        dt.timedelta,
+        str,
+        int,
+        Union[float, int],
+    ]:
+        """Return the objects relevant for readable string representation."""
+        dt_timedelta = self.timedelta(dt.datetime.now(self.tzinfo))
+        if self.alias is not None:
+            f_args = ""
+        elif hasattr(self.handle, "__code__"):
+            f_args = "(..)" if self.handle.__code__.co_nlocals else "()"
+        else:
+            f_args = "(?)"
+        return (
+            self.type.name if self.max_attempts != 1 else "ONCE",
+            self.handle.__qualname__ if self.alias is None else self.alias,
+            f_args,
+            self.datetime,
+            str(self.datetime)[:19],
+            self.datetime.tzname(),
+            dt_timedelta,
+            prettify_timedelta(dt_timedelta),
+            self.attempts,
+            float("inf") if self.max_attempts == 0 else self.max_attempts,
+        )
+
+    def __str__(self) -> str:
+        return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}".format(*self._str())
 
     @property
     def type(self) -> JobType:

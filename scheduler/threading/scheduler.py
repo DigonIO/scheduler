@@ -553,7 +553,7 @@ class Scheduler(BaseScheduler):
             raise SchedulerError(WEEKLY_TYPE_ERROR_MSG) from err
         return self.__schedule(job_type=JobType.WEEKLY, timing=timing, handle=handle, **kwargs)
 
-    def once(
+    def once(  # pylint: disable=arguments-differ
         self,
         timing: TimingOnceUnion,
         handle: Callable[..., None],

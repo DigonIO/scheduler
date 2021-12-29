@@ -16,7 +16,7 @@ def constant_weight_prioritization(
     time_delta: float, job: Job, max_exec: int, job_count: int
 ) -> float:  # pragma: no cover
     r"""
-    Interprete the `Job`'s weight as its priority.
+    Interprets the `Job`'s weight as its priority.
 
     Return the |Job|'s weight for overdue
     |Job|\ s, otherwise return zero:
@@ -98,7 +98,7 @@ def random_priority_function(
     time: float, job: Job, max_exec: int, job_count: int
 ) -> float:  # pragma: no cover
     """
-    Generate random priority values from weigths.
+    Generate random priority values from weights.
 
     .. warning:: Not suitable for security relevant purposes.
 
