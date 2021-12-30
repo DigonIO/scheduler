@@ -122,6 +122,31 @@ class BaseJob:
         if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
             self.__mark_delete = True
 
+    def _repr(self) -> tuple[str]:
+        return tuple(
+            [
+                repr(elem)
+                for elem in (
+                    self.__type,
+                    self.__timing,
+                    self.__handle,
+                    self.__args,
+                    self.__kwargs,
+                    self.__max_attempts,
+                    self.__delay,
+                    self.__start,
+                    self.__stop,
+                    self.__skip_missing,
+                    self.__alias,
+                    self.tzinfo,
+                )
+            ]
+        )
+
+    def __repr__(self) -> str:
+        params: tuple[str] = self._repr()
+        return f"scheduler.base.job.BaseJob({', '.join(params)})"
+
     def _str(
         self,
     ) -> tuple[

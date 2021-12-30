@@ -129,28 +129,9 @@ class Job(BaseJob):
 
     def __repr__(self) -> str:
         with self.__lock:
-            return "scheduler.Job({})".format(
-                ", ".join(
-                    (
-                        repr(elem)
-                        for elem in (
-                            self.type,
-                            self._BaseJob__timing,  # pylint: disable=no-member
-                            self.handle,
-                            self.args,
-                            self.kwargs,
-                            self.max_attempts,
-                            self.__weight,
-                            self.delay,
-                            self.start,
-                            self.stop,
-                            self.skip_missing,
-                            self.alias,
-                            self.tzinfo,
-                        )
-                    )
-                )
-            )
+            params: tuple[str] = self._repr()
+            params_sum: str = ", ".join(params[:6] + (repr(self.__weight),) + params[6:])
+            return f"scheduler.Job({params_sum})"
 
     def _str(
         self,
