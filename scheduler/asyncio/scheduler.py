@@ -135,8 +135,8 @@ class AsyncScheduler(BaseScheduler):
         bool
             True if deleted
         """
-        task = self.__jobs.pop(job)
-        _ = task.cancel()  # has to be true, because pop should raise
+        task: aio.Task = self.__jobs.pop(job)
+        _: bool = task.cancel()  # has to be true, because pop should raise
 
     def delete_jobs(
         self,
