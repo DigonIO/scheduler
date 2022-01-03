@@ -83,6 +83,35 @@ class AsyncScheduler(BaseScheduler):
         else:
             self.delete_job(job)
 
+    def get_jobs(
+        self,
+        tags: Optional[set[str]] = None,
+        any_tag: bool = False,
+    ) -> set[AsyncJob]:
+        r"""
+        Get a set of |AsyncJob|\ s from the |AsyncScheduler| by tags.
+
+        If no tags or an empty set of tags are given defaults to returning
+        all |AsyncJob|\ s.
+
+        Parameters
+        ----------
+        tags : set[str]
+            Tags to filter scheduled |AsyncJob|\ s.
+            If no tags are given all |AsyncJob|\ s are returned.
+        any_tag : bool
+            False: To match a |AsyncJob| all tags have to match.
+            True: To match a |AsyncJob| at least one tag has to match.
+
+        Returns
+        -------
+        set[AsyncJob]
+            Currently scheduled |AsyncJob|\ s.
+        """
+        if tags is None or tags == {}:
+            return self.jobs
+        return select_jobs_by_tag(self.jobs, tags, any_tag)
+
     @property
     def jobs(self) -> set[AsyncJob]:
         r"""
@@ -90,7 +119,7 @@ class AsyncScheduler(BaseScheduler):
 
         Returns
         -------
-        set[Job]
+        set[AsyncJob]
             Currently scheduled |AsyncJob|\ s.
         """
         return set(self.__jobs.keys())
