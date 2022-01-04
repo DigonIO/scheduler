@@ -6,11 +6,11 @@ Examples
     :caption: Table of Contents
 
     pages/examples/quick_start
+    pages/examples/asyncio
+    pages/examples/threading
+    pages/examples/timezones
     pages/examples/parameters
     pages/examples/tags
-    pages/examples/threading
-    pages/examples/asyncio
-    pages/examples/timezones
     pages/examples/job_batching
     pages/examples/job_deletion
     pages/examples/weights
