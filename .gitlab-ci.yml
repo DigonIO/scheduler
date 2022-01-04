@@ -59,6 +59,18 @@ pydoctest_3_9_5:
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
+pytest_3_10_1:
+  stage: testing
+  image: "python:3.10.1"
+  script:
+    - pytest --cov=scheduler/ tests/
+
+pydoctest_3_10_1:
+  stage: testing
+  image: "python:3.10.1"
+  script:
+    - pytest --doctest-modules doc/pages/*/*.rst
+
 #### release ####
 pypi:
   image: python:3.9.5
