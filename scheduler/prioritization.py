@@ -93,7 +93,6 @@ def linear_priority_function(time_delta: float, job: Job, max_exec: int, job_cou
     return (time_delta + 1) * job.weight
 
 
-@staticmethod
 def random_priority_function(
     time: float, job: Job, max_exec: int, job_count: int
 ) -> float:  # pragma: no cover

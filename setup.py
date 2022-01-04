@@ -25,8 +25,9 @@ setup(
     license="LGPLv3",
     packages=[
         "scheduler",
-        "scheduler.threading"
-        "scheduler.asyncio"
+        "scheduler.base",
+        "scheduler.threading",
+        "scheduler.asyncio",
         "scheduler.trigger",
     ],
     keywords="scheduler schedule asyncio threading datetime date time timedelta timezone timing",

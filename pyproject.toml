@@ -15,6 +15,3 @@ warn_return_any = true
 warn_unused_configs = true
 disallow_any_generics = true
 disallow_subclassing_any = true
-
-[tool.pytest]
-addopts = "-ra -vv"

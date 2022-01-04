@@ -26,8 +26,7 @@ counts and automate Jobs.</p>
 [(Quick Start)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/quick_start.html)
 * `Asyncio` scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/asyncio.html)
 * `Threading` scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
-* Timezone compatibility
-    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/parameters.html)
+* Timezone compatibility [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/parameters.html)
 * Passing of parameters
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/timezones.html)
 * `Job` prioritization
