@@ -7,6 +7,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 from __future__ import annotations
 
 import datetime as dt
+from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional, Union, cast
 
 from scheduler.base.definition import JobType
@@ -23,7 +24,7 @@ from scheduler.base.job_util import (
 from scheduler.base.timingtype import TimingJobUnion
 
 
-class BaseJob:
+class BaseJob(ABC):
     """Abstract definition basic interface for a job class."""
 
     __type: JobType
@@ -143,7 +144,9 @@ class BaseJob:
             ]
         )
 
+    @abstractmethod
     def __repr__(self) -> str:
+        # Implementation example
         params: tuple[str] = self._repr()
         return f"scheduler.base.job.BaseJob({', '.join(params)})"
 
@@ -182,7 +185,9 @@ class BaseJob:
             float("inf") if self.max_attempts == 0 else self.max_attempts,
         )
 
+    @abstractmethod
     def __str__(self) -> str:
+        # Implementation example
         return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}".format(*self._str())
 
     @property

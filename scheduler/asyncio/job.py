@@ -61,3 +61,10 @@ class AsyncJob(BaseJob):
         self._BaseJob__attempts += 1
 
     # pylint: enable=no-member invalid-name
+
+    def __repr__(self) -> str:
+        params: tuple[str] = self._repr()
+        return f"scheduler.asyncio.job.AsyncJob({', '.join(params)})"
+
+    def __str__(self) -> str:
+        return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}".format(*self._str())

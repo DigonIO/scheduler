@@ -9,6 +9,7 @@ Examples
     pages/examples/parameters
     pages/examples/tags
     pages/examples/threading
+    pages/examples/asyncio
     pages/examples/timezones
     pages/examples/job_batching
     pages/examples/job_deletion

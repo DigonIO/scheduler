@@ -7,7 +7,10 @@ When to use `scheduler`?
    in what you are doing.
 
    Integrating the python standard `datetime` library allows for simple yet powerful scheduling
-   options including recurring and oneshot |Job|\ s and timezone support while being lightweight.
+   options including recurring and oneshot jobs and timezone support while being lightweight.
+
+   Parallel execution is integrated for `asyncio <https://docs.python.org/3/library/asyncio.html>`_
+   and `threading <https://docs.python.org/3/library/threading.html>`_.
 
 When to look for other solutions?
    As the development for `scheduler` started fairly recently, the userbase is still small. While
@@ -15,13 +18,12 @@ When to look for other solutions?
    With additional features still under development, there is no guarantee for
    future releases not to break current APIs.
 
-   Currently `scheduler` is purely implemented as an in-process `scheduler` and does not run standalone
-   or with a command line interface.
+   Currently `scheduler` is purely implemented as an in-process scheduler and does not
+   standalone or with a command line interface.
 
-   As of now there is neither support for asynchronous tasks nor threading. Backends for |Job|
-   storing have to be implemented by the user.
+   Backends for job storing have to be implemented by the user.
 
-   When you rely on accurate timings within a few microseconds.
+   When you rely on accurate timings below milliseconds.
 
 Implementation details
 ----------------------

@@ -63,8 +63,7 @@ class AsyncScheduler(BaseScheduler):
         self.__tzinfo = tzinfo
         self.__tz_str = dt.datetime.now(tzinfo).tzname()
 
-        self.__jobs: dict[AsyncJob, aio.Task] = dict()
-        self.__update_jobs = aio.Event()
+        self.__jobs: dict[AsyncJob, aio.Task] = {}
 
     async def __supervise_job(self, job: AsyncJob) -> None:
         try:
