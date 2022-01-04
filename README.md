@@ -1,8 +1,9 @@
 <p align="center">
   <a href="https://gitlab.com/DigonIO/scheduler"><img alt="scheduler" src="https://gitlab.com/DigonIO/scheduler/-/raw/master/doc/_assets/logo_name.svg" width="60%"></a>
 </p>
-<p>A simple in-process python scheduler library with timezone and threading support. Schedule tasks by their
-time cycles, fixed times, weekdays, dates, weights, offsets and execution counts and automate Jobs.</p>
+<p>A simple in-process python scheduler library with asyncio, threading and timezone support.
+Schedule tasks by their time cycles, fixed times, weekdays, dates, weights, offsets and execution
+counts and automate Jobs.</p>
 
 [![repository](https://img.shields.io/badge/src-GitLab-orange)](https://gitlab.com/DigonIO/scheduler)
 [![mirror](https://img.shields.io/badge/mirror-GitHub-orange)](https://github.com/DigonIO/scheduler)
@@ -23,14 +24,12 @@ time cycles, fixed times, weekdays, dates, weights, offsets and execution counts
 
 * Easy and user friendly in-process `Job` scheduling
 [(Quick Start)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/quick_start.html)
-  * Create recurring `Job`s by given date, time, datetime, weekday, ...
-  * Create recurring `Job`s with a given timedelta
-  * Oneshot `Job`s
-  * Passing of parameters to `Job`
-    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/parameters.html)
+* `Asyncio` scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/asyncio.html)
+* `Threading` scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
 * Timezone compatibility
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/parameters.html)
+* Passing of parameters
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/timezones.html)
-* Parallel `Job` execution with `threading` [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
 * `Job` prioritization
   * Default linear prioritization
     [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/weights.html)
