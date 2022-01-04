@@ -7,11 +7,11 @@ We previously discussed the default |Job| prioritization behaviour
 in the :ref:`examples.weights` example.
 
 By default the priority in |Scheduler| is computed using the
-:func:`~scheduler.util.linear_priority_function`, where :math:`\mathtt{time\_delta}` is
+:func:`~scheduler.prioritization.linear_priority_function`, where :math:`\mathtt{time\_delta}` is
 defined as the difference between the current time (:math:`\mathtt{now}`) and the
 planned execution time (:math:`\mathtt{next\_exec}`) with
 :math:`\mathtt{time\_delta}=\mathtt{now}-\mathtt{next\_exec}`.
-The default :func:`~scheduler.util.linear_priority_function` implements the prioritization
+The default :func:`~scheduler.prioritization.linear_priority_function` implements the prioritization
 using the following formula:
 
 .. math::
@@ -21,7 +21,7 @@ using the following formula:
     \end{cases}
 
 .. note:: By default |Job|\ s with a priority value smaller or
-    equal to zero are not executed by the :meth:`~scheduler.core.Scheduler.exec_jobs`
+    equal to zero are not executed by the :meth:`~scheduler.threading.scheduler.Scheduler.exec_jobs`
     method of the |Scheduler|.
 
 Some applications require customized prioritization models (e.g. with quadratic or exponential
@@ -29,13 +29,13 @@ behaviour). Each |Scheduler| instance supports a custom implementation
 of the prioritization function.
 
 .. note:: The custom prioritization functions implemented in this guide are directly
-    available from :class:`~scheduler.util.Prioritization`.
+    available from :class:`~scheduler.prioritization`.
 
 Constant Weight Prioritization
 ------------------------------
 
 In this example we are going to implement a priority function without the time linear behaviour
-of the default :func:`~scheduler.util.linear_priority_function` with:
+of the default :func:`~scheduler.prioritization.linear_priority_function` with:
 
 .. math::
     \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
@@ -45,14 +45,14 @@ of the default :func:`~scheduler.util.linear_priority_function` with:
 
 The |Scheduler| expects a prioritization function of the signature
 ``Callable[[float, Job, int, int], float]``. The custom prioritization function is
-available in :mod:`~scheduler.util` as :meth:`~scheduler.util.Prioritization.constant_weight_prioritization`.
+available in :mod:`~scheduler.prioritization` as :meth:`~scheduler.prioritization.constant_weight_prioritization`.
 
 .. code-block:: python
 
     import scheduler
 
     def constant_weight_prioritization(
-        time_delta: float, job: scheduler.util.AbstractJob, max_exec: int, job_count: int
+        time_delta: float, job: scheduler.threading.job.Job, max_exec: int, job_count: int
     ) -> float:
         """Interprete the Job's weight as its priority"""
         _ = max_exec
@@ -67,10 +67,10 @@ Instantiate the |Scheduler| with the custom priority function.
 
     >>> import datetime as dt
     >>> from scheduler import Scheduler
-    >>> from scheduler.util import Prioritization as Prio
+    >>> import scheduler.prioritization as sp
 
     >>> now = dt.datetime.now()
-    >>> schedule = Scheduler(max_exec=3, priority_function=Prio.constant_weight_prioritization)
+    >>> schedule = Scheduler(max_exec=3, priority_function=sp.constant_weight_prioritization)
 
 Schedule some |Job|\ s at different points in the past with distinct weights:
 
@@ -133,7 +133,7 @@ Uniform Random Prioritization
 This example demonstrates, how the priority function can be used to implement behaviours
 resembling more of a load balancer than a classical scheduler.
 
-The following function implementation interpretes the `weight` of a |Job|
+The following function implementation interprets the `weight` of a |Job|
 as a probability for it's execution using the `uniformly distributed`_ random number
 generator `random.random()`. With `random.random()` generating values in the interval
 ``[0,1)``, the |Job|'s `weight`\ s of ``0``, ``0.3`` and ``1``
@@ -145,7 +145,7 @@ would be interpreted as a probabilities of ``0%``, ``30%`` and ``100%``.
 The |Scheduler| expects a prioritization function of the signature
 ``Callable[[float, Job, int, int], float]``. The custom prioritization function is
 available in :mod:`~scheduler.util` as
-:meth:`~scheduler.util.Prioritization.random_priority_function`.
+:meth:`~scheduler.prioritization.random_priority_function`.
 
 .. code-block:: python
 
@@ -153,7 +153,7 @@ available in :mod:`~scheduler.util` as
     import scheduler
 
     def random_priority_function(
-        time: float, job: scheduler.util.AbstractJob, max_exec: int, job_count: int
+        time: float, job: scheduler.threading.job.Job, max_exec: int, job_count: int
     ) -> float:
         """
         Generate random priority values from weigths.
@@ -177,9 +177,9 @@ some generic |Job|\ s with probabilities from ``0%`` to ``100%``:
 
     >>> import datetime as dt
     >>> from scheduler import Scheduler
-    >>> from scheduler.util import Prioritization as Prio
+    >>> import scheduler.prioritization as sp
 
-    >>> schedule = Scheduler(priority_function=Prio.random_priority_function)
+    >>> schedule = Scheduler(priority_function=sp.random_priority_function)
 
     >>> jobs = {}
     >>> for percentage in range(0,101,10):
