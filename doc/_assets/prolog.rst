@@ -2,11 +2,19 @@
 
    <br />
 
-.. |Job| replace:: :py:class:`~scheduler.job.Job`
+.. |BaseJob| replace:: :py:class:`~scheduler.base.job.BaseJob`
 
-.. |Scheduler| replace:: :py:class:`~scheduler.core.Scheduler`
+.. |BaseScheduler| replace:: :py:class:`~scheduler.base.scheduler.BaseScheduler`
 
-.. |JobTimer| replace:: :py:class:`~scheduler.job.JobTimer`
+.. |Job| replace:: :py:class:`~scheduler.threading.job.Job`
+
+.. |Scheduler| replace:: :py:class:`~scheduler.thraeding.scheduler.Scheduler`
+
+.. |AsyncJob| replace:: :py:class:`~scheduler.asyncio.job.AsyncJob`
+
+.. |AsyncScheduler| replace:: :py:class:`~scheduler.asyncio.scheduler.AsyncScheduler`
+
+.. |JobTimer| replace:: :py:class:`~scheduler.base.job_timer.JobTimer`
 
 .. |Weekday| replace:: :py:class:`~scheduler.trigger.core.Weekday`
 

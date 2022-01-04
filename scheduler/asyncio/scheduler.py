@@ -131,7 +131,7 @@ class AsyncScheduler(BaseScheduler):
         handle: Callable[..., None],
         **kwargs,
     ) -> AsyncJob:
-        """Encapsulate the `AsyncJob` and add the `AioScheduler`'s timezone."""
+        """Encapsulate the `AsyncJob` and add the `AsyncScheduler`'s timezone."""
         if not isinstance(timing, list):
             timing_list = cast(TimingJobUnion, [timing])
         else:
@@ -173,7 +173,7 @@ class AsyncScheduler(BaseScheduler):
         any_tag: bool = False,
     ) -> int:
         r"""
-        Delete a set of |AsyncJob|\ s from the |AioScheduler| by tags.
+        Delete a set of |AsyncJob|\ s from the |AsyncScheduler| by tags.
 
         If no tags or an empty set of tags are given defaults to the deletion
         of all |AsyncJob|\ s.

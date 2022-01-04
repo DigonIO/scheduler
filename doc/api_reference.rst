@@ -8,7 +8,10 @@ API Reference
     :template: custom-module-template.rst
     :recursive:
 
-    core
-    job
-    util
+    base
+    threading
+    asyncio
     trigger
+    error
+    prioritization
+    util
