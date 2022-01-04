@@ -77,7 +77,7 @@ class AsyncScheduler(BaseScheduler):
                 reference_dt = dt.datetime.now(tz=self.__tzinfo)
                 job._calc_next_exec(reference_dt)  # pylint: disable=protected-access
 
-        except aio.CancelledError:
+        except aio.CancelledError:  # NOTE asyncio does not trigger this exception in pytest, why?
             pass
 
         else:
