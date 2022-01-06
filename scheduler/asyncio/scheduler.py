@@ -83,6 +83,19 @@ class AsyncScheduler(BaseScheduler):
         else:
             self.delete_job(job)
 
+    def __repr__(self) -> str:
+        return "scheduler.asyncio.scheduler.AsyncScheduler({0}, jobs={{{1}}})".format(
+            ", ".join(
+                (
+                    repr(elem)
+                    for elem in (
+                        self.__tzinfo,
+                    )
+                )
+            ),
+            ", ".join([repr(job) for job in sorted(self.jobs)]),
+        )
+
     def __headings(self) -> list[str]:
         headings = [
             f"tzinfo={self.__tz_str}",
