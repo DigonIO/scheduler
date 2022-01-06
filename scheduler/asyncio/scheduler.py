@@ -15,6 +15,7 @@ import typeguard as tg
 from scheduler.asyncio.job import AsyncJob
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag
+from scheduler.base.scheduler_util import str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
@@ -81,6 +82,54 @@ class AsyncScheduler(BaseScheduler):
 
         else:
             self.delete_job(job)
+
+    def __headings(self) -> list[str]:
+        headings = [
+            f"tzinfo={self.__tz_str}",
+            f"#jobs={len(self.__jobs)}",
+        ]
+        return headings
+
+    def __str__(self) -> str:
+        # Scheduler meta heading
+        scheduler_headings = "{0}, {1}\n\n".format(*self.__headings())
+
+        # Job table (we join two of the Job._repr() fields into one)
+        # columns
+        c_align = ("<", "<", "<", "<", ">", ">")
+        c_width = (8, 16, 19, 12, 9, 13)
+        c_name = (
+            "type",
+            "function / alias",
+            "due at",
+            "tzinfo",
+            "due in",
+            "attempts",
+        )
+        form = [
+            f"{{{idx}:{align}{width}}}"
+            for idx, (align, width) in enumerate(zip(c_align, c_width))
+        ]
+        if self.__tz_str is None:
+            form = form[:3] + form[4:]
+
+        fstring = " ".join(form) + "\n"
+        job_table = fstring.format(*c_name)
+        job_table += fstring.format(*("-" * width for width in c_width))
+        for job in sorted(self.jobs):
+            row = job._str()
+            entries = (
+                row[0],
+                str_cutoff(row[1] + row[2], c_width[1], False),
+                row[4],
+                str_cutoff(row[5] or "", c_width[3], False),
+                str_cutoff(row[7], c_width[4], True),
+                str_cutoff(f"{row[8]}/{row[9]}", c_width[5], True),
+            )
+            job_table += fstring.format(*entries)
+
+        return scheduler_headings + job_table
+
 
     def get_jobs(
         self,
