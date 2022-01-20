@@ -48,18 +48,31 @@ time cycles, fixed times, weekdays, dates, weights, offsets and execution counts
 
 ## Installation
 
-`scheduler` can be installed using pip with the following command:
+### pip
+
+`scheduler` can be installed directly from the PyPI repositories with:
 
 ```bash
 pip install scheduler
 ```
 
-Alternatively clone the [repository](https://gitlab.com/DigonIO/scheduler) and install with:
+Alternatively install `scheduler` from the `git`
+[repository](https://gitlab.com/DigonIO/scheduler) with:
 
 ```bash
 git clone https://gitlab.com/DigonIO/scheduler.git
 cd scheduler
 pip install .
+```
+
+### Arch Linux
+
+The `PKGBUILD` file can be utilized from the
+[Arch Build System](https://wiki.archlinux.org/title/Arch_Build_System).
+Download the `PKGBUILD` file and from within the containing folder run
+
+```console
+makepkg -i
 ```
 
 ## Example: *How to schedule Jobs*
