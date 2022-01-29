@@ -28,6 +28,7 @@ setup(
         "scheduler",
         "scheduler.trigger",
     ],
+    package_data={"scheduler": ["py.typed"]},
     keywords="scheduler schedule datetime date time timedelta timezone timing",
     install_requires=[
         "typeguard>=2.6.0",
