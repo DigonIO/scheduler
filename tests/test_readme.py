@@ -54,7 +54,6 @@ def test_general_readme():
     <BLANKLINE>
     type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
-    ...
     ONCE     foo()            ... 00:45:00  ...           0/1      1...
     <BLANKLINE>
 
