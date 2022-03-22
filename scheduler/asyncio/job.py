@@ -9,9 +9,9 @@ from __future__ import annotations
 from scheduler.base.job import BaseJob
 
 
-class AsyncJob(BaseJob):
+class Job(BaseJob):
     r"""
-    |AsyncJob| class bundling time and callback function methods.
+    |Job| class bundling time and callback function methods.
 
     Parameters
     ----------
@@ -22,35 +22,35 @@ class AsyncJob(BaseJob):
     handle : Callable[..., None]
         Handle to a callback function.
     args : tuple[Any]
-        Positional argument payload for the function handle within a |AsyncJob|.
+        Positional argument payload for the function handle within a |Job|.
     kwargs : Optional[dict[str, Any]]
-        Keyword arguments payload for the function handle within a |AsyncJob|.
+        Keyword arguments payload for the function handle within a |Job|.
     tags : Optional[set[str]]
-        The tags of the |AsyncJob|.
+        The tags of the |Job|.
     delay : Optional[bool]
         If ``True`` wait with the execution for the next scheduled time.
     start : Optional[datetime.datetime]
-        Set the reference `datetime.datetime` stamp the |AsyncJob|
+        Set the reference `datetime.datetime` stamp the |Job|
         will be scheduled against. Default value is `datetime.datetime.now()`.
     stop : Optional[datetime.datetime]
-        Define a point in time after which a |AsyncJob| will be stopped
+        Define a point in time after which a |Job| will be stopped
         and deleted.
     max_attempts : Optional[int]
-        Number of times the |AsyncJob| will be executed where ``0 <=> inf``.
-        A |AsyncJob| with no free attempt will be deleted.
+        Number of times the |Job| will be executed where ``0 <=> inf``.
+        A |Job| with no free attempt will be deleted.
     skip_missing : Optional[bool]
-        If ``True`` a |AsyncJob| will only schedule it's newest planned
+        If ``True`` a |Job| will only schedule it's newest planned
         execution and drop older ones.
     alias : Optional[str]
         Overwrites the function handle name in the string representation.
     tzinfo : Optional[datetime.tzinfo]
-        Set the timezone of the |Scheduler| the |AsyncJob|
+        Set the timezone of the |Scheduler| the |Job|
         is scheduled in.
 
     Returns
     -------
-    AsyncJob
-        Instance of a scheduled |AsyncJob|.
+    Job
+        Instance of a scheduled |Job|.
     """
 
     # pylint: disable=no-member invalid-name
@@ -64,7 +64,7 @@ class AsyncJob(BaseJob):
 
     def __repr__(self) -> str:
         params: tuple[str] = self._repr()
-        return f"scheduler.asyncio.job.AsyncJob({', '.join(params)})"
+        return f"scheduler.asyncio.job.Job({', '.join(params)})"
 
     def __str__(self) -> str:
         return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}".format(*self._str())

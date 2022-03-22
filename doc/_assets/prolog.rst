@@ -10,7 +10,7 @@
 
 .. |Scheduler| replace:: :py:class:`~scheduler.thraeding.scheduler.Scheduler`
 
-.. |AsyncJob| replace:: :py:class:`~scheduler.asyncio.job.AsyncJob`
+.. |Job| replace:: :py:class:`~scheduler.asyncio.job.Job`
 
 .. |Scheduler| replace:: :py:class:`~scheduler.asyncio.scheduler.Scheduler`
 

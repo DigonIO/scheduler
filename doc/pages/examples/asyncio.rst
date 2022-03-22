@@ -22,7 +22,7 @@ The following example shows, how to use the |Scheduler| with a simple coroutine.
 
     >>> delta = dt.timedelta(minutes=10)
     >>> schedule.cyclic(delta, foo)
-    scheduler.asyncio.job.AsyncJob(...CYCLIC...datetime.timedelta(seconds=600)...foo...0,...)
+    scheduler.asyncio.job.Job(...CYCLIC...datetime.timedelta(seconds=600)...foo...0,...)
 
 If a customized event loop is required, the second example can be taken into account.
 
@@ -40,4 +40,4 @@ If a customized event loop is required, the second example can be taken into acc
 
     >>> delta = dt.timedelta(minutes=10)
     >>> schedule.cyclic(delta, foo)
-    scheduler.asyncio.job.AsyncJob(...CYCLIC...datetime.timedelta(seconds=600)...foo...0,...)
+    scheduler.asyncio.job.Job(...CYCLIC...datetime.timedelta(seconds=600)...foo...0,...)

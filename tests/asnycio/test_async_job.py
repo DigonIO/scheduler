@@ -6,7 +6,7 @@ import pytest
 from helpers import job_args, job_args_utc, T_2021_5_26__3_55, T_2021_5_26__3_55_UTC
 
 from scheduler.base.definition import JobType
-from scheduler.asyncio.scheduler import AsyncJob
+from scheduler.asyncio.scheduler import Job
 
 async_job_args = copy.deepcopy(job_args)
 for ele in async_job_args:
@@ -22,7 +22,7 @@ async def foo():
 
 @pytest.mark.asyncio
 async def test_async_job():
-    job = AsyncJob(
+    job = Job(
         JobType.CYCLIC,
         [dt.timedelta(seconds=0.01)],
         foo,
@@ -40,25 +40,25 @@ async def test_async_job():
 
 job_reprs = (
     [
-        "scheduler.asyncio.job.AsyncJob(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
+        "scheduler.asyncio.job.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
         ">, (), {}, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None, None)",
     ],
     [
-        "scheduler.asyncio.job.AsyncJob(<JobType.MINUTELY: 2>, [datetime.time(0, 0, 20)], <function bar at 0x",
+        "scheduler.asyncio.job.Job(<JobType.MINUTELY: 2>, [datetime.time(0, 0, 20)], <function bar at 0x",
         (
             ">, (), {'msg': 'foobar'}, 20, False, datetime.datetime(2021, 5, 26, 3, 54, 15),"
             " datetime.datetime(2021, 5, 26, 4, 5), False, None, None)"
         ),
     ],
     [
-        "scheduler.asyncio.job.AsyncJob(<JobType.DAILY: 4>, [datetime.time(7, 5)], <function foo at 0x",
+        "scheduler.asyncio.job.Job(<JobType.DAILY: 4>, [datetime.time(7, 5)], <function foo at 0x",
         ">, (), {}, 7, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None, None)",
     ],
 )
 
 job_reprs_utc = (
     [
-        "scheduler.asyncio.job.AsyncJob(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
+        "scheduler.asyncio.job.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
         (
             ">, (), {}, 0, False, datetime.datetime(2021, 5, 26, 3, 54, 59, 999990"
             ", tzinfo=datetime.timezone.utc), None, True, None, datetime.timezone.utc)"
@@ -66,7 +66,7 @@ job_reprs_utc = (
     ],
     [
         (
-            "scheduler.asyncio.job.AsyncJob(<JobType.HOURLY: 3>, [datetime.time(0, 5, tzinfo=datetime.timezone.utc)],"
+            "scheduler.asyncio.job.Job(<JobType.HOURLY: 3>, [datetime.time(0, 5, tzinfo=datetime.timezone.utc)],"
             " <built-in function print>, (), {}, 0, False, datetime.datetime(2021, 5, 26, 3, 55,"
             " tzinfo=datetime.timezone.utc), datetime.datetime(2021, 5, 26, 23, 55, "
             "tzinfo=datetime.timezone.utc), False, None, datetime.timezone.utc)"
@@ -74,7 +74,7 @@ job_reprs_utc = (
     ],
     [
         (
-            "scheduler.asyncio.job.AsyncJob(<JobType.WEEKLY: 5>, [Monday(time=datetime.time(0, 0, "
+            "scheduler.asyncio.job.Job(<JobType.WEEKLY: 5>, [Monday(time=datetime.time(0, 0, "
             "tzinfo=datetime.timezone.utc))], <function bar at 0x"
         ),
         (
@@ -84,7 +84,7 @@ job_reprs_utc = (
     ],
     [
         (
-            "scheduler.asyncio.job.AsyncJob(<JobType.WEEKLY: 5>, [Wednesday(time=datetime.time(0, 0, "
+            "scheduler.asyncio.job.Job(<JobType.WEEKLY: 5>, [Wednesday(time=datetime.time(0, 0, "
             "tzinfo=datetime.timezone.utc)), Tuesday(time=datetime.time(23, 45, 59, "
             "tzinfo=datetime.timezone.utc))], <built-in function print>"
             ", (), {'end': 'FOO\\n'}, 1, True, "
@@ -104,7 +104,7 @@ def test_async_job_repr(
     job_kwargs,
     result,
 ):
-    rep = repr(AsyncJob(**job_kwargs))
+    rep = repr(Job(**job_kwargs))
     for substring in result:
         assert substring in rep
         rep = rep.replace(substring, "", 1)
@@ -144,4 +144,4 @@ def test_job_str(
     results,
 ):
     for kwargs, result in zip(job_kwargs, results):
-        assert result == str(AsyncJob(**kwargs))
+        assert result == str(Job(**kwargs))
