@@ -11,7 +11,7 @@ from helpers import (
     WEEKLY_TYPE_ERROR_MSG,
 )
 
-from scheduler.asyncio.scheduler import AsyncScheduler
+from scheduler.asyncio.scheduler import Scheduler
 from scheduler.error import SchedulerError
 from scheduler.trigger import Monday
 
@@ -21,12 +21,12 @@ async def foo():
 
 
 def test_async_scheduler_init(event_loop):
-    _ = AsyncScheduler(loop=event_loop)
+    _ = Scheduler(loop=event_loop)
 
 
 @pytest.mark.asyncio
 async def test_async_scheduler_exec(event_loop):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     job = sch.cyclic(dt.timedelta(seconds=0.01), foo, max_attempts=3)
 
     assert len(sch.jobs) == 1
@@ -44,7 +44,7 @@ async def test_async_scheduler_exec(event_loop):
 
 @pytest.mark.asyncio
 async def test_delete_jobs(event_loop):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     job0 = sch.cyclic(dt.timedelta(seconds=1), foo)
     job1 = sch.cyclic(dt.timedelta(seconds=1), foo)
 
@@ -63,7 +63,7 @@ async def test_delete_jobs(event_loop):
     ],
 )
 async def test_delete_jobs_with_tags(event_loop, tags, any_tag, length):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     job0 = sch.cyclic(dt.timedelta(seconds=1), foo, tags={"foo"})
     job1 = sch.cyclic(dt.timedelta(seconds=1), foo, tags={"bar"})
 
@@ -84,7 +84,7 @@ async def test_delete_jobs_with_tags(event_loop, tags, any_tag, length):
     ],
 )
 async def test_get_jobs_with_tags(event_loop, tags, any_tag, length):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     job0 = sch.cyclic(dt.timedelta(seconds=1), foo, tags={"foo"})
     job1 = sch.cyclic(dt.timedelta(seconds=1), foo, tags={"bar"})
 
@@ -94,7 +94,7 @@ async def test_get_jobs_with_tags(event_loop, tags, any_tag, length):
 
 @pytest.mark.asyncio
 async def test_async_list_timing(event_loop):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     job0 = sch.minutely([dt.time(second=30), dt.time(second=45)], foo)
 
 
@@ -107,7 +107,7 @@ async def test_async_list_timing(event_loop):
     ],
 )
 async def test_async_cyclic(event_loop, timing, err_msg):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError) as msg:
             job0 = sch.cyclic(timing, foo)
@@ -125,7 +125,7 @@ async def test_async_cyclic(event_loop, timing, err_msg):
     ],
 )
 async def test_async_minutely(event_loop, timing, err_msg):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError) as msg:
             job0 = sch.minutely(timing, foo)
@@ -143,7 +143,7 @@ async def test_async_minutely(event_loop, timing, err_msg):
     ],
 )
 async def test_async_hourly(event_loop, timing, err_msg):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError) as msg:
             job0 = sch.hourly(timing, foo)
@@ -161,7 +161,7 @@ async def test_async_hourly(event_loop, timing, err_msg):
     ],
 )
 async def test_async_daily(event_loop, timing, err_msg):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError) as msg:
             job0 = sch.daily(timing, foo)
@@ -179,7 +179,7 @@ async def test_async_daily(event_loop, timing, err_msg):
     ],
 )
 async def test_async_weekly(event_loop, timing, err_msg):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError) as msg:
             job0 = sch.weekly(timing, foo)
@@ -197,7 +197,7 @@ async def test_async_weekly(event_loop, timing, err_msg):
     ],
 )
 async def test_async_once(event_loop, timing, err_msg):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError) as msg:
             job0 = sch.once(timing, foo)
@@ -208,5 +208,5 @@ async def test_async_once(event_loop, timing, err_msg):
 
 @pytest.mark.asyncio
 async def test_async_once_datetime(event_loop):
-    sch = AsyncScheduler(loop=event_loop)
+    sch = Scheduler(loop=event_loop)
     job0 = sch.once(dt.datetime.now(), foo)

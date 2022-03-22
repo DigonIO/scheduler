@@ -2,23 +2,23 @@ Asyncio
 =======
 
 To use `asyncio <https://docs.python.org/3/library/asyncio.html>`_ with the `scheduler` library,
-replace the |Scheduler| with the |AsyncScheduler|.
+replace the |Scheduler| with the |Scheduler|.
 Both schedulers provide nearly the same API and can be exchanged without major adjustments.
-The main difference is, that the |AsyncScheduler| works without prioritization and weighting.
+The main difference is, that the |Scheduler| works without prioritization and weighting.
 
-The following example shows, how to use the |AsyncScheduler| with a simple coroutine.
+The following example shows, how to use the |Scheduler| with a simple coroutine.
 
 .. note:: An ``asyncio`` import is not required.
 
 .. code-block:: pycon
 
     >>> import datetime as dt
-    >>> from scheduler.asyncio import AsyncScheduler
+    >>> from scheduler.asyncio import Scheduler
 
     >>> async def foo():
     ...     print("bar")
 
-    >>> schedule = AsyncScheduler()
+    >>> schedule = Scheduler()
 
     >>> delta = dt.timedelta(minutes=10)
     >>> schedule.cyclic(delta, foo)
@@ -30,13 +30,13 @@ If a customized event loop is required, the second example can be taken into acc
 
     >>> import asyncio
     >>> import datetime as dt
-    >>> from scheduler.asyncio import AsyncScheduler
+    >>> from scheduler.asyncio import Scheduler
 
     >>> async def foo():
     ...     print("bar")
 
     >>> loop = asyncio.get_event_loop()
-    >>> schedule = AsyncScheduler(loop=loop)
+    >>> schedule = Scheduler(loop=loop)
 
     >>> delta = dt.timedelta(minutes=10)
     >>> schedule.cyclic(delta, foo)

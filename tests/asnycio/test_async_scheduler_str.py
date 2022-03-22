@@ -9,7 +9,7 @@ from helpers import (
     utc,
 )
 
-from scheduler.asyncio.scheduler import AsyncScheduler
+from scheduler.asyncio.scheduler import Scheduler
 from scheduler.asyncio.job import AsyncJob
 
 patch_samples = [T_2021_5_26__3_55] * 7
@@ -55,7 +55,7 @@ table_utc = (
 )
 def test_async_scheduler_str(patch_datetime_now, job_kwargs, tzinfo, res):
     jobs = [AsyncJob(**kwargs) for kwargs in job_kwargs]
-    sch = AsyncScheduler(tzinfo=tzinfo)
+    sch = Scheduler(tzinfo=tzinfo)
     for job in jobs:
-        sch._AsyncScheduler__jobs[job] = None
+        sch._Scheduler__jobs[job] = None
     assert str(sch) == res

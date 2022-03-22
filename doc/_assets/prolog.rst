@@ -12,7 +12,7 @@
 
 .. |AsyncJob| replace:: :py:class:`~scheduler.asyncio.job.AsyncJob`
 
-.. |AsyncScheduler| replace:: :py:class:`~scheduler.asyncio.scheduler.AsyncScheduler`
+.. |Scheduler| replace:: :py:class:`~scheduler.asyncio.scheduler.Scheduler`
 
 .. |JobTimer| replace:: :py:class:`~scheduler.base.job_timer.JobTimer`
 

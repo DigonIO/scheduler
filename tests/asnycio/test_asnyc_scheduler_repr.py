@@ -9,7 +9,7 @@ from helpers import (
     utc,
 )
 
-from scheduler.asyncio.scheduler import AsyncScheduler
+from scheduler.asyncio.scheduler import Scheduler
 from scheduler.asyncio.job import AsyncJob
 
 patch_samples = [T_2021_5_26__3_55] * 7
@@ -24,11 +24,11 @@ for ele in async_job_args_utc:
     ele.pop("weight")
 
 async_sch_repr = (
-    "scheduler.asyncio.scheduler.AsyncScheduler(None, jobs={",
+    "scheduler.asyncio.scheduler.Scheduler(None, jobs={",
     "})",
 )
 async_sch_repr_utc = (
-    "scheduler.asyncio.scheduler.AsyncScheduler(datetime.timezone.utc, jobs={",
+    "scheduler.asyncio.scheduler.Scheduler(datetime.timezone.utc, jobs={",
     "})",
 )
 
@@ -99,9 +99,9 @@ async_job_reprs_utc = (
 )
 def test_async_scheduler_repr(patch_datetime_now, job_kwargs, tzinfo, j_results, s_results):
     jobs = [AsyncJob(**kwargs) for kwargs in job_kwargs]
-    sch = AsyncScheduler(tzinfo=tzinfo)
+    sch = Scheduler(tzinfo=tzinfo)
     for job in jobs:
-        sch._AsyncScheduler__jobs[job] = None
+        sch._Scheduler__jobs[job] = None
     rep = repr(sch)
     n_j_addr = 0  # number of address strings in jobs
     for j_result in j_results:

@@ -34,7 +34,7 @@ from scheduler.message import (
 )
 
 
-class AsyncScheduler(BaseScheduler):
+class Scheduler(BaseScheduler):
     r"""
     Implementation of an asyncio scheduler.
 
@@ -43,7 +43,7 @@ class AsyncScheduler(BaseScheduler):
 
     Notes
     -----
-    Due to the support of `datetime` objects, the |AsyncScheduler| is able to work
+    Due to the support of `datetime` objects, the |Scheduler| is able to work
     with timezones.
 
     Parameters
@@ -84,7 +84,7 @@ class AsyncScheduler(BaseScheduler):
             self.delete_job(job)
 
     def __repr__(self) -> str:
-        return "scheduler.asyncio.scheduler.AsyncScheduler({0}, jobs={{{1}}})".format(
+        return "scheduler.asyncio.scheduler.Scheduler({0}, jobs={{{1}}})".format(
             ", ".join(
                 (
                     repr(elem)
@@ -150,7 +150,7 @@ class AsyncScheduler(BaseScheduler):
         any_tag: bool = False,
     ) -> set[AsyncJob]:
         r"""
-        Get a set of |AsyncJob|\ s from the |AsyncScheduler| by tags.
+        Get a set of |AsyncJob|\ s from the |Scheduler| by tags.
 
         If no tags or an empty set of tags are given defaults to returning
         all |AsyncJob|\ s.
@@ -192,7 +192,7 @@ class AsyncScheduler(BaseScheduler):
         handle: Callable[..., None],
         **kwargs,
     ) -> AsyncJob:
-        """Encapsulate the `AsyncJob` and add the `AsyncScheduler`'s timezone."""
+        """Encapsulate the `AsyncJob` and add the `Scheduler`'s timezone."""
         if not isinstance(timing, list):
             timing_list = cast(TimingJobUnion, [timing])
         else:
@@ -213,7 +213,7 @@ class AsyncScheduler(BaseScheduler):
 
     def delete_job(self, job: AsyncJob) -> None:
         """
-        Delete a `AsyncJob` from the `AsyncScheduler`.
+        Delete a `AsyncJob` from the `Scheduler`.
 
         Parameters
         ----------
@@ -234,7 +234,7 @@ class AsyncScheduler(BaseScheduler):
         any_tag: bool = False,
     ) -> int:
         r"""
-        Delete a set of |AsyncJob|\ s from the |AsyncScheduler| by tags.
+        Delete a set of |AsyncJob|\ s from the |Scheduler| by tags.
 
         If no tags or an empty set of tags are given defaults to the deletion
         of all |AsyncJob|\ s.
