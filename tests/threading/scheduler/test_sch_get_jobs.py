@@ -9,7 +9,6 @@ from scheduler.base.definition import JobType
 from scheduler.threading.job import Job
 
 
-
 @pytest.mark.parametrize(
     "empty_set",
     [

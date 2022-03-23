@@ -44,12 +44,8 @@ from scheduler.base.job_util import JobTimer, sane_timing_types
             JobType.MINUTELY,
             dt.time(second=1, tzinfo=utc),
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39, tzinfo=utc),
-            dt.datetime(
-                year=2021, month=5, day=26, hour=11, minute=39, second=1, tzinfo=utc
-            ),
-            dt.datetime(
-                year=2021, month=5, day=26, hour=11, minute=40, second=1, tzinfo=utc
-            ),
+            dt.datetime(year=2021, month=5, day=26, hour=11, minute=39, second=1, tzinfo=utc),
+            dt.datetime(year=2021, month=5, day=26, hour=11, minute=40, second=1, tzinfo=utc),
         ],
         [
             JobType.CYCLIC,

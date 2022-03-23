@@ -1,19 +1,12 @@
+import asyncio
 import copy
+import datetime as dt
 
 import pytest
-from helpers import (
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55_UTC,
-    job_args,
-    job_args_utc,
-    utc,
-)
+from helpers import job_args, job_args_utc, T_2021_5_26__3_55, T_2021_5_26__3_55_UTC
 
-from scheduler.asyncio.scheduler import Scheduler
-from scheduler.asyncio.job import Job
-
-patch_samples = [T_2021_5_26__3_55] * 7
-patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11
+from scheduler.base.definition import JobType
+from scheduler.asyncio.scheduler import Job
 
 async_job_args = copy.deepcopy(job_args)
 for ele in async_job_args:
@@ -23,16 +16,31 @@ async_job_args_utc = copy.deepcopy(job_args_utc)
 for ele in async_job_args_utc:
     ele.pop("weight")
 
-async_sch_repr = (
-    "scheduler.asyncio.scheduler.Scheduler(None, jobs={",
-    "})",
-)
-async_sch_repr_utc = (
-    "scheduler.asyncio.scheduler.Scheduler(datetime.timezone.utc, jobs={",
-    "})",
-)
 
-async_job_reprs = (
+async def foo():
+    await asyncio.sleep(0.01)
+
+
+@pytest.mark.asyncio
+async def test_async_job():
+    job = Job(
+        JobType.CYCLIC,
+        [dt.timedelta(seconds=0.01)],
+        foo,
+        max_attempts=2,
+    )
+    assert job.attempts == 0
+
+    await job._exec()
+    assert job.attempts == 1
+
+    await job._exec()
+    assert job.attempts == 2
+
+    assert job.has_attempts_remaining == False
+
+
+job_reprs = (
     [
         "scheduler.asyncio.job.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
         ">, (), {}, 1, True, datetime.datetime(2021, 5, 26, 3, 55), None, True, None, None)",
@@ -50,7 +58,7 @@ async_job_reprs = (
     ],
 )
 
-async_job_reprs_utc = (
+job_reprs_utc = (
     [
         "scheduler.asyncio.job.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
         (
@@ -89,29 +97,54 @@ async_job_reprs_utc = (
     ],
 )
 
+
 @pytest.mark.parametrize(
-    "patch_datetime_now, job_kwargs, tzinfo, j_results, s_results",
-    [
-        (patch_samples, async_job_args, None, async_job_reprs, async_sch_repr),
-        (patch_samples_utc, async_job_args_utc, utc, async_job_reprs_utc, async_sch_repr_utc),
-    ],
-    indirect=["patch_datetime_now"],
+    "job_kwargs, result",
+    [(args, reprs) for args, reprs in zip(async_job_args, job_reprs)]
+    + [(args, reprs) for args, reprs in zip(async_job_args_utc, job_reprs_utc)],
 )
-def test_async_scheduler_repr(patch_datetime_now, job_kwargs, tzinfo, j_results, s_results):
-    jobs = [Job(**kwargs) for kwargs in job_kwargs]
-    sch = Scheduler(tzinfo=tzinfo)
-    for job in jobs:
-        sch._Scheduler__jobs[job] = None
-    rep = repr(sch)
-    n_j_addr = 0  # number of address strings in jobs
-    for j_result in j_results:
-        n_j_addr += len(j_result) - 1
-        for substring in j_result:
-            assert substring in rep
-            rep = rep.replace(substring, "", 1)
-    for substring in s_results:
+def test_async_job_repr(
+    job_kwargs,
+    result,
+):
+    rep = repr(Job(**job_kwargs))
+    for substring in result:
         assert substring in rep
         rep = rep.replace(substring, "", 1)
 
-    # ", " seperators between jobs: (len(j_results) - 1) * 2
-    assert len(rep) == n_j_addr * 12 + (len(j_results) - 1) * 2
+    # result is broken into substring at every address. Address string is 12 long
+    assert len(rep) == (len(result) - 1) * 12
+
+
+@pytest.mark.parametrize(
+    "patch_datetime_now, job_kwargs, results",
+    [
+        (
+            [T_2021_5_26__3_55] * 3,
+            async_job_args,
+            [
+                "ONCE, foo(), at=2021-05-26 04:55:00, tz=None, in=1:00:00, #0/1",
+                "MINUTELY, bar(..), at=2021-05-26 03:54:15, tz=None, in=-0:00:45, #0/20",
+                "DAILY, foo(), at=2021-05-26 07:05:00, tz=None, in=3:10:00, #0/7",
+            ],
+        ),
+        (
+            [T_2021_5_26__3_55_UTC] * 4,
+            async_job_args_utc,
+            [
+                "CYCLIC, foo(), at=2021-05-26 03:54:59, tz=UTC, in=-0:00:00, #0/inf",
+                "HOURLY, print(?), at=2021-05-26 03:55:00, tz=UTC, in=0:00:00, #0/inf",
+                "WEEKLY, bar(..), at=2021-05-25 03:55:00, tz=UTC, in=-1 day, #0/inf",
+                "ONCE, print(?), at=2021-06-08 23:45:59, tz=UTC, in=13 days, #0/1",
+            ],
+        ),
+    ],
+    indirect=["patch_datetime_now"],
+)
+def test_job_str(
+    patch_datetime_now,
+    job_kwargs,
+    results,
+):
+    for kwargs, result in zip(job_kwargs, results):
+        assert result == str(Job(**kwargs))

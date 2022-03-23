@@ -145,7 +145,7 @@ class BaseJob(ABC):
         )
 
     @abstractmethod
-    def __repr__(self) -> str: # pragma: no cover
+    def __repr__(self) -> str:  # pragma: no cover
         # Implementation example
         params: tuple[str] = self._repr()
         return f"scheduler.base.job.BaseJob({', '.join(params)})"
@@ -186,7 +186,7 @@ class BaseJob(ABC):
         )
 
     @abstractmethod
-    def __str__(self) -> str: # pragma: no cover
+    def __str__(self) -> str:  # pragma: no cover
         # Implementation example
         return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}".format(*self._str())
 

@@ -85,14 +85,7 @@ class Scheduler(BaseScheduler):
 
     def __repr__(self) -> str:
         return "scheduler.asyncio.scheduler.Scheduler({0}, jobs={{{1}}})".format(
-            ", ".join(
-                (
-                    repr(elem)
-                    for elem in (
-                        self.__tzinfo,
-                    )
-                )
-            ),
+            ", ".join((repr(elem) for elem in (self.__tzinfo,))),
             ", ".join([repr(job) for job in sorted(self.jobs)]),
         )
 
@@ -120,8 +113,7 @@ class Scheduler(BaseScheduler):
             "attempts",
         )
         form = [
-            f"{{{idx}:{align}{width}}}"
-            for idx, (align, width) in enumerate(zip(c_align, c_width))
+            f"{{{idx}:{align}{width}}}" for idx, (align, width) in enumerate(zip(c_align, c_width))
         ]
         if self.__tz_str is None:
             form = form[:3] + form[4:]
@@ -142,7 +134,6 @@ class Scheduler(BaseScheduler):
             job_table += fstring.format(*entries)
 
         return scheduler_headings + job_table
-
 
     def get_jobs(
         self,

@@ -8,9 +8,7 @@ from scheduler.base.definition import JobType
 from scheduler.threading.job import Job
 
 
-def priority_function_dummy(
-    seconds: float, job: Job, max_exec: int, job_count: int
-) -> float:
+def priority_function_dummy(seconds: float, job: Job, max_exec: int, job_count: int) -> float:
     _ = seconds
     _ = job
     _ = max_exec

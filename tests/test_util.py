@@ -55,9 +55,7 @@ def test_days_to_weekday(wkdy_src, wkdy_dest, days, err_msg):
             dt.datetime(year=2021, month=5, day=26, hour=12, minute=3, second=1),
         ],
         [
-            dt.datetime(
-                year=2021, month=5, day=26, hour=11, minute=39, tzinfo=dt.timezone.utc
-            ),
+            dt.datetime(year=2021, month=5, day=26, hour=11, minute=39, tzinfo=dt.timezone.utc),
             trigger.Thursday(),
             dt.time(hour=12, minute=3, second=1, tzinfo=dt.timezone.utc),
             dt.datetime(

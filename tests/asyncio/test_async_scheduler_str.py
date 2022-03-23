@@ -45,6 +45,7 @@ table_utc = (
     "ONCE     print(?)         2021-06-08 23:45:59 UTC            13 days           0/1\n"
 )
 
+
 @pytest.mark.parametrize(
     "patch_datetime_now, job_kwargs, tzinfo, res",
     [
