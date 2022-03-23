@@ -1,6 +1,6 @@
 before_script:
   - python --version
-  - python secrets.py
+  - python ci/secrets.py
   - pip install -r requirements.txt
   - pip install -e .
 
