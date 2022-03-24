@@ -1,19 +1,13 @@
 import copy
 
 import pytest
-from helpers import (
-    T_2021_5_26__3_55,
-    T_2021_5_26__3_55_UTC,
-    job_args,
-    job_args_utc,
-    utc,
-)
+from helpers import T_2021_5_26__3_55, T_2021_5_26__3_55_UTC, job_args, job_args_utc, utc
 
-from scheduler.asyncio.scheduler import Scheduler
 from scheduler.asyncio.job import Job
+from scheduler.asyncio.scheduler import Scheduler
 
-patch_samples = [T_2021_5_26__3_55] * 7
-patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11
+patch_samples = [T_2021_5_26__3_55] * 4
+patch_samples_utc = [T_2021_5_26__3_55_UTC] * 5
 
 async_job_args = copy.deepcopy(job_args)
 for ele in async_job_args:

@@ -100,8 +100,7 @@ class BaseJob(ABC):
                 self.__mark_delete = True
 
     def __lt__(self, other: BaseJob):
-        dt_stamp = dt.datetime.now(self.__tzinfo)
-        return self.timedelta(dt_stamp).total_seconds() < other.timedelta(dt_stamp).total_seconds()
+        return self.datetime < other.datetime
 
     def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
         """
@@ -145,10 +144,8 @@ class BaseJob(ABC):
         )
 
     @abstractmethod
-    def __repr__(self) -> str:  # pragma: no cover
-        # Implementation example
-        params: tuple[str] = self._repr()
-        return f"scheduler.base.job.BaseJob({', '.join(params)})"
+    def __repr__(self) -> str:
+        raise NotImplementedError()  # pragma: no cover
 
     def _str(
         self,
@@ -186,9 +183,8 @@ class BaseJob(ABC):
         )
 
     @abstractmethod
-    def __str__(self) -> str:  # pragma: no cover
-        # Implementation example
-        return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}".format(*self._str())
+    def __str__(self) -> str:
+        raise NotImplementedError()  # pragma: no cover
 
     @property
     def type(self) -> JobType:
