@@ -10,10 +10,10 @@ import datetime as dt
 import threading
 from typing import Optional, cast
 
-from scheduler.base.definition import JOB_NEXT_DAYLIKE_MAPPING, JobType
+from scheduler.base.definition import JobType
 from scheduler.base.timingtype import TimingJobTimerUnion
 from scheduler.trigger.core import Weekday
-from scheduler.util import next_weekday_time_occurrence
+from scheduler.util import JOB_NEXT_DAYLIKE_MAPPING, next_weekday_time_occurrence
 
 
 class JobTimer:

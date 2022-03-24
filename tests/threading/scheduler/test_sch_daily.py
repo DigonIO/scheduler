@@ -1,14 +1,7 @@
 import datetime as dt
 
 import pytest
-from helpers import (
-    DAILY_TYPE_ERROR_MSG,
-    TZ_ERROR_MSG,
-    foo,
-    samples_days,
-    samples_days_utc,
-    utc,
-)
+from helpers import DAILY_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples_days, samples_days_utc, utc
 
 import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError

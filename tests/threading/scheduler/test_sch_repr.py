@@ -9,8 +9,8 @@ from helpers import (
     utc,
 )
 
-from scheduler.threading.scheduler import Scheduler
 from scheduler.threading.job import Job
+from scheduler.threading.scheduler import Scheduler
 
 patch_samples = [T_2021_5_26__3_55] * 7
 patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11

@@ -1,17 +1,18 @@
-import pytest
 import datetime as dt
+
+import pytest
+from helpers import samples, samples_utc
+
 from scheduler.trigger import (
-    weekday,
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
     Friday,
+    Monday,
     Saturday,
     Sunday,
+    Thursday,
+    Tuesday,
+    Wednesday,
+    weekday,
 )
-
-from helpers import samples, samples_utc
 
 
 def test_trigger_misc():
