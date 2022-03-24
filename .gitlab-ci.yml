@@ -11,69 +11,69 @@ stages:
   - release
 
 #### analysis ####
-pylint_3_9_5:
+pylint_3_9_11:
   stage: analysis
-  image: "python:3.9.5"
+  image: "python:3.9.11-alpine3.15"
   script:
     - pylint scheduler
   allow_failure: true
 
-mypy_3_9_5:
+mypy_3_9_11:
   stage: analysis
-  image: "python:3.9.5"
+  image: "python:3.9.11-alpine3.15"
   script:
     - mypy scheduler
   allow_failure: true
 
-pydocstyle_3_9_5:
+pydocstyle_3_9_11:
   stage: analysis
-  image: "python:3.9.5"
+  image: "python:3.9.11-alpine3.15"
   script:
     - pydocstyle scheduler
   allow_failure: true
 
-bandit_3_9_5:
+bandit_3_9_11:
   stage: analysis
-  image: "python:3.9.5"
+  image: "python:3.9.11-alpine3.15"
   script:
     - bandit -r scheduler
   allow_failure: false
 
 #### documentation ####
-doc_3_9_5:
+doc_3_9_11:
   stage: documentation
-  image: "python:3.9.5"
+  image: "python:3.9.11-alpine3.15"
   script:
     - sphinx-build -b html doc/ doc/_build/html
 
 #### testing ####
-pytest_3_9_5:
+pytest_3_9_11:
   stage: testing
-  image: "python:3.9.5"
+  image: "python:3.9.11-alpine3.15"
   script:
     - pytest --cov=scheduler/ tests/
 
-pydoctest_3_9_5:
+pydoctest_3_9_11:
   stage: testing
-  image: "python:3.9.5"
+  image: "python:3.9.11-alpine3.15"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
-pytest_3_10_1:
+pytest_3_10_3:
   stage: testing
-  image: "python:3.10.1"
+  image: "python:3.10.3-alpine3.15"
   script:
     - pytest --cov=scheduler/ tests/
 
-pydoctest_3_10_1:
+pydoctest_3_10_3:
   stage: testing
-  image: "python:3.10.1"
+  image: "python:3.10.3-alpine3.15"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
 #### release ####
 pypi:
-  image: python:3.9.5
+  image: python:3.9.11-alpine3.15
   stage: release
   script:
     - pip install twine
