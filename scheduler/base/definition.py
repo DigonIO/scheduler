@@ -16,7 +16,6 @@ from scheduler.message import (
     WEEKLY_TYPE_ERROR_MSG,
 )
 from scheduler.trigger import Friday, Monday, Saturday, Sunday, Thursday, Tuesday, Wednesday
-from scheduler.util import next_daily_occurrence, next_hourly_occurrence, next_minutely_occurrence
 
 
 class JobType(Enum):
@@ -62,10 +61,4 @@ JOB_TIMING_TYPE_MAPPING = {
         "type": _TimingWeeklyList,
         "err": WEEKLY_TYPE_ERROR_MSG,
     },
-}
-
-JOB_NEXT_DAYLIKE_MAPPING = {
-    JobType.MINUTELY: next_minutely_occurrence,
-    JobType.HOURLY: next_hourly_occurrence,
-    JobType.DAILY: next_daily_occurrence,
 }
