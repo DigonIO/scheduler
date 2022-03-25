@@ -328,6 +328,20 @@ def _random_priority_function(time: float, job: Job, max_exec: int, job_count: i
     return 0
 
 
+def _warn_deprecated(
+    function: Callable[[float, Job, int, int], float]
+) -> Callable[[float, Job, int, int], float]:
+    def wrapped_function(time: float, job: Job, max_exec: int, job_count: int) -> float:
+        warnings.warn(
+            "Deprecated import! Use scheduler.prioritization instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return function(time, job, max_exec, job_count)
+
+    return wrapped_function
+
+
 # NOTE: will be removed in next minor release (0.8.0)
 class Prioritization:
     """
@@ -336,20 +350,6 @@ class Prioritization:
     For compatibility with the |Scheduler|, the prioritization
     functions have to be of type ``Callable[[float, Job, int, int], float]``.
     """
-
-    @staticmethod
-    def _warn_deprecated(
-        function: Callable[[float, Job, int, int], float]
-    ) -> Callable[[float, Job, int, int], float]:
-        def wrapped_function(time: float, job: Job, max_exec: int, job_count: int) -> float:
-            warnings.warn(
-                "Deprecated import! Use scheduler.prioritization instead.",
-                DeprecationWarning,
-                stacklevel=2,
-            )
-            return function(time, job, max_exec, job_count)
-
-        return wrapped_function
 
     constant_weight_prioritization = _warn_deprecated(_constant_weight_prioritization)
     linear_priority_function = _warn_deprecated(_linear_priority_function)
