@@ -2,13 +2,12 @@ Asyncio
 =======
 
 To use `asyncio <https://docs.python.org/3/library/asyncio.html>`_ with the `scheduler` library,
-replace the |Scheduler| with the |AioScheduler|.
-Both schedulers provide nearly the same API and can be exchanged without major adjustments.
-The main difference is, that the |AioScheduler| works without prioritization and weighting.
+replace the default threading Scheduler (:py:class:`scheduler.threading.scheduler.Scheduler`)
+with the asyncio Scheduler (:py:class:`scheduler.asyncio.scheduler.Scheduler`) variant.
+Both schedulers provide nearly the same API and can be switched out without major adjustments.
+The main difference is, that the asyncio |AioScheduler| does not support prioritization and weighting.
 
-The following example shows, how to use the |AioScheduler| with a simple coroutine.
-
-.. note:: An ``asyncio`` import is not required.
+The following example shows how to use the asyncio |AioScheduler| with a simple coroutine.
 
 .. code-block:: pycon
 
@@ -24,7 +23,11 @@ The following example shows, how to use the |AioScheduler| with a simple corouti
     >>> schedule.cyclic(delta, foo)
     scheduler.asyncio.job.Job(...CYCLIC...datetime.timedelta(seconds=600)...foo...0,...)
 
-If a customized event loop is required, the second example can be taken into account.
+.. note:: The first example does not require to import ``asyncio``. This only changes once
+   a custom event loop is used.
+
+To initialize the |AioScheduler| with a user defined event loop, use the `loop` keyword
+argument:
 
 .. code-block:: pycon
 
