@@ -11,7 +11,7 @@ counts and automate Jobs.</p>
 [![pipeline status](https://gitlab.com/DigonIO/scheduler/badges/master/pipeline.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![coverage report](https://gitlab.com/DigonIO/scheduler/badges/master/coverage.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![Documentation Status](https://readthedocs.org/projects/python-scheduler/badge/?version=latest)](https://python-scheduler.readthedocs.io/en/latest/?badge=latest)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Code style: black](https://gitlab.com/DigonIO/scheduler/-/raw/master/doc/_assets/code_style_black.svg)](https://github.com/psf/black)
 
 [![pkgversion](https://img.shields.io/pypi/v/scheduler)](https://pypi.org/project/scheduler/)
 [![versionsupport](https://img.shields.io/pypi/pyversions/scheduler)](https://pypi.org/project/scheduler/)
@@ -22,27 +22,27 @@ counts and automate Jobs.</p>
 
 ## Features
 
-* Easy and user friendly in-process `Job` scheduling
+* Easy and user friendly in-process Job scheduling
 [(Quick Start)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/quick_start.html)
-* `Asyncio` scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/asyncio.html)
-* `Threading` scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
+* Asyncio scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/asyncio.html)
+* Threading scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
 * Timezone compatibility [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/parameters.html)
 * Passing of parameters
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/timezones.html)
-* `Job` prioritization
+* Job prioritization
   * Default linear prioritization
     [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/weights.html)
   * User definable prioritization functions
     [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/custom_prioritization.html)
-* `Job` tagging
+* Job tagging
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/tags.html)
-* `Job` batching
+* Job batching
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/job_batching.html)
-* `Job` metadata
+* Job metadata
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/metrics.html)
 * Lightweight
 * High test coverage
-* [Online documentation](https://python-scheduler.readthedocs.io/en/latest/index.html)
+* [Online documentation](https://python-scheduler.readthedocs.io/en/latest/readme.html)
 
 ## Installation
 
@@ -126,7 +126,7 @@ while True:
 ## Documentation
 
 The API documentation can either be viewed
-[online](https://python-scheduler.readthedocs.io/en/latest/index.html)
+[online](https://python-scheduler.readthedocs.io/en/latest/readme.html)
 or generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)
 formatting. To build, run:
 

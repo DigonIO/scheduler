@@ -23,7 +23,7 @@ Default behaviour
 -----------------
 
 By default, the |Scheduler| will prioritize using a linear function
-(py:func:`~scheduler.util.linear_priority_function`) that depends on the
+(:py:func:`~scheduler.prioritization.linear_priority_function`) that depends on the
 |Job|\ s `weight` and time it is overdue.
 
 .. tip:: It is possible to change the prioritization behaviour of a

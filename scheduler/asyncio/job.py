@@ -11,7 +11,7 @@ from scheduler.base.job import BaseJob
 
 class Job(BaseJob):
     r"""
-    |Job| class bundling time and callback function methods.
+    |AioJob| class bundling time and callback function methods.
 
     Parameters
     ----------
@@ -22,35 +22,35 @@ class Job(BaseJob):
     handle : Callable[..., None]
         Handle to a callback function.
     args : tuple[Any]
-        Positional argument payload for the function handle within a |Job|.
+        Positional argument payload for the function handle within a |AioJob|.
     kwargs : Optional[dict[str, Any]]
-        Keyword arguments payload for the function handle within a |Job|.
+        Keyword arguments payload for the function handle within a |AioJob|.
     tags : Optional[set[str]]
-        The tags of the |Job|.
+        The tags of the |AioJob|.
     delay : Optional[bool]
         If ``True`` wait with the execution for the next scheduled time.
     start : Optional[datetime.datetime]
-        Set the reference `datetime.datetime` stamp the |Job|
+        Set the reference `datetime.datetime` stamp the |AioJob|
         will be scheduled against. Default value is `datetime.datetime.now()`.
     stop : Optional[datetime.datetime]
-        Define a point in time after which a |Job| will be stopped
+        Define a point in time after which a |AioJob| will be stopped
         and deleted.
     max_attempts : Optional[int]
-        Number of times the |Job| will be executed where ``0 <=> inf``.
-        A |Job| with no free attempt will be deleted.
+        Number of times the |AioJob| will be executed where ``0 <=> inf``.
+        A |AioJob| with no free attempt will be deleted.
     skip_missing : Optional[bool]
-        If ``True`` a |Job| will only schedule it's newest planned
+        If ``True`` a |AioJob| will only schedule it's newest planned
         execution and drop older ones.
     alias : Optional[str]
         Overwrites the function handle name in the string representation.
     tzinfo : Optional[datetime.tzinfo]
-        Set the timezone of the |Scheduler| the |Job|
+        Set the timezone of the |AioScheduler| the |AioJob|
         is scheduled in.
 
     Returns
     -------
     Job
-        Instance of a scheduled |Job|.
+        Instance of a scheduled |AioJob|.
     """
 
     # pylint: disable=no-member invalid-name

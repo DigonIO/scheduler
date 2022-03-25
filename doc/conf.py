@@ -86,6 +86,13 @@ html_logo = "logo_w_border.svg"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
 
+imgmath_latex_preamble = (
+    "\\usepackage{xcolor}\n\\definecolor{formulacolor}{RGB}{128,128,128}" "\\color{formulacolor}"
+)
+
+
 latex_elements = {
-    "preamble": r"\usepackage[columns=1]{idxlayout}\makeindex",
+    "preamble": [
+        r"\usepackage[columns=1]{idxlayout}\makeindex",
+    ],
 }

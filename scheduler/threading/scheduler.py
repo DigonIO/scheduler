@@ -41,7 +41,7 @@ class Scheduler(BaseScheduler):
     Implementation of a scheduler for callback functions.
 
     This implementation enables the planning of |Job|\ s depending on time
-    cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
+    cycles, fixed times, weekdays, dates, offsets, execution counts and weights.
 
     Notes
     -----
@@ -407,7 +407,7 @@ class Scheduler(BaseScheduler):
         Notes
         -----
         If given a `datetime.time` object with a non zero hour or minute property, these
-        informations will be ignored.
+        information will be ignored.
 
         Parameters
         ----------
@@ -520,9 +520,9 @@ class Scheduler(BaseScheduler):
         Schedule a weekly `Job`.
 
         Use a `tuple` of a `Weekday` and a `datetime.time` object to define a weekly
-        recuring |Job|. Combine multiple desired `tuples` in
+        recurring |Job|. Combine multiple desired `tuples` in
         a `list`. If the planed execution time is `00:00` the `datetime.time` object
-        can be ingored, just pass a `Weekday` without a `tuple`.
+        can be ignored, just pass a `Weekday` without a `tuple`.
 
         Parameters
         ----------

@@ -13,5 +13,5 @@ Examples
     pages/examples/tags
     pages/examples/job_batching
     pages/examples/job_deletion
-    pages/examples/weights
+    pages/examples/job_prioritization
     pages/examples/metrics

@@ -8,11 +8,11 @@
 
 .. |Job| replace:: :py:class:`~scheduler.threading.job.Job`
 
-.. |Scheduler| replace:: :py:class:`~scheduler.thraeding.scheduler.Scheduler`
+.. |Scheduler| replace:: :py:class:`~scheduler.threading.scheduler.Scheduler`
 
-.. |Job| replace:: :py:class:`~scheduler.asyncio.job.Job`
+.. |AioJob| replace:: :py:class:`~scheduler.asyncio.job.Job`
 
-.. |Scheduler| replace:: :py:class:`~scheduler.asyncio.scheduler.Scheduler`
+.. |AioScheduler| replace:: :py:class:`~scheduler.asyncio.scheduler.Scheduler`
 
 .. |JobTimer| replace:: :py:class:`~scheduler.base.job_timer.JobTimer`
 

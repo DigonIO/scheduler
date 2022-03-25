@@ -38,12 +38,12 @@ class Scheduler(BaseScheduler):
     r"""
     Implementation of an asyncio scheduler.
 
-    This implementation enables the planning of |Job|\ s depending on time
-    cycles, fixed times, weekdays, dates, weights, offsets and execution counts.
+    This implementation enables the planning of |AioJob|\ s depending on time
+    cycles, fixed times, weekdays, dates, offsets and execution counts.
 
     Notes
     -----
-    Due to the support of `datetime` objects, the |Scheduler| is able to work
+    Due to the support of `datetime` objects, the |AioScheduler| is able to work
     with timezones.
 
     Parameters
@@ -51,7 +51,7 @@ class Scheduler(BaseScheduler):
     loop : asyncio.selector_events.BaseSelectorEventLoop
         Set a AsyncIO event loop, default is the global event loop
     tzinfo : datetime.tzinfo
-        Set the timezone of the |Scheduler|.
+        Set the timezone of the |AioScheduler|.
     """
 
     def __init__(
@@ -141,24 +141,24 @@ class Scheduler(BaseScheduler):
         any_tag: bool = False,
     ) -> set[Job]:
         r"""
-        Get a set of |Job|\ s from the |Scheduler| by tags.
+        Get a set of |AioJob|\ s from the |AioScheduler| by tags.
 
         If no tags or an empty set of tags are given defaults to returning
-        all |Job|\ s.
+        all |AioJob|\ s.
 
         Parameters
         ----------
         tags : set[str]
-            Tags to filter scheduled |Job|\ s.
-            If no tags are given all |Job|\ s are returned.
+            Tags to filter scheduled |AioJob|\ s.
+            If no tags are given all |AioJob|\ s are returned.
         any_tag : bool
-            False: To match a |Job| all tags have to match.
-            True: To match a |Job| at least one tag has to match.
+            False: To match a |AioJob| all tags have to match.
+            True: To match a |AioJob| at least one tag has to match.
 
         Returns
         -------
         set[Job]
-            Currently scheduled |Job|\ s.
+            Currently scheduled |AioJob|\ s.
         """
         if tags is None or tags == {}:
             return self.jobs
@@ -172,7 +172,7 @@ class Scheduler(BaseScheduler):
         Returns
         -------
         set[Job]
-            Currently scheduled |Job|\ s.
+            Currently scheduled |AioJob|\ s.
         """
         return set(self.__jobs.keys())
 
@@ -209,7 +209,7 @@ class Scheduler(BaseScheduler):
         Parameters
         ----------
         job : Job
-            |Job| instance to delete.
+            |AioJob| instance to delete.
 
         Returns
         -------
@@ -225,18 +225,18 @@ class Scheduler(BaseScheduler):
         any_tag: bool = False,
     ) -> int:
         r"""
-        Delete a set of |Job|\ s from the |Scheduler| by tags.
+        Delete a set of |AioJob|\ s from the |AioScheduler| by tags.
 
         If no tags or an empty set of tags are given defaults to the deletion
-        of all |Job|\ s.
+        of all |AioJob|\ s.
 
         Parameters
         ----------
         tags : Optional[set[str]]
-            Set of tags to identify target |Job|\ s.
+            Set of tags to identify target |AioJob|\ s.
         any_tag : bool
-            False: To delete a |Job| all tags have to match.
-            True: To delete a |Job| at least one tag has to match.
+            False: To delete a |AioJob| all tags have to match.
+            True: To delete a |AioJob| at least one tag has to match.
         """
         all_jobs: set[Job] = set(self.__jobs.keys())
         jobs_to_delete: set[Job]
@@ -252,6 +252,35 @@ class Scheduler(BaseScheduler):
         return len(jobs_to_delete)
 
     def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> Job:
+        r"""
+        Schedule a cyclic `Job`.
+
+        Use a `datetime.timedelta` object or a `list` of `datetime.timedelta` objects
+        to schedule a cyclic |AioJob|.
+
+        Parameters
+        ----------
+        timing : TimingTypeCyclic
+            Desired execution time.
+        handle : Callable[..., None]
+            Handle to a callback function.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled |AioJob|.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            |AioJob| properties, optional
+
+            `kwargs` are used to specify |AioJob| properties.
+
+            Here is a list of available |AioJob| properties:
+
+            .. include:: ../_assets/aio_kwargs.rst
+        """
         try:
             tg.check_type("timing", timing, TimingCyclic)
         except TypeError as err:
@@ -259,6 +288,40 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs)
 
     def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+        r"""
+        Schedule a minutely `Job`.
+
+        Use a `datetime.time` object or a `list` of `datetime.time` objects
+        to schedule a |AioJob| every minute.
+
+        Notes
+        -----
+        If given a `datetime.time` object with a non zero hour or minute property, these
+        information will be ignored.
+
+        Parameters
+        ----------
+        timing : TimingDailyUnion
+            Desired execution time(s).
+        handle : Callable[..., None]
+            Handle to a callback function.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled |AioJob|.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            |AioJob| properties, optional
+
+            `kwargs` are used to specify |AioJob| properties.
+
+            Here is a list of available |AioJob| properties:
+
+            .. include:: ../_assets/aio_kwargs.rst
+        """
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
@@ -266,6 +329,40 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs)
 
     def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+        r"""
+        Schedule an hourly `Job`.
+
+        Use a `datetime.time` object or a `list` of `datetime.time` objects
+        to schedule a |AioJob| every hour.
+
+        Notes
+        -----
+        If given a `datetime.time` object with a non zero hour property, this information
+        will be ignored.
+
+        Parameters
+        ----------
+        timing : TimingDailyUnion
+            Desired execution time(s).
+        handle : Callable[..., None]
+            Handle to a callback function.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled |AioJob|.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            |AioJob| properties, optional
+
+            `kwargs` are used to specify |AioJob| properties.
+
+            Here is a list of available |AioJob| properties:
+
+            .. include:: ../_assets/aio_kwargs.rst
+        """
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
@@ -273,6 +370,35 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs)
 
     def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+        r"""
+        Schedule a daily `Job`.
+
+        Use a `datetime.time` object or a `list` of `datetime.time` objects
+        to schedule a |AioJob| every day.
+
+        Parameters
+        ----------
+        timing : TimingDailyUnion
+            Desired execution time(s).
+        handle : Callable[..., None]
+            Handle to a callback function.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled |AioJob|.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            |AioJob| properties, optional
+
+            `kwargs` are used to specify |AioJob| properties.
+
+            Here is a list of available |AioJob| properties:
+
+            .. include:: ../_assets/aio_kwargs.rst
+        """
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
@@ -280,6 +406,37 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs)
 
     def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> Job:
+        r"""
+        Schedule a weekly `Job`.
+
+        Use a `tuple` of a `Weekday` and a `datetime.time` object to define a weekly
+        recurring |AioJob|. Combine multiple desired `tuples` in
+        a `list`. If the planed execution time is `00:00` the `datetime.time` object
+        can be ignored, just pass a `Weekday` without a `tuple`.
+
+        Parameters
+        ----------
+        timing : TimingWeeklyUnion
+            Desired execution time(s).
+        handle : Callable[..., None]
+            Handle to a callback function.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled |AioJob|.
+
+        Other Parameters
+        ----------------
+        **kwargs
+            |AioJob| properties, optional
+
+            `kwargs` are used to specify |AioJob| properties.
+
+            Here is a list of available |AioJob| properties:
+
+            .. include:: ../_assets/aio_kwargs.rst
+        """
         try:
             tg.check_type("timing", timing, TimingWeeklyUnion)
         except TypeError as err:
@@ -295,6 +452,27 @@ class Scheduler(BaseScheduler):
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
     ) -> Job:
+        r"""
+        Schedule a oneshot `Job`.
+
+        Parameters
+        ----------
+        timing : TimingOnceUnion
+            Desired execution time.
+        handle : Callable[..., None]
+            Handle to a callback function.
+        args : tuple[Any]
+            Positional argument payload for the function handle within a |AioJob|.
+        kwargs : Optional[dict[str, Any]]
+            Keyword arguments payload for the function handle within a |AioJob|.
+        tags : Optional[set[str]]
+            The tags of the |AioJob|.
+
+        Returns
+        -------
+        Job
+            Instance of a scheduled |AioJob|.
+        """
         try:
             tg.check_type("timing", timing, TimingOnceUnion)
         except TypeError as err:

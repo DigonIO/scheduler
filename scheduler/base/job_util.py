@@ -86,7 +86,7 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
 
 def standardize_timing_format(job_type: JobType, timing: TimingJobUnion) -> TimingJobUnion:
     r"""
-    Return timings in standarized form.
+    Return timings in standardized form.
 
     Clears irrelevant time positionals for `JobType.MINUTELY` and `JobType.HOURLY`.
     """

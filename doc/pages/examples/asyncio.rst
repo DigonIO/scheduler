@@ -2,11 +2,11 @@ Asyncio
 =======
 
 To use `asyncio <https://docs.python.org/3/library/asyncio.html>`_ with the `scheduler` library,
-replace the |Scheduler| with the |Scheduler|.
+replace the |Scheduler| with the |AioScheduler|.
 Both schedulers provide nearly the same API and can be exchanged without major adjustments.
-The main difference is, that the |Scheduler| works without prioritization and weighting.
+The main difference is, that the |AioScheduler| works without prioritization and weighting.
 
-The following example shows, how to use the |Scheduler| with a simple coroutine.
+The following example shows, how to use the |AioScheduler| with a simple coroutine.
 
 .. note:: An ``asyncio`` import is not required.
 
