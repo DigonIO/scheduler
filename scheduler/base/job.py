@@ -9,6 +9,7 @@ from __future__ import annotations
 import datetime as dt
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional, Union, cast
+import warnings
 
 from scheduler.base.definition import JobType
 from scheduler.base.job_timer import JobTimer
@@ -257,7 +258,7 @@ class BaseJob(ABC):
     @property
     def delay(self) -> bool:
         """
-        Return ``True`` if the first `Job` execution will wait for the next scheduled time.
+        *Deprecated*: Return ``True`` if the first `Job` execution will wait for the next scheduled time.
 
         Returns
         -------
@@ -265,6 +266,14 @@ class BaseJob(ABC):
             If ``True`` wait with the execution for the next scheduled time. If ``False``
             the first execution will target the time of `Job.start`.
         """
+        warnings.warn(
+            (
+                "Using the `delay` property is deprecated and will"
+                "be removed in the next minor release."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.__delay
 
     @property

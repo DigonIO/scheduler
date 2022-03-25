@@ -34,7 +34,7 @@ class Job(BaseJob):
     weight : Optional[float]
         Relative `weight` against other |Job|\ s.
     delay : Optional[bool]
-        If ``True`` wait with the execution for the next scheduled time.
+        *Deprecated*: If ``True`` wait with the execution for the next scheduled time.
     start : Optional[datetime.datetime]
         Set the reference `datetime.datetime` stamp the |Job|
         will be scheduled against. Default value is `datetime.datetime.now()`.

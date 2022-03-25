@@ -28,7 +28,7 @@ class Job(BaseJob):
     tags : Optional[set[str]]
         The tags of the |AioJob|.
     delay : Optional[bool]
-        If ``True`` wait with the execution for the next scheduled time.
+        *Deprecated*: If ``True`` wait with the execution for the next scheduled time.
     start : Optional[datetime.datetime]
         Set the reference `datetime.datetime` stamp the |AioJob|
         will be scheduled against. Default value is `datetime.datetime.now()`.
