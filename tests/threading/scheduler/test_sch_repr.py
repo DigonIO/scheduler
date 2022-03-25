@@ -50,5 +50,5 @@ def test_sch_repr(patch_datetime_now, job_kwargs, tzinfo, j_results, s_results):
         rep = rep.replace(substring, "", 1)
 
     # Addr str of priority_function: 12
-    # ", " seperators between jobs: (len(j_results) - 1) * 2
+    # ", " separators between jobs: (len(j_results) - 1) * 2
     assert len(rep) == 12 + n_j_addr * 12 + (len(j_results) - 1) * 2

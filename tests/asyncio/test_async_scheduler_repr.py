@@ -108,5 +108,5 @@ def test_async_scheduler_repr(patch_datetime_now, job_kwargs, tzinfo, j_results,
         assert substring in rep
         rep = rep.replace(substring, "", 1)
 
-    # ", " seperators between jobs: (len(j_results) - 1) * 2
+    # ", " separators between jobs: (len(j_results) - 1) * 2
     assert len(rep) == n_j_addr * 12 + (len(j_results) - 1) * 2
