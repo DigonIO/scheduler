@@ -124,23 +124,21 @@ class BaseJob(ABC):
 
     def _repr(self) -> tuple[str]:
         return tuple(
-            [
-                repr(elem)
-                for elem in (
-                    self.__type,
-                    self.__timing,
-                    self.__handle,
-                    self.__args,
-                    self.__kwargs,
-                    self.__max_attempts,
-                    self.__delay,
-                    self.__start,
-                    self.__stop,
-                    self.__skip_missing,
-                    self.__alias,
-                    self.tzinfo,
-                )
-            ]
+            repr(elem)
+            for elem in (
+                self.__type,
+                self.__timing,
+                self.__handle,
+                self.__args,
+                self.__kwargs,
+                self.__max_attempts,
+                self.__delay,
+                self.__start,
+                self.__stop,
+                self.__skip_missing,
+                self.__alias,
+                self.tzinfo,
+            )
         )
 
     @abstractmethod

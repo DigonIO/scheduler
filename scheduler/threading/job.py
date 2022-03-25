@@ -10,7 +10,6 @@ from typing import Any, Callable, Optional, Union
 
 from scheduler.base.definition import JobType
 from scheduler.base.job import BaseJob
-from scheduler.base.job_timer import JobTimer
 from scheduler.base.timingtype import TimingJobUnion
 
 
@@ -59,27 +58,8 @@ class Job(BaseJob):
     Job
         Instance of a scheduled |Job|.
     """
-
-    __type: JobType
-    __timing: TimingJobUnion
-    __handle: Callable[..., None]
-    __args: tuple[Any, ...]
-    __kwargs: dict[str, Any]
-    __max_attempts: int
-    __tags: set[str]
     __weight: float
-    __delay: bool
-    __start: Optional[dt.datetime]
-    __stop: Optional[dt.datetime]
-    __skip_missing: bool
-    __alias: Optional[str]
-    __tzinfo: Optional[dt.tzinfo]
-
     __lock: threading.RLock
-    __mark_delete: bool
-    __attempts: int
-    __pending_timer: JobTimer
-    __timers: list[JobTimer]
 
     def __init__(
         self,

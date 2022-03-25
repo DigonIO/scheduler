@@ -1,5 +1,4 @@
 import datetime as dt
-import pdb
 
 import pytest
 from helpers import sample_seconds_interference_lag, samples_days

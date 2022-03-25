@@ -1,6 +1,3 @@
-import datetime as dt
-
-import pytest
 from helpers import samples, samples_utc
 
 from scheduler.trigger import (
