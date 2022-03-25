@@ -6,6 +6,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional
+import warnings
 
 from scheduler.base.job import BaseJob
 from scheduler.base.timingtype import (
@@ -42,6 +43,18 @@ def select_jobs_by_tag(
     if any_tag:
         return {job for job in jobs if tags & job.tags}
     return {job for job in jobs if tags <= job.tags}
+
+
+def _warn_deprecated_delay(delay: Optional[bool] = None, **kwargs):
+    if delay is not None:
+        warnings.warn(
+            (
+                "Using the `delay` argument is deprecated and will"
+                "be removed in the next minor release."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
 
 class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than an ABC class

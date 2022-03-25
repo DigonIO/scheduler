@@ -13,7 +13,7 @@ import typeguard as tg
 
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.job import BaseJob
-from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag
+from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag, _warn_deprecated_delay
 from scheduler.base.scheduler_util import str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
@@ -391,6 +391,7 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/kwargs.rst
         """
+        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type("timing", timing, TimingCyclic)
         except TypeError as err:
@@ -432,6 +433,7 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/kwargs.rst
         """
+        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
@@ -473,6 +475,7 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/kwargs.rst
         """
+        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
@@ -509,6 +512,7 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/kwargs.rst
         """
+        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type("timing", timing, TimingDailyUnion)
         except TypeError as err:
@@ -547,6 +551,7 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/kwargs.rst
         """
+        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type("timing", timing, TimingWeeklyUnion)
         except TypeError as err:
