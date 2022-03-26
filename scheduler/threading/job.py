@@ -115,25 +115,13 @@ class Job(BaseJob):
 
     def _str(
         self,
-    ) -> tuple[
-        str,
-        str,
-        str,
-        dt.datetime,
-        str,
-        Optional[str],
-        dt.timedelta,
-        str,
-        int,
-        Union[float, int],
-        float,
-    ]:
+    ) -> tuple[str, str, str, str, Optional[str], str, int, Union[float, int], float]:
         """Return the objects relevant for readable string representation."""
         with self.__lock:
-            return super()._str() + (self.__weight,)
+            return (*super()._str(), self.__weight)
 
     def __str__(self) -> str:
-        return "{0}, {1}{2}, at={4}, tz={5}, in={7}, #{8}/{9}, w={10:.3f}".format(*self._str())
+        return "{0}, {1}{2}, at={3}, tz={4}, in={5}, #{6}/{7}, w={8:.3f}".format(*self._str())
 
     @property
     def weight(self) -> float:

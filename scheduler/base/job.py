@@ -148,18 +148,7 @@ class BaseJob(ABC):
 
     def _str(
         self,
-    ) -> tuple[
-        str,
-        str,
-        str,
-        dt.datetime,
-        str,
-        Optional[str],
-        dt.timedelta,
-        str,
-        int,
-        Union[float, int],
-    ]:
+    ) -> tuple[str, str, str, str, Optional[str], str, int, Union[float, int]]:
         """Return the objects relevant for readable string representation."""
         dt_timedelta = self.timedelta(dt.datetime.now(self.tzinfo))
         if self.alias is not None:
@@ -172,10 +161,8 @@ class BaseJob(ABC):
             self.type.name if self.max_attempts != 1 else "ONCE",
             self.handle.__qualname__ if self.alias is None else self.alias,
             f_args,
-            self.datetime,
             str(self.datetime)[:19],
             self.datetime.tzname(),
-            dt_timedelta,
             prettify_timedelta(dt_timedelta),
             self.attempts,
             float("inf") if self.max_attempts == 0 else self.max_attempts,
