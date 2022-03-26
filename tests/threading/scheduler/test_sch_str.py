@@ -37,7 +37,7 @@ table_utc = (
     ],
     indirect=["patch_datetime_now"],
 )
-def test_sch_repr(patch_datetime_now, job_kwargs, tzinfo, res):
+def test_sch_str(patch_datetime_now, job_kwargs, tzinfo, res):
     jobs = [Job(**kwargs) for kwargs in job_kwargs]
     sch = Scheduler(tzinfo=tzinfo, jobs=jobs)
     assert str(sch) == res

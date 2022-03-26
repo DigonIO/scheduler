@@ -16,7 +16,7 @@ from scheduler.base.definition import JobType
 from scheduler.threading.job import Job
 
 
-def test_misc_properties():
+def test_misc_properties(recwarn):
     job = Job(
         job_type=JobType.CYCLIC,
         timing=[dt.timedelta()],
@@ -37,12 +37,18 @@ def test_misc_properties():
     assert job.kwargs == {"abc": 123}
     assert job.tags == {"test", "misc"}
     assert job.weight == 1 / 3
-    assert job.delay == False
     assert job.start == T_2021_5_26__3_55_UTC
     assert job.stop == T_2021_5_26__3_55_UTC + dt.timedelta(seconds=1)
     assert job.tzinfo == utc
     assert job.skip_missing == True
     assert job._tzinfo == utc2
+
+    assert job.delay == False
+    warn = recwarn.pop(DeprecationWarning)
+    assert (
+        str(warn.message)
+        == "Using the `delay` property is deprecated and will be removed in the next minor release."
+    )
 
 
 @pytest.mark.parametrize(

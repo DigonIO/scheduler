@@ -186,13 +186,18 @@ def test_str_cutoff(string, max_length, cut_tail, result, err):
         Prio.linear_priority_function,
     ],
 )
-def test_deprecated_prioritization(timedelta, executions, priority_function):
+def test_deprecated_prioritization(timedelta, executions, priority_function, recwarn):
     schedule = scheduler.Scheduler(max_exec=3, priority_function=priority_function)
     schedule.once(
         dt.datetime.now() + timedelta,
         print,
     )
     assert schedule.exec_jobs() == executions
+    warn = recwarn.pop(DeprecationWarning)
+    assert (
+        str(warn.message)
+        == "Deprecated import! Use scheduler.prioritization instead of scheduler.util.Prioritization."
+    )
 
 
 @pytest.mark.parametrize(
@@ -202,10 +207,15 @@ def test_deprecated_prioritization(timedelta, executions, priority_function):
         [dt.timedelta(seconds=100), 1],
     ],
 )
-def test_deprecated_rnd_prioritization(timedelta, executions):
+def test_deprecated_rnd_prioritization(timedelta, executions, recwarn):
     schedule = scheduler.Scheduler(max_exec=3, priority_function=Prio.random_priority_function)
     schedule.once(
         dt.datetime.now() + timedelta,
         print,
     )
     assert schedule.exec_jobs() == executions
+    warn = recwarn.pop(DeprecationWarning)
+    assert (
+        str(warn.message)
+        == "Deprecated import! Use scheduler.prioritization instead of scheduler.util.Prioritization."
+    )

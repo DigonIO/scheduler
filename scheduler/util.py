@@ -334,7 +334,7 @@ def _warn_deprecated(
     def wrapped_function(time: float, job: Job, max_exec: int, job_count: int) -> float:
         warnings.warn(
             (
-                "Deprecated import! Use scheduler.prioritization instead of"
+                "Deprecated import! Use scheduler.prioritization instead of "
                 "scheduler.util.Prioritization."
             ),
             DeprecationWarning,
@@ -347,6 +347,7 @@ def _warn_deprecated(
 
 # NOTE: will be removed in next minor release (0.8.0)
 class Prioritization:
+
     """
     Collection of prioritization functions.
 

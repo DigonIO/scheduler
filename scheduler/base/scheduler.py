@@ -49,7 +49,7 @@ def _warn_deprecated_delay(delay: Optional[bool] = None, **kwargs):
     if delay is not None:
         warnings.warn(
             (
-                "Using the `delay` argument is deprecated and will"
+                "Using the `delay` argument is deprecated and will "
                 "be removed in the next minor release."
             ),
             DeprecationWarning,

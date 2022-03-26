@@ -70,7 +70,7 @@ def test_worker_count(n_threads, max_exec, n_jobs, res_n_exec):
         (0.0005, 4, 4, 3, [3, 3, 3, 3]),  # 4 threads, exec limit, 3 slow jobs
     ],
 )
-def test_threading_slow_jobs(job_sleep, n_threads, max_exec, n_jobs, res_n_exec):
+def test_threading_slow_jobs(job_sleep, n_threads, max_exec, n_jobs, res_n_exec, recwarn):
     sch = Scheduler(n_threads=n_threads, max_exec=max_exec)
 
     for _ in range(n_jobs):
@@ -80,6 +80,11 @@ def test_threading_slow_jobs(job_sleep, n_threads, max_exec, n_jobs, res_n_exec)
             kwargs={"secs": job_sleep},
             delay=False,
         )
+    warn = recwarn.pop(DeprecationWarning)
+    assert (
+        str(warn.message)
+        == "Using the `delay` argument is deprecated and will be removed in the next minor release."
+    )
     results = []
     for _ in range(len(res_n_exec)):
         results.append(sch.exec_jobs())

@@ -30,7 +30,7 @@ class BaseJob(ABC):
 
     __type: JobType
     __timing: TimingJobUnion
-    __handle: handle
+    __handle: Callable[..., None]
     __args: tuple[Any, ...]
     __kwargs: dict[str, Any]
     __max_attempts: int
@@ -123,7 +123,7 @@ class BaseJob(ABC):
         if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
             self.__mark_delete = True
 
-    def _repr(self) -> tuple[str]:
+    def _repr(self) -> tuple[str, str, str, str, str, str, str, str, str, str, str, str]:
         return tuple(
             repr(elem)
             for elem in (
@@ -148,7 +148,7 @@ class BaseJob(ABC):
 
     def _str(
         self,
-    ) -> tuple[str, str, str, str, Optional[str], str, int, Union[float, int]]:
+    ) -> tuple[str, str, str, str, str, str, str, str]:
         """Return the objects relevant for readable string representation."""
         dt_timedelta = self.timedelta(dt.datetime.now(self.tzinfo))
         if self.alias is not None:
@@ -162,15 +162,14 @@ class BaseJob(ABC):
             self.handle.__qualname__ if self.alias is None else self.alias,
             f_args,
             str(self.datetime)[:19],
-            self.datetime.tzname(),
+            str(self.datetime.tzname()),
             prettify_timedelta(dt_timedelta),
-            self.attempts,
-            float("inf") if self.max_attempts == 0 else self.max_attempts,
+            str(self.attempts),
+            str(float("inf") if self.max_attempts == 0 else self.max_attempts),
         )
 
-    @abstractmethod
     def __str__(self) -> str:
-        raise NotImplementedError()  # pragma: no cover
+        return "{0}, {1}{2}, at={3}, tz={4}, in={5}, #{6}/{7}".format(*self._str())
 
     @property
     def type(self) -> JobType:
@@ -255,7 +254,7 @@ class BaseJob(ABC):
         """
         warnings.warn(
             (
-                "Using the `delay` property is deprecated and will"
+                "Using the `delay` property is deprecated and will "
                 "be removed in the next minor release."
             ),
             DeprecationWarning,
@@ -313,7 +312,7 @@ class BaseJob(ABC):
         return self.__skip_missing
 
     @property
-    def alias(self) -> Optional[dt.tzinfo]:
+    def alias(self) -> Optional[str]:
         r"""
         Get the alias of the `Job`.
 

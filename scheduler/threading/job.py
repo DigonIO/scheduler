@@ -102,26 +102,19 @@ class Job(BaseJob):
     def _exec(self) -> None:
         """Execute the callback function."""
         with self.__lock:
-            self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)
-            self._BaseJob__attempts += 1
+            self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)  # type: ignore
+            self._BaseJob__attempts += 1  # type: ignore
 
     # pylint: enable=no-member invalid-name
 
     def __repr__(self) -> str:
         with self.__lock:
-            params: tuple[str] = self._repr()
+            params: tuple[str, str, str, str, str, str, str, str, str, str, str, str] = self._repr()
             params_sum: str = ", ".join(params[:6] + (repr(self.__weight),) + params[6:])
             return f"scheduler.Job({params_sum})"
 
-    def _str(
-        self,
-    ) -> tuple[str, str, str, str, Optional[str], str, int, Union[float, int], float]:
-        """Return the objects relevant for readable string representation."""
-        with self.__lock:
-            return (*super()._str(), self.__weight)
-
     def __str__(self) -> str:
-        return "{0}, {1}{2}, at={3}, tz={4}, in={5}, #{6}/{7}, w={8:.3f}".format(*self._str())
+        return f"{super().__str__()}, w={self.weight:.3g}"
 
     @property
     def weight(self) -> float:

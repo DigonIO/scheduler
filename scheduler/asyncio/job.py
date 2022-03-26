@@ -65,6 +65,3 @@ class Job(BaseJob):
     def __repr__(self) -> str:
         params: tuple[str] = self._repr()
         return f"scheduler.asyncio.job.Job({', '.join(params)})"
-
-    def __str__(self) -> str:
-        return "{0}, {1}{2}, at={3}, tz={4}, in={5}, #{6}/{7}".format(*self._str())

@@ -153,7 +153,7 @@ class Scheduler(BaseScheduler):
                     str_cutoff(row[4] or "", c_width[3], False),
                     str_cutoff(row[5], c_width[4], True),
                     str_cutoff(f"{row[6]}/{row[7]}", c_width[5], True),
-                    str_cutoff(f"{row[8]}", c_width[6], True),
+                    str_cutoff(f"{job.weight}", c_width[6], True),
                 )
                 job_table += fstring.format(*entries)
 
