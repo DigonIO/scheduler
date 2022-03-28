@@ -210,3 +210,22 @@ async def test_async_once(event_loop, timing, err_msg):
 async def test_async_once_datetime(event_loop):
     sch = Scheduler(loop=event_loop)
     job0 = sch.once(dt.datetime.now(), foo)
+
+
+def test_async_scheduler_usage_example():
+    async def main():
+        schedule = Scheduler()
+
+        schedule.once(dt.timedelta(), foo)
+        cyclic_job = schedule.cyclic(dt.timedelta(seconds=0.01), foo)
+        assert len(schedule.get_jobs()) == 2
+        await asyncio.sleep(0.001)
+        assert len(schedule.get_jobs()) == 1
+        assert cyclic_job.attempts == 0
+        await asyncio.sleep(0.02)
+        assert len(schedule.get_jobs()) == 1
+        assert cyclic_job.attempts == 1
+        await asyncio.sleep(0.001)
+        assert cyclic_job.attempts == 2
+
+    asyncio.run(main())
