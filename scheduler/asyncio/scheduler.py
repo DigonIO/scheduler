@@ -60,7 +60,7 @@ class Scheduler(BaseScheduler):
         loop: Optional[aio.selector_events.BaseSelectorEventLoop] = None,
         tzinfo: Optional[dt.tzinfo] = None,
     ):
-        self.__loop = loop if loop else aio.get_event_loop()
+        self.__loop = loop if loop else aio.get_running_loop()
         self.__tzinfo = tzinfo
         self.__tz_str = dt.datetime.now(tzinfo).tzname()
 

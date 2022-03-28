@@ -84,6 +84,7 @@ async_job_reprs_utc = (
 )
 
 
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "patch_datetime_now, job_kwargs, tzinfo, j_results, s_results",
     [
@@ -92,8 +93,9 @@ async_job_reprs_utc = (
     ],
     indirect=["patch_datetime_now"],
 )
-def test_async_scheduler_repr(patch_datetime_now, job_kwargs, tzinfo, j_results, s_results):
+async def test_async_scheduler_repr(patch_datetime_now, job_kwargs, tzinfo, j_results, s_results):
     jobs = [Job(**kwargs) for kwargs in job_kwargs]
+
     sch = Scheduler(tzinfo=tzinfo)
     for job in jobs:
         sch._Scheduler__jobs[job] = None
