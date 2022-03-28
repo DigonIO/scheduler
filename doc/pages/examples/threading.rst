@@ -22,8 +22,9 @@ run times.
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> def sleep(secs: float):
@@ -51,8 +52,9 @@ will spawn a seperate worker thread for every pending |Job|.
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> def sleep(secs: float):

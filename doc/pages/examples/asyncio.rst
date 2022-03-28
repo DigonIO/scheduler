@@ -27,6 +27,7 @@ The following example shows how to use the asyncio |AioScheduler| with a simple 
 
       schedule.once(dt.timedelta(seconds=5), foo)
       schedule.cyclic(dt.timedelta(minutes=10), foo)
+
       while True:
           await asyncio.sleep(1)
 
@@ -52,6 +53,7 @@ argument:
 
       schedule.once(dt.timedelta(seconds=5), foo)
       schedule.cyclic(dt.timedelta(minutes=10), foo)
+
       while True:
           await asyncio.sleep(1)
 

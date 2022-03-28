@@ -70,6 +70,7 @@ For advanced scheduling examples please visit the online
 
 ```py
 import datetime as dt
+
 from scheduler import Scheduler
 import scheduler.trigger as trigger
 

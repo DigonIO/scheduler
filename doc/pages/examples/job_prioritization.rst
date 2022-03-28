@@ -36,8 +36,9 @@ of the highest weight:
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> now = dt.datetime.now()
@@ -68,8 +69,9 @@ If several |Job|\ s of the same weight are overdue, the
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> now = dt.datetime.now()

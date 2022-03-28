@@ -6,8 +6,8 @@ Examples
     :caption: Table of Contents
 
     pages/examples/quick_start
-    pages/examples/asyncio
     pages/examples/threading
+    pages/examples/asyncio
     pages/examples/timezones
     pages/examples/parameters
     pages/examples/tags

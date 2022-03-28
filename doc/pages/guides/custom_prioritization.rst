@@ -66,6 +66,7 @@ Instantiate the |Scheduler| with the custom priority function.
 .. code-block:: pycon
 
     >>> import datetime as dt
+
     >>> from scheduler import Scheduler
     >>> import scheduler.prioritization as sp
 
@@ -150,6 +151,7 @@ available in :mod:`~scheduler.util` as
 .. code-block:: python
 
     import random
+
     import scheduler
 
     def random_priority_function(
@@ -176,6 +178,7 @@ some generic |Job|\ s with probabilities from ``0%`` to ``100%``:
 .. code-block:: pycon
 
     >>> import datetime as dt
+
     >>> from scheduler import Scheduler
     >>> import scheduler.prioritization as sp
 

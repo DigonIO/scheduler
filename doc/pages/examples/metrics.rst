@@ -8,8 +8,9 @@ Starting with a |Scheduler| and two |Job|\ s:
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> def foo():
