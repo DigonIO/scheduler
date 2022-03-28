@@ -4,43 +4,55 @@ Asyncio
 To use `asyncio <https://docs.python.org/3/library/asyncio.html>`_ with the `scheduler` library,
 replace the default threading Scheduler (:py:class:`scheduler.threading.scheduler.Scheduler`)
 with the asyncio Scheduler (:py:class:`scheduler.asyncio.scheduler.Scheduler`) variant.
-Both schedulers provide nearly the same API and can be switched out without major adjustments.
-The main difference is, that the asyncio |AioScheduler| does not support prioritization and weighting.
+Both schedulers provide a nearly identical API - the only difference is the lack of
+prioritization and weighting support for the asyncio |AioScheduler|.
+
+.. note:: In contrast to the threading |Scheduler| it is necessary to instanciate
+   the asyncio |AioScheduler| within a coroutine.
 
 The following example shows how to use the asyncio |AioScheduler| with a simple coroutine.
 
-.. code-block:: pycon
+.. code-block:: python
 
-    >>> import datetime as dt
-    >>> from scheduler.asyncio import Scheduler
+  import asyncio
+  import datetime as dt
 
-    >>> async def foo():
-    ...     print("bar")
+  from scheduler.asyncio import Scheduler
 
-    >>> schedule = Scheduler()
+  async def foo():
+      print("foo")
 
-    >>> delta = dt.timedelta(minutes=10)
-    >>> schedule.cyclic(delta, foo)
-    scheduler.asyncio.job.Job(...CYCLIC...datetime.timedelta(seconds=600)...foo...0,...)
+  async def main():
+      schedule = Scheduler()
 
-.. note:: The first example does not require to import ``asyncio``. This only changes once
-   a custom event loop is used.
+      schedule.once(dt.timedelta(seconds=5), foo)
+      schedule.cyclic(dt.timedelta(minutes=10), foo)
+      while True:
+          await asyncio.sleep(1)
+
+  asyncio.run(main())
+
 
 To initialize the |AioScheduler| with a user defined event loop, use the `loop` keyword
 argument:
 
-.. code-block:: pycon
+.. code-block:: python
 
-    >>> import asyncio
-    >>> import datetime as dt
-    >>> from scheduler.asyncio import Scheduler
+  import asyncio
+  import datetime as dt
 
-    >>> async def foo():
-    ...     print("bar")
+  from scheduler.asyncio import Scheduler
 
-    >>> loop = asyncio.get_event_loop()
-    >>> schedule = Scheduler(loop=loop)
+  async def foo():
+      print("foo")
 
-    >>> delta = dt.timedelta(minutes=10)
-    >>> schedule.cyclic(delta, foo)
-    scheduler.asyncio.job.Job(...CYCLIC...datetime.timedelta(seconds=600)...foo...0,...)
+  async def main():
+      loop = asyncio.get_running_loop()
+      schedule = Scheduler(loop=loop)
+
+      schedule.once(dt.timedelta(seconds=5), foo)
+      schedule.cyclic(dt.timedelta(minutes=10), foo)
+      while True:
+          await asyncio.sleep(1)
+
+  asyncio.run(main())
