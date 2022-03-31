@@ -76,8 +76,9 @@ class Scheduler(BaseScheduler):
 
     async def __supervise_job(self, job: Job) -> None:
         try:
+            reference_dt = dt.datetime.now(tz=self.__tzinfo)
             while job.has_attempts_remaining:
-                sleep_seconds: float = job.timedelta().total_seconds()
+                sleep_seconds: float = job.timedelta(reference_dt).total_seconds()
                 await aio.sleep(sleep_seconds)
 
                 await job._exec()  # pylint: disable=protected-access

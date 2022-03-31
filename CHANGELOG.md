@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0
+
+### Deprecation warnings
+
+The `delay` argument used when scheduling jobs of different types will be removed
+in the 0.8.0 release.
+
 ## 0.6.3
 
 ### Bugfixes
