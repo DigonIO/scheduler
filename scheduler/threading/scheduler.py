@@ -88,7 +88,6 @@ class Scheduler(BaseScheduler):
                 raise SchedulerError(TZ_ERROR_MSG)
 
         self.__n_threads = n_threads
-        #self.__tz_str = dt.datetime.now(tzinfo).tzname()
         self.__tz_str = check_tzname(tzinfo=tzinfo)
 
     def __repr__(self) -> str:

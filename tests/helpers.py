@@ -35,7 +35,6 @@ TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
 START_STOP_ERROR = "Start argument must be smaller than the stop argument."
 
 samples = [
-    T_2021_5_26__3_55,  # scheduler init
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t2
@@ -48,7 +47,6 @@ samples = [
 ]
 
 samples_utc = [
-    T_2021_5_26__3_55_UTC,  # scheduler init
     T_2021_5_26__3_55_UTC,  # job creation
     T_2021_5_26__3_55_UTC + dt.timedelta(seconds=5),  # t1
     T_2021_5_26__3_55_UTC + dt.timedelta(seconds=8),  # t2
@@ -61,7 +59,6 @@ samples_utc = [
 ]
 
 sample_seconds_interference = [
-    T_2021_5_26__3_55,  # scheduler init
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(seconds=4),  # t1
     T_2021_5_26__3_55 + dt.timedelta(seconds=4.1),  # t2
@@ -86,7 +83,6 @@ sample_seconds_interference = [
 ]
 
 sample_seconds_interference_lag = [
-    T_2021_5_26__3_55,  # scheduler init
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(seconds=4),  # t1
     T_2021_5_26__3_55 + dt.timedelta(seconds=4.1),  # t2
@@ -109,7 +105,6 @@ sample_seconds_interference_lag = [
 ]
 
 samples_seconds = [
-    T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(seconds=8),  # t2
@@ -122,7 +117,6 @@ samples_seconds = [
 ]
 
 samples_seconds_utc = [
-    T_2021_5_26__3_55_UTC,  # scheduler creation
     T_2021_5_26__3_55_UTC,  # job creation
     T_2021_5_26__3_55_UTC + dt.timedelta(seconds=5),  # t1
     T_2021_5_26__3_55_UTC + dt.timedelta(seconds=8),  # t2
@@ -135,7 +129,6 @@ samples_seconds_utc = [
 ]
 
 samples_half_minutes = [
-    T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(minutes=0, seconds=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(minutes=0, seconds=10),  # t2
@@ -149,7 +142,6 @@ samples_half_minutes = [
 ]
 
 samples_minutes = [
-    T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(minutes=1, seconds=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(minutes=2, seconds=8),  # t2
@@ -162,7 +154,6 @@ samples_minutes = [
 ]
 
 samples_minutes_utc = [
-    T_2021_5_26__3_55_UTC,  # scheduler creation
     T_2021_5_26__3_55_UTC,  # job creation
     T_2021_5_26__3_55_UTC + dt.timedelta(minutes=1, seconds=5),  # t1
     T_2021_5_26__3_55_UTC + dt.timedelta(minutes=2, seconds=8),  # t2
@@ -175,7 +166,6 @@ samples_minutes_utc = [
 ]
 
 samples_hours = [
-    T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(hours=1, minutes=5),  # t1 05:00
     T_2021_5_26__3_55 + dt.timedelta(hours=2, minutes=8),  # t2 06:03
@@ -188,7 +178,6 @@ samples_hours = [
 ]
 
 samples_hours_utc = [
-    T_2021_5_26__3_55_UTC,  # scheduler creation
     T_2021_5_26__3_55_UTC,  # job creation
     T_2021_5_26__3_55_UTC + dt.timedelta(hours=1, minutes=5),  # t1
     T_2021_5_26__3_55_UTC + dt.timedelta(hours=2, minutes=8),  # t2
@@ -202,7 +191,6 @@ samples_hours_utc = [
 
 
 samples_days = [
-    T_2021_5_26__3_55,  # scheduler creation
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(days=1, hours=5),  # t1
     T_2021_5_26__3_55 + dt.timedelta(days=1, hours=8),  # t2
@@ -215,7 +203,6 @@ samples_days = [
 ]
 
 samples_days_utc = [
-    T_2021_5_26__3_55_UTC,  # scheduler creation
     T_2021_5_26__3_55_UTC,  # job creation
     T_2021_5_26__3_55_UTC + dt.timedelta(days=1, hours=5),  # t1
     T_2021_5_26__3_55_UTC + dt.timedelta(days=1, hours=8),  # t2
@@ -229,7 +216,6 @@ samples_days_utc = [
 
 
 samples_weeks = [
-    T_2021_5_26__3_55,  # scheduler creation WEDNESDAY
     T_2021_5_26__3_55,  # job creation WEDNESDAY
     T_2021_5_26__3_55 + dt.timedelta(weeks=1, days=1),  # t1 THURSDAY
     T_2021_5_26__3_55 + dt.timedelta(weeks=1, days=2),  # t2 FRIDAY
@@ -242,7 +228,6 @@ samples_weeks = [
 ]
 
 samples_weeks_utc = [
-    T_2021_5_26__3_55_UTC,  # scheduler creation WEDNESDAY
     T_2021_5_26__3_55_UTC,  # job creation WEDNESDAY
     T_2021_5_26__3_55_UTC + dt.timedelta(weeks=1, days=1),  # t1 THURSDAY
     T_2021_5_26__3_55_UTC + dt.timedelta(weeks=1, days=2),  # t2 FRIDAY
