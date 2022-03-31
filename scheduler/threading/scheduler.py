@@ -14,7 +14,7 @@ import typeguard as tg
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.job import BaseJob
 from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag, _warn_deprecated_delay
-from scheduler.base.scheduler_util import str_cutoff
+from scheduler.base.scheduler_util import str_cutoff, check_tzname
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
@@ -88,7 +88,8 @@ class Scheduler(BaseScheduler):
                 raise SchedulerError(TZ_ERROR_MSG)
 
         self.__n_threads = n_threads
-        self.__tz_str = dt.datetime.now(tzinfo).tzname()
+        #self.__tz_str = dt.datetime.now(tzinfo).tzname()
+        self.__tz_str = check_tzname(tzinfo=tzinfo)
 
     def __repr__(self) -> str:
         with self.__lock:
