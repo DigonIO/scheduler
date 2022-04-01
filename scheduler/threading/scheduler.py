@@ -7,18 +7,17 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 import queue
 import threading
-from typing import Any, Callable, Optional, Union, cast
+from typing import Any, Callable, Optional
 
 import typeguard as tg
 
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.job import BaseJob
 from scheduler.base.scheduler import BaseScheduler, _warn_deprecated_delay, select_jobs_by_tag
-from scheduler.base.scheduler_util import check_tzname, str_cutoff
+from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
-    TimingJobUnion,
     TimingOnceUnion,
     TimingWeeklyUnion,
 )
@@ -346,24 +345,10 @@ class Scheduler(BaseScheduler):
 
     def __schedule(
         self,
-        job_type: JobType,
-        timing: Union[TimingCyclic, TimingDailyUnion, TimingWeeklyUnion],
-        handle: Callable[..., None],
         **kwargs,
     ) -> Job:
         """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
-        if not isinstance(timing, list):
-            timing_list = cast(TimingJobUnion, [timing])
-        else:
-            timing_list = cast(TimingJobUnion, timing)
-
-        job = Job(
-            job_type=job_type,
-            timing=timing_list,
-            handle=handle,
-            tzinfo=self.__tzinfo,
-            **kwargs,
-        )
+        job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
         if job.has_attempts_remaining:
             with self.__lock:
                 self.__jobs.add(job)

@@ -5,8 +5,16 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 
 import datetime as dt
-from typing import Optional
+from typing import Callable, Optional, Union, cast
 
+from scheduler.base.definition import JobType
+from scheduler.base.job import BaseJobType
+from scheduler.base.timingtype import (
+    TimingCyclic,
+    TimingDailyUnion,
+    TimingJobUnion,
+    TimingWeeklyUnion,
+)
 from scheduler.error import SchedulerError
 
 
@@ -49,3 +57,23 @@ def check_tzname(tzinfo: Optional[dt.tzinfo]) -> Optional[str]:
     if name is not None and not isinstance(name, str):
         raise SchedulerError(f"tzinfo.tzname() must return None or string, not {type(name)}")
     return name
+
+
+def create_job_instance(
+    job_class: type,
+    timing: Union[TimingCyclic, TimingDailyUnion, TimingWeeklyUnion],
+    **kwargs,
+) -> BaseJobType:
+    """Create a job instance from the given input parameters."""
+    if not isinstance(timing, list):
+        timing_list = cast(TimingJobUnion, [timing])
+    else:
+        timing_list = cast(TimingJobUnion, timing)
+
+    return cast(
+        BaseJobType,
+        job_class(
+            timing=timing_list,
+            **kwargs,
+        ),
+    )

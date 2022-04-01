@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import asyncio as aio
 import datetime as dt
-from typing import Any, Callable, Optional, Union, cast
+from typing import Any, Callable, Optional, cast
 
 import typeguard as tg
 
@@ -20,11 +20,10 @@ from scheduler.base.scheduler import (
     _warn_deprecated_delay,
     select_jobs_by_tag,
 )
-from scheduler.base.scheduler_util import check_tzname, str_cutoff
+from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
-    TimingJobUnion,
     TimingOnceUnion,
     TimingWeeklyUnion,
 )
@@ -187,24 +186,10 @@ class Scheduler(BaseScheduler):
 
     def __schedule(
         self,
-        job_type: JobType,
-        timing: Union[TimingCyclic, TimingDailyUnion, TimingWeeklyUnion],
-        handle: Callable[..., None],
         **kwargs,
     ) -> Job:
         """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
-        if not isinstance(timing, list):
-            timing_list = cast(TimingJobUnion, [timing])
-        else:
-            timing_list = cast(TimingJobUnion, timing)
-
-        job = Job(
-            job_type=job_type,
-            timing=timing_list,
-            handle=handle,
-            tzinfo=self.__tzinfo,
-            **kwargs,
-        )
+        job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
 
         task = self.__loop.create_task(self.__supervise_job(job))
         self.__jobs[job] = task
