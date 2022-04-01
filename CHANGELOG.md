@@ -2,20 +2,45 @@
 
 ## 0.7.0
 
+### Features
+
++ Added a scheduler for asyncio under the import path `scheduler.asyncio.Scheduler`.
+
+### Bugfixes
+
++ The deletion of an unscheduled `Job` with the `scheduler.Scheduler.delete_job` method raised
+  a `KeyError`. This was corrected and it will now raise a `SchedulerError`.
+
+### Misc
+
++ Refactoring of the internal code structure.
++ New namespace conventions.
++ Revision of the `setup.py` file.
++ Revision of the README.md.
++ Documentation updated.
++ The documentation now uses the [furo](https://github.com/pradyunsg/furo) theme.
+
 ### Deprecation warnings
 
-The `delay` argument used when scheduling jobs of different types will be removed
-in the 0.8.0 release.
++ The `delay` argument used when scheduling jobs of different types will be removed
+  in the 0.8.0 release.
+
+### Known issues
+
++ Some mypy errors arise due to implementation details regarding the inheritance of the `BaseJob`
+  and `BaseScheduler`.
 
 ## 0.6.3
 
 ### Bugfixes
 
-+ Fix the missing lock acquiring in the `JobTimer` described as bug in the [issue #10](https://gitlab.com/DigonIO/scheduler/-/issues/10).
++ Fix the missing lock acquiring in the `JobTimer` described as bug in the
+  [issue #10](https://gitlab.com/DigonIO/scheduler/-/issues/10).
 
 ### Misc
 
-+ Fix the version of `mistune` in the `requirement.txt` to prevent pipeline failure  (`m2r2` dependency, not fixed there).
++ Fix the version of `mistune` in the `requirement.txt` to prevent pipeline failure
+  (`m2r2` dependency, not fixed there).
 
 ## 0.6.2
 
