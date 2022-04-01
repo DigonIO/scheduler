@@ -63,5 +63,5 @@ class Job(BaseJob):
     # pylint: enable=no-member invalid-name
 
     def __repr__(self) -> str:
-        params: tuple[str] = self._repr()
+        params: tuple[str, ...] = self._repr()
         return f"scheduler.asyncio.job.Job({', '.join(params)})"

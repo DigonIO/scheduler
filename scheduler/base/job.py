@@ -123,7 +123,7 @@ class BaseJob(ABC):
         if self.__stop is not None and self.__pending_timer.datetime > self.__stop:
             self.__mark_delete = True
 
-    def _repr(self) -> tuple[str, str, str, str, str, str, str, str, str, str, str, str]:
+    def _repr(self) -> tuple[str, ...]:
         return tuple(
             repr(elem)
             for elem in (
@@ -148,7 +148,7 @@ class BaseJob(ABC):
 
     def _str(
         self,
-    ) -> tuple[str, str, str, str, str, str, str, str]:
+    ) -> tuple[str, ...]:
         """Return the objects relevant for readable string representation."""
         dt_timedelta = self.timedelta(dt.datetime.now(self.tzinfo))
         if self.alias is not None:

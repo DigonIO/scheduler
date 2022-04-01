@@ -348,7 +348,7 @@ class Scheduler(BaseScheduler):
         **kwargs,
     ) -> Job:
         """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
-        job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
+        job: Job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
         if job.has_attempts_remaining:
             with self.__lock:
                 self.__jobs.add(job)

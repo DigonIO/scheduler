@@ -110,7 +110,7 @@ class Job(BaseJob):
 
     def __repr__(self) -> str:
         with self.__lock:
-            params: tuple[str, str, str, str, str, str, str, str, str, str, str, str] = self._repr()
+            params: tuple[str, ...] = self._repr()
             params_sum: str = ", ".join(params[:6] + (repr(self.__weight),) + params[6:])
             return f"scheduler.Job({params_sum})"
 

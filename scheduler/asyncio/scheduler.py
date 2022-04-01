@@ -189,7 +189,7 @@ class Scheduler(BaseScheduler):
         **kwargs,
     ) -> Job:
         """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
-        job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
+        job: Job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
 
         task = self.__loop.create_task(self.__supervise_job(job))
         self.__jobs[job] = task
