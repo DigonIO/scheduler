@@ -5,9 +5,8 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 
 import datetime as dt
-from typing import Callable, Optional, Union, cast
+from typing import Optional, Union, cast
 
-from scheduler.base.definition import JobType
 from scheduler.base.job import BaseJobType
 from scheduler.base.timingtype import (
     TimingCyclic,

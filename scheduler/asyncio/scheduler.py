@@ -73,36 +73,11 @@ class Scheduler(BaseScheduler):
 
         self.__jobs: dict[Job, aio.Task[None]] = {}
 
-    async def __supervise_job(self, job: Job) -> None:
-        try:
-            reference_dt = dt.datetime.now(tz=self.__tzinfo)
-            while job.has_attempts_remaining:
-                sleep_seconds: float = job.timedelta(reference_dt).total_seconds()
-                await aio.sleep(sleep_seconds)
-
-                await job._exec()  # pylint: disable=protected-access
-
-                reference_dt = dt.datetime.now(tz=self.__tzinfo)
-                job._calc_next_exec(reference_dt)  # pylint: disable=protected-access
-
-        except aio.CancelledError:  # TODO asyncio does not trigger this exception in pytest, why?
-            pass  # pragma: no cover
-
-        else:
-            self.delete_job(job)
-
     def __repr__(self) -> str:
         return "scheduler.asyncio.scheduler.Scheduler({0}, jobs={{{1}}})".format(
             ", ".join((repr(elem) for elem in (self.__tzinfo,))),
             ", ".join([repr(job) for job in sorted(self.jobs)]),
         )
-
-    def __headings(self) -> list[str]:
-        headings = [
-            f"tzinfo={self.__tz_str}",
-            f"#jobs={len(self.__jobs)}",
-        ]
-        return headings
 
     def __str__(self) -> str:
         # Scheduler meta heading
@@ -143,46 +118,12 @@ class Scheduler(BaseScheduler):
 
         return scheduler_headings + job_table
 
-    def get_jobs(
-        self,
-        tags: Optional[set[str]] = None,
-        any_tag: bool = False,
-    ) -> set[Job]:
-        r"""
-        Get a set of |AioJob|\ s from the |AioScheduler| by tags.
-
-        If no tags or an empty set of tags are given defaults to returning
-        all |AioJob|\ s.
-
-        Parameters
-        ----------
-        tags : set[str]
-            Tags to filter scheduled |AioJob|\ s.
-            If no tags are given all |AioJob|\ s are returned.
-        any_tag : bool
-            False: To match a |AioJob| all tags have to match.
-            True: To match a |AioJob| at least one tag has to match.
-
-        Returns
-        -------
-        set[Job]
-            Currently scheduled |AioJob|\ s.
-        """
-        if tags is None or tags == {}:
-            return self.jobs
-        return cast(set[Job], select_jobs_by_tag(cast(set[BaseJob], self.jobs), tags, any_tag))
-
-    @property
-    def jobs(self) -> set[Job]:
-        r"""
-        Get the set of all `Job`\ s.
-
-        Returns
-        -------
-        set[Job]
-            Currently scheduled |AioJob|\ s.
-        """
-        return set(self.__jobs.keys())
+    def __headings(self) -> list[str]:
+        headings = [
+            f"tzinfo={self.__tz_str}",
+            f"#jobs={len(self.__jobs)}",
+        ]
+        return headings
 
     def __schedule(
         self,
@@ -195,6 +136,24 @@ class Scheduler(BaseScheduler):
         self.__jobs[job] = task
 
         return job
+
+    async def __supervise_job(self, job: Job) -> None:
+        try:
+            reference_dt = dt.datetime.now(tz=self.__tzinfo)
+            while job.has_attempts_remaining:
+                sleep_seconds: float = job.timedelta(reference_dt).total_seconds()
+                await aio.sleep(sleep_seconds)
+
+                await job._exec()  # pylint: disable=protected-access
+
+                reference_dt = dt.datetime.now(tz=self.__tzinfo)
+                job._calc_next_exec(reference_dt)  # pylint: disable=protected-access
+
+        except aio.CancelledError:  # TODO asyncio does not trigger this exception in pytest, why?
+            pass  # pragma: no cover
+
+        else:
+            self.delete_job(job)
 
     def delete_job(self, job: Job) -> None:
         """
@@ -249,6 +208,35 @@ class Scheduler(BaseScheduler):
             self.delete_job(job)
 
         return len(jobs_to_delete)
+
+    def get_jobs(
+        self,
+        tags: Optional[set[str]] = None,
+        any_tag: bool = False,
+    ) -> set[Job]:
+        r"""
+        Get a set of |AioJob|\ s from the |AioScheduler| by tags.
+
+        If no tags or an empty set of tags are given defaults to returning
+        all |AioJob|\ s.
+
+        Parameters
+        ----------
+        tags : set[str]
+            Tags to filter scheduled |AioJob|\ s.
+            If no tags are given all |AioJob|\ s are returned.
+        any_tag : bool
+            False: To match a |AioJob| all tags have to match.
+            True: To match a |AioJob| at least one tag has to match.
+
+        Returns
+        -------
+        set[Job]
+            Currently scheduled |AioJob|\ s.
+        """
+        if tags is None or tags == {}:
+            return self.jobs
+        return cast(set[Job], select_jobs_by_tag(cast(set[BaseJob], self.jobs), tags, any_tag))
 
     def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> Job:
         r"""
@@ -502,3 +490,15 @@ class Scheduler(BaseScheduler):
             max_attempts=1,
             tags=tags,
         )
+
+    @property
+    def jobs(self) -> set[Job]:
+        r"""
+        Get the set of all `Job`\ s.
+
+        Returns
+        -------
+        set[Job]
+            Currently scheduled |AioJob|\ s.
+        """
+        return set(self.__jobs.keys())

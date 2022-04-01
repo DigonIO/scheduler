@@ -41,3 +41,6 @@
 
 .. |skip_missing_text| replace:: If ``True`` a |Job| will only
    schedule it's newest planned execution and drop older ones.
+
+.. |alias_text| replace:: Set the timezone of the |AioScheduler| the |AioJob|
+   is scheduled in.

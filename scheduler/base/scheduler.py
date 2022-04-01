@@ -84,11 +84,6 @@ class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than a
     ) -> set[BaseJob]:
         r"""Get a set of |BaseJob|\ s from the `BaseScheduler` by tags."""
 
-    @property
-    @abstractmethod
-    def jobs(self) -> set[BaseJob]:
-        r"""Get the set of all |BaseJob|\ s."""
-
     @abstractmethod
     def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> BaseJob:
         """Schedule a cyclic |BaseJob|."""
@@ -120,3 +115,8 @@ class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than a
         tags: Optional[list[str]] = None,
     ) -> BaseJob:
         """Schedule a oneshot |BaseJob|."""
+
+    @property
+    @abstractmethod
+    def jobs(self) -> set[BaseJob]:
+        r"""Get the set of all |BaseJob|\ s."""

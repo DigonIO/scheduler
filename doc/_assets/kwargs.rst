@@ -3,6 +3,8 @@
 +----------------------------------------------------+----------------------+
 | :attr:`~scheduler.base.job.BaseJob.kwargs`         | |kwargs_text|        |
 +----------------------------------------------------+----------------------+
+| :attr:`~scheduler.base.job.BaseJob.max_attempts`   | |max_attempts_text|  |
++----------------------------------------------------+----------------------+
 | :attr:`~scheduler.base.job.BaseJob.tags`           | |tags_text|          |
 +----------------------------------------------------+----------------------+
 | :attr:`~scheduler.base.job.BaseJob.delay`          | |delay_text|         |
@@ -11,9 +13,9 @@
 +----------------------------------------------------+----------------------+
 | :attr:`~scheduler.base.job.BaseJob.stop`           | |stop_text|          |
 +----------------------------------------------------+----------------------+
-| :attr:`~scheduler.base.job.BaseJob.max_attempts`   | |max_attempts_text|  |
-+----------------------------------------------------+----------------------+
 | :attr:`~scheduler.base.job.BaseJob.skip_missing`   | |skip_missing_text|  |
++----------------------------------------------------+----------------------+
+| :attr:`~scheduler.base.job.BaseJob.alias`          | |alias_text|         |
 +----------------------------------------------------+----------------------+
 | :attr:`~scheduler.base.job.BaseJob.weight`         | |weight_text|        |
 +----------------------------------------------------+----------------------+
