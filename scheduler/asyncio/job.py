@@ -25,6 +25,9 @@ class Job(BaseJob):
         Positional argument payload for the function handle within a |AioJob|.
     kwargs : Optional[dict[str, Any]]
         Keyword arguments payload for the function handle within a |AioJob|.
+    max_attempts : Optional[int]
+        Number of times the |AioJob| will be executed where ``0 <=> inf``.
+        A |AioJob| with no free attempt will be deleted.
     tags : Optional[set[str]]
         The tags of the |AioJob|.
     delay : Optional[bool]
@@ -35,9 +38,6 @@ class Job(BaseJob):
     stop : Optional[datetime.datetime]
         Define a point in time after which a |AioJob| will be stopped
         and deleted.
-    max_attempts : Optional[int]
-        Number of times the |AioJob| will be executed where ``0 <=> inf``.
-        A |AioJob| with no free attempt will be deleted.
     skip_missing : Optional[bool]
         If ``True`` a |AioJob| will only schedule it's newest planned
         execution and drop older ones.

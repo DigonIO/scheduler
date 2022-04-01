@@ -29,10 +29,11 @@ class Job(BaseJob):
         Positional argument payload for the function handle within a |Job|.
     kwargs : Optional[dict[str, Any]]
         Keyword arguments payload for the function handle within a |Job|.
+    max_attempts : Optional[int]
+        Number of times the |Job| will be executed where ``0 <=> inf``.
+        A |Job| with no free attempt will be deleted.
     tags : Optional[set[str]]
         The tags of the |Job|.
-    weight : Optional[float]
-        Relative `weight` against other |Job|\ s.
     delay : Optional[bool]
         *Deprecated*: If ``True`` wait with the execution for the next scheduled time.
     start : Optional[datetime.datetime]
@@ -41,9 +42,6 @@ class Job(BaseJob):
     stop : Optional[datetime.datetime]
         Define a point in time after which a |Job| will be stopped
         and deleted.
-    max_attempts : Optional[int]
-        Number of times the |Job| will be executed where ``0 <=> inf``.
-        A |Job| with no free attempt will be deleted.
     skip_missing : Optional[bool]
         If ``True`` a |Job| will only schedule it's newest planned
         execution and drop older ones.
@@ -52,6 +50,8 @@ class Job(BaseJob):
     tzinfo : Optional[datetime.tzinfo]
         Set the timezone of the |Scheduler| the |Job|
         is scheduled in.
+    weight : Optional[float]
+        Relative `weight` against other |Job|\ s.
 
     Returns
     -------
@@ -72,13 +72,13 @@ class Job(BaseJob):
         kwargs: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         tags: Optional[set[str]] = None,
-        weight: float = 1,
         delay: bool = True,
         start: Optional[dt.datetime] = None,
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
         alias: str = None,
         tzinfo: Optional[dt.tzinfo] = None,
+        weight: float = 1,
     ):
         super().__init__(
             job_type,
@@ -108,6 +108,10 @@ class Job(BaseJob):
 
     # pylint: enable=no-member invalid-name
 
+    def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
+        with self.__lock:
+            super()._calc_next_exec(ref_dt)
+
     def __repr__(self) -> str:
         with self.__lock:
             params: tuple[str, ...] = self._repr()
@@ -116,6 +120,15 @@ class Job(BaseJob):
 
     def __str__(self) -> str:
         return f"{super().__str__()}, w={self.weight:.3g}"
+
+    def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
+        with self.__lock:
+            return super().timedelta(dt_stamp)
+
+    @property
+    def datetime(self) -> dt.datetime:
+        with self.__lock:
+            return super().datetime
 
     @property
     def weight(self) -> float:
@@ -129,20 +142,7 @@ class Job(BaseJob):
         """
         return self.__weight
 
-    def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
-        with self.__lock:
-            super()._calc_next_exec(ref_dt)
-
     @property
     def has_attempts_remaining(self) -> bool:
         with self.__lock:
             return super().has_attempts_remaining
-
-    @property
-    def datetime(self) -> dt.datetime:
-        with self.__lock:
-            return super().datetime
-
-    def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
-        with self.__lock:
-            return super().timedelta(dt_stamp)

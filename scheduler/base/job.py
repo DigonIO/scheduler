@@ -171,6 +171,40 @@ class BaseJob(ABC):
     def __str__(self) -> str:
         return "{0}, {1}{2}, at={3}, tz={4}, in={5}, #{6}/{7}".format(*self._str())
 
+    def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
+        """
+        Get the `datetime.timedelta` until the next execution of this `Job`.
+
+        Parameters
+        ----------
+        dt_stamp : Optional[datetime.datetime]
+            Time to be compared with the planned execution time to determine the time difference.
+
+        Returns
+        -------
+        timedelta
+            `datetime.timedelta` to the next execution.
+        """
+        if dt_stamp is None:
+            dt_stamp = dt.datetime.now(self.__tzinfo)
+        if not self.__delay and self.__attempts == 0:
+            return cast(dt.datetime, self.__start) - dt_stamp
+        return self.__pending_timer.timedelta(dt_stamp)
+
+    @property
+    def datetime(self) -> dt.datetime:
+        """
+        Give the `datetime.datetime` object for the planed execution.
+
+        Returns
+        -------
+        datetime.datetime
+            Execution `datetime.datetime` stamp.
+        """
+        if not self.__delay and self.__attempts == 0:
+            return cast(dt.datetime, self.__start)
+        return self.__pending_timer.datetime
+
     @property
     def type(self) -> JobType:
         """
@@ -230,6 +264,18 @@ class BaseJob(ABC):
         return self.__kwargs
 
     @property
+    def max_attempts(self) -> int:
+        """
+        Get the execution limit for a `Job`.
+
+        Returns
+        -------
+        int
+            Max execution attempts.
+        """
+        return self.__max_attempts
+
+    @property
     def tags(self) -> set[str]:
         r"""
         Get the tags of a `Job`.
@@ -287,18 +333,6 @@ class BaseJob(ABC):
         return self.__stop
 
     @property
-    def max_attempts(self) -> int:
-        """
-        Get the execution limit for a `Job`.
-
-        Returns
-        -------
-        int
-            Max execution attempts.
-        """
-        return self.__max_attempts
-
-    @property
     def skip_missing(self) -> bool:
         """
         Return ``True`` if `Job` will only schedule it's newest planned execution.
@@ -348,6 +382,18 @@ class BaseJob(ABC):
         return self.__tzinfo
 
     @property
+    def attempts(self) -> int:
+        """
+        Get the number of executions for a `Job`.
+
+        Returns
+        -------
+        int
+            Execution attempts.
+        """
+        return self.__attempts
+
+    @property
     def has_attempts_remaining(self) -> bool:
         """
         Check if a `Job` has remaining attempts.
@@ -366,52 +412,6 @@ class BaseJob(ABC):
         if self.__max_attempts == 0:
             return True
         return self.__attempts < self.__max_attempts
-
-    @property
-    def attempts(self) -> int:
-        """
-        Get the number of executions for a `Job`.
-
-        Returns
-        -------
-        int
-            Execution attempts.
-        """
-        return self.__attempts
-
-    @property
-    def datetime(self) -> dt.datetime:
-        """
-        Give the `datetime.datetime` object for the planed execution.
-
-        Returns
-        -------
-        datetime.datetime
-            Execution `datetime.datetime` stamp.
-        """
-        if not self.__delay and self.__attempts == 0:
-            return cast(dt.datetime, self.__start)
-        return self.__pending_timer.datetime
-
-    def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
-        """
-        Get the `datetime.timedelta` until the next execution of this `Job`.
-
-        Parameters
-        ----------
-        dt_stamp : Optional[datetime.datetime]
-            Time to be compared with the planned execution time to determine the time difference.
-
-        Returns
-        -------
-        timedelta
-            `datetime.timedelta` to the next execution.
-        """
-        if dt_stamp is None:
-            dt_stamp = dt.datetime.now(self.__tzinfo)
-        if not self.__delay and self.__attempts == 0:
-            return cast(dt.datetime, self.__start) - dt_stamp
-        return self.__pending_timer.timedelta(dt_stamp)
 
 
 BaseJobType = TypeVar("BaseJobType", bound=BaseJob)
