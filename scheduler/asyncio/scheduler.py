@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import asyncio as aio
 import datetime as dt
-from typing import Any, Callable, Coroutine, Optional, Union, cast
+from typing import Any, Callable, Optional, Union, cast
 
 import typeguard as tg
 
@@ -68,7 +68,7 @@ class Scheduler(BaseScheduler):
         try:
             self.__loop = loop if loop else aio.get_running_loop()
         except RuntimeError:
-            raise SchedulerError("The asyncio Scheduler requires a running event loop.")
+            raise SchedulerError("The asyncio Scheduler requires a running event loop.") from None
         self.__tzinfo = tzinfo
         self.__tz_str = check_tzname(tzinfo=tzinfo)
 
@@ -223,13 +223,13 @@ class Scheduler(BaseScheduler):
         Raises
         ------
         SchedulerError
-            Raises if the argument |AioJob| instance is not scheduled in the |AioScheduler| instance.
+            Raises if the |AioJob| of the argument is not scheduled.
         """
         try:
             task: aio.Task[None] = self.__jobs.pop(job)
             _: bool = task.cancel()
         except KeyError:
-            raise SchedulerError("An unscheduled Job can not be deleted!")
+            raise SchedulerError("An unscheduled Job can not be deleted!") from None
 
     def delete_jobs(
         self,

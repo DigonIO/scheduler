@@ -6,7 +6,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import datetime as dt
 import threading
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional
 
 from scheduler.base.definition import JobType
 from scheduler.base.job import BaseJob
@@ -58,6 +58,7 @@ class Job(BaseJob):
     Job
         Instance of a scheduled |Job|.
     """
+
     __weight: float
     __lock: threading.RLock
 

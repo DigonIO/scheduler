@@ -5,7 +5,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 
 import datetime as dt
-from typing import Any, Optional, cast
+from typing import Optional
 
 from scheduler.error import SchedulerError
 
@@ -42,12 +42,10 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
 
 
 def check_tzname(tzinfo: Optional[dt.tzinfo]) -> Optional[str]:
-    """
-    Composed of the datetime.datetime.tzname and the datetime._check_tzname methode.
-    """
+    """Composed of the datetime.datetime.tzname and the datetime._check_tzname methode."""
     if tzinfo is None:
         return None
     name: Optional[str] = tzinfo.tzname(None)
     if name is not None and not isinstance(name, str):
-        raise SchedulerError("tzinfo.tzname() must return None or string, " "not '%s'" % type(name))
+        raise SchedulerError(f"tzinfo.tzname() must return None or string, not {type(name)}")
     return name

@@ -347,7 +347,6 @@ def _warn_deprecated(
 
 # NOTE: will be removed in next minor release (0.8.0)
 class Prioritization:
-
     """
     Collection of prioritization functions.
 

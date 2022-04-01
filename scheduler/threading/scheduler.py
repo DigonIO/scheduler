@@ -171,13 +171,13 @@ class Scheduler(BaseScheduler):
         Raises
         ------
         SchedulerError
-            Raises if the argument |Job| instance is not scheduled in the |Scheduler| instance.
+            Raises if the |Job| of the argument is not scheduled.
         """
         with self.__jobs_lock:
             try:
                 self.__jobs.remove(job)
             except KeyError:
-                raise SchedulerError("An unscheduled Job can not be deleted!")
+                raise SchedulerError("An unscheduled Job can not be deleted!") from None
 
     def delete_jobs(
         self,
