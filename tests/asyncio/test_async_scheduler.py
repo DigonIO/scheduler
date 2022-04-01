@@ -6,12 +6,12 @@ import pytest
 from helpers import (
     CYCLIC_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
+    DELETE_NOT_SCHEDULED_ERROR,
     HOURLY_TYPE_ERROR_MSG,
     MINUTELY_TYPE_ERROR_MSG,
     ONCE_TYPE_ERROR_MSG,
-    WEEKLY_TYPE_ERROR_MSG,
-    DELETE_NOT_SCHEDULED_ERROR,
     T_2021_5_26__3_55,
+    WEEKLY_TYPE_ERROR_MSG,
 )
 
 from scheduler.asyncio.scheduler import Scheduler
@@ -54,6 +54,7 @@ async def test_delete_jobs(event_loop):
     assert len(sch.jobs) == 2
     sch.delete_jobs()
     assert len(sch.jobs) == 0
+
 
 @pytest.mark.asyncio
 async def test_delete_job(event_loop):

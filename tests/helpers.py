@@ -406,5 +406,3 @@ job_reprs_utc = (
         )
     ],
 )
-
-stack_logger = []

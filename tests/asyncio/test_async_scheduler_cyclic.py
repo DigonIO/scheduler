@@ -12,10 +12,9 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import asyncio
 import datetime as dt
-import traceback
 
 import pytest
-from helpers import T_2021_5_26__3_55, stack_logger
+from helpers import T_2021_5_26__3_55
 
 from scheduler.asyncio.scheduler import Scheduler
 
@@ -23,32 +22,20 @@ samples_secondly = [T_2021_5_26__3_55 + dt.timedelta(seconds=x) for x in range(1
 async_real_sleep = asyncio.sleep
 
 
-async def bar(delay=-0.1):
-    st = traceback.format_stack()
-    stack_logger.append(st[-2:-1])
-    stack_logger.append(f"{delay}\n\n")
-    with open("./sleep_stack.log", "w") as fh:
-        for stack in stack_logger:
-            fh.writelines(stack)
-    ...
-
-
 async def fake_sleep(delay, result=None):
     """Fake asyncio.sleep, depends on monkeypatch `patch_datetime_now`"""
-    st = traceback.format_stack()
-    stack_logger.append(st[-2:-1])
-    stack_logger.append(f"{delay}\n\n")
-    with open("./sleep_stack.log", "w") as fh:
-        for stack in stack_logger:
-            fh.writelines(stack)
     t_start = dt.datetime.last_now()
     while True:
         await asyncio.tasks.__sleep0()
-        if (dt.datetime.last_now() - t_start).total_seconds() >= delay:  # TODO: offset yes/no?
+        if (dt.datetime.last_now() - t_start).total_seconds() >= delay:
             break
         else:
             _ = dt.datetime.now()
     return result
+
+
+async def bar():
+    ...
 
 
 @pytest.mark.parametrize(
@@ -63,7 +50,7 @@ def test_async_scheduler_cyclic1s(monkeypatch, patch_datetime_now, event_loop):
             schedule = Scheduler()
 
             # schedule.__schedule calls: now, async: [now, async_sleep]
-            cyclic_job = schedule.cyclic(dt.timedelta(seconds=1), bar, args=(-0.01,))
+            cyclic_job = schedule.cyclic(dt.timedelta(seconds=1), bar)
             assert dt.datetime.last_now() == samples_secondly[0]
             assert cyclic_job.datetime == samples_secondly[1]
             assert cyclic_job.attempts == 0
