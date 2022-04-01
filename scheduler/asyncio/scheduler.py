@@ -211,13 +211,17 @@ class Scheduler(BaseScheduler):
         job : Job
             |AioJob| instance to delete.
 
-        Returns
-        -------
-        bool
-            True if deleted
+        Raises
+        ------
+        SchedulerError
+            Raises if the argument |AioJob| instance is not scheduled in the |AioScheduler| instance.
         """
-        task: aio.Task = self.__jobs.pop(job)
-        _: bool = task.cancel()  # has to be true, because pop should raise
+        try:
+            task: aio.Task = self.__jobs.pop(job)
+            _: bool = task.cancel()
+        except KeyError:
+            raise SchedulerError("An unscheduled Job can not be deleted!")
+
 
     def delete_jobs(
         self,
