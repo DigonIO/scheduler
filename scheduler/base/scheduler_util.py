@@ -9,6 +9,7 @@ from typing import Optional, Any, cast
 
 from scheduler.error import SchedulerError
 
+
 def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
     """
     Abbreviate a string to a given length.
@@ -38,6 +39,7 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
         return string[:pos] + "#" if cut_tail else "#" + string[-pos:]
 
     return string
+
 
 def check_tzname(tzinfo: Optional[dt.tzinfo]) -> Optional[str]:
     """

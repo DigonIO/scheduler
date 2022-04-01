@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import datetime as dt
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Optional, Union, cast
+from typing import Any, Callable, Optional, Union, TypeVar, cast
 import warnings
 
 from scheduler.base.definition import JobType
@@ -23,7 +23,6 @@ from scheduler.base.job_util import (
     standardize_timing_format,
 )
 from scheduler.base.timingtype import TimingJobUnion
-
 
 class BaseJob(ABC):
     """Abstract definition basic interface for a job class."""
@@ -412,3 +411,5 @@ class BaseJob(ABC):
         if not self.__delay and self.__attempts == 0:
             return cast(dt.datetime, self.__start) - dt_stamp
         return self.__pending_timer.timedelta(dt_stamp)
+
+BaseJobType = TypeVar("BaseJobType", bound=BaseJob)

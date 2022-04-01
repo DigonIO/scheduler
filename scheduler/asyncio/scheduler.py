@@ -8,13 +8,18 @@ from __future__ import annotations
 
 import asyncio as aio
 import datetime as dt
-from typing import Any, Callable, Optional, Union, cast
+from typing import Any, Callable, Optional, Union, Coroutine, cast
 
 import typeguard as tg
 
 from scheduler.asyncio.job import Job
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
-from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag, _warn_deprecated_delay
+from scheduler.base.scheduler import (
+    BaseScheduler,
+    BaseJob,
+    select_jobs_by_tag,
+    _warn_deprecated_delay,
+)
 from scheduler.base.scheduler_util import str_cutoff, check_tzname
 from scheduler.base.timingtype import (
     TimingCyclic,
@@ -67,7 +72,7 @@ class Scheduler(BaseScheduler):
         self.__tzinfo = tzinfo
         self.__tz_str = check_tzname(tzinfo=tzinfo)
 
-        self.__jobs: dict[Job, aio.Task] = {}
+        self.__jobs: dict[Job, aio.Task[None]] = {}
 
     async def __supervise_job(self, job: Job) -> None:
         try:
@@ -165,7 +170,7 @@ class Scheduler(BaseScheduler):
         """
         if tags is None or tags == {}:
             return self.jobs
-        return select_jobs_by_tag(self.jobs, tags, any_tag)
+        return cast(set[Job], select_jobs_by_tag(cast(set[BaseJob], self.jobs), tags, any_tag))
 
     @property
     def jobs(self) -> set[Job]:
@@ -220,11 +225,10 @@ class Scheduler(BaseScheduler):
             Raises if the argument |AioJob| instance is not scheduled in the |AioScheduler| instance.
         """
         try:
-            task: aio.Task = self.__jobs.pop(job)
+            task: aio.Task[None] = self.__jobs.pop(job)
             _: bool = task.cancel()
         except KeyError:
             raise SchedulerError("An unscheduled Job can not be deleted!")
-
 
     def delete_jobs(
         self,
@@ -251,7 +255,9 @@ class Scheduler(BaseScheduler):
         if tags is None or tags == {}:
             jobs_to_delete = all_jobs
         else:
-            jobs_to_delete = select_jobs_by_tag(all_jobs, tags, any_tag)
+            jobs_to_delete = cast(
+                set[Job], select_jobs_by_tag(cast(set[BaseJob], all_jobs), tags, any_tag)
+            )
 
         for job in jobs_to_delete:
             self.delete_job(job)

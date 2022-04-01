@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional
 import warnings
 
-from scheduler.base.job import BaseJob
+from scheduler.base.job import BaseJob, BaseJobType
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
@@ -18,10 +18,10 @@ from scheduler.base.timingtype import (
 
 
 def select_jobs_by_tag(
-    jobs: set[BaseJob],
+    jobs: set[BaseJobType],
     tags: set[str],
     any_tag: bool,
-) -> set[BaseJob]:
+) -> set[BaseJobType]:
     r"""
     Select |BaseJob|\ s by matching `tags`.
 
