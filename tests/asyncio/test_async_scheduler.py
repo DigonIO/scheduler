@@ -9,6 +9,7 @@ from helpers import (
     MINUTELY_TYPE_ERROR_MSG,
     ONCE_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
+    DELETE_NOT_SCHEDULED_ERROR,
 )
 
 from scheduler.asyncio.scheduler import Scheduler
@@ -51,6 +52,20 @@ async def test_delete_jobs(event_loop):
     assert len(sch.jobs) == 2
     sch.delete_jobs()
     assert len(sch.jobs) == 0
+
+@pytest.mark.asyncio
+async def test_delete_job(event_loop):
+    sch = Scheduler(loop=event_loop)
+    job0 = sch.cyclic(dt.timedelta(seconds=1), foo)
+    job1 = sch.cyclic(dt.timedelta(seconds=1), foo)
+
+    sch.delete_job(job0)
+    sch.delete_job(job1)
+
+    # test error if the job is not scheduled
+    with pytest.raises(SchedulerError) as msg:
+        sch.delete_job(job1)
+        assert msg == DELETE_NOT_SCHEDULED_ERROR
 
 
 @pytest.mark.asyncio

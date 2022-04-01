@@ -2,7 +2,7 @@ import datetime as dt
 import random
 
 import pytest
-from helpers import foo
+from helpers import foo, DELETE_NOT_SCHEDULED_ERROR
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.base.definition import JobType
@@ -31,6 +31,11 @@ def test_delete_job(n_jobs):
     sch.delete_job(job)
     assert job not in sch.jobs
     assert len(sch.jobs) == n_jobs - 1
+
+    # test error if the job is not scheduled
+    with pytest.raises(SchedulerError) as msg:
+        sch.delete_job(job)
+        assert msg == DELETE_NOT_SCHEDULED_ERROR
 
 
 @pytest.mark.parametrize(

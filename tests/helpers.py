@@ -34,6 +34,8 @@ TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
 
 START_STOP_ERROR = "Start argument must be smaller than the stop argument."
 
+DELETE_NOT_SCHEDULED_ERROR = "An unscheduled Job can not be deleted!"
+
 samples = [
     T_2021_5_26__3_55,  # job creation
     T_2021_5_26__3_55 + dt.timedelta(seconds=5),  # t1
