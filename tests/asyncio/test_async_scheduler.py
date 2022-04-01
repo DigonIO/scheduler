@@ -244,3 +244,8 @@ def test_async_scheduler_usage_example():
         assert cyclic_job.attempts == 2
 
     asyncio.run(main())
+
+def test_async_scheduler_without_running_loop():
+    with pytest.raises(SchedulerError) as msg:
+        sch = Scheduler()
+        assert msg == "The asyncio Scheduler requires a running event loop."

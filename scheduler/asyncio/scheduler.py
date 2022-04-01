@@ -60,7 +60,10 @@ class Scheduler(BaseScheduler):
         loop: Optional[aio.selector_events.BaseSelectorEventLoop] = None,
         tzinfo: Optional[dt.tzinfo] = None,
     ):
-        self.__loop = loop if loop else aio.get_running_loop()
+        try:
+            self.__loop = loop if loop else aio.get_running_loop()
+        except RuntimeError:
+            raise SchedulerError("The asyncio Scheduler requires a running event loop.")
         self.__tzinfo = tzinfo
         self.__tz_str = check_tzname(tzinfo=tzinfo)
 
