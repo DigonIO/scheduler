@@ -5,7 +5,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 
 import datetime as dt
-from typing import Optional, Any, cast
+from typing import Any, Optional, cast
 
 from scheduler.error import SchedulerError
 

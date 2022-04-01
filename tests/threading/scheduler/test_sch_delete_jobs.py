@@ -2,7 +2,7 @@ import datetime as dt
 import random
 
 import pytest
-from helpers import foo, DELETE_NOT_SCHEDULED_ERROR
+from helpers import DELETE_NOT_SCHEDULED_ERROR, foo
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.base.definition import JobType

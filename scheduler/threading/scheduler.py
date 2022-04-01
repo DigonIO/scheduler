@@ -13,8 +13,8 @@ import typeguard as tg
 
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.job import BaseJob
-from scheduler.base.scheduler import BaseScheduler, select_jobs_by_tag, _warn_deprecated_delay
-from scheduler.base.scheduler_util import str_cutoff, check_tzname
+from scheduler.base.scheduler import BaseScheduler, _warn_deprecated_delay, select_jobs_by_tag
+from scheduler.base.scheduler_util import check_tzname, str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,

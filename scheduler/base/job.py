@@ -7,9 +7,9 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 from __future__ import annotations
 
 import datetime as dt
+import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional, TypeVar, cast
-import warnings
 
 from scheduler.base.definition import JobType
 from scheduler.base.job_timer import JobTimer
