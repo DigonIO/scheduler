@@ -8,8 +8,9 @@ Starting with a |Scheduler| and two |Job|\ s:
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> def foo():
@@ -54,7 +55,7 @@ for the :py:attr:`~scheduler.job.Job.attempts` attribute:
 
 .. code-block:: pycon
 
-    >>> job = schedule.cyclic(dt.timedelta(seconds=0.1), foo, max_attempts=2, delay=False)
+    >>> job = schedule.cyclic(dt.timedelta(seconds=0.1), foo, max_attempts=2)
     >>> print(job)  # doctest:+SKIP
     CYCLIC, foo(), at=2021-06-21 04:53:34, tz=None, in=0:00:00, #0/2, w=1.000
 

@@ -14,10 +14,9 @@ setup(
     name="scheduler",
     version=version,
     description=(
-        "A simple in-process python scheduler library with seamless integration of "
-        "the `datetime` standard library. Timezone support and planning of `Job`s "
-        "depending on time cycles, fixed times, weekdays, dates, weights, offsets "
-        "and execution counts."
+        "A simple in-process python scheduler library with asyncio, threading and timezone support."
+        "Use datetime standard library objects for planning of Jobs depending on time cycles,"
+        "fixed times, weekdays, dates, weights, offsets and execution counts."
     ),
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
@@ -26,9 +25,13 @@ setup(
     license="LGPLv3",
     packages=[
         "scheduler",
+        "scheduler.base",
+        "scheduler.threading",
+        "scheduler.asyncio",
         "scheduler.trigger",
     ],
-    keywords="scheduler schedule datetime date time timedelta timezone timing",
+    package_data={"scheduler": ["py.typed"]},
+    keywords="scheduler schedule asyncio threading datetime date time timedelta timezone timing",
     install_requires=[
         "typeguard>=2.6.0",
     ],
@@ -37,6 +40,7 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: Implementation :: CPython",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries",

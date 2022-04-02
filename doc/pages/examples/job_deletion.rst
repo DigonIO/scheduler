@@ -10,8 +10,9 @@ Setup a couple of |Job|\ s
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> def foo():
@@ -54,8 +55,9 @@ Setup a couple of |Job|\ s
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> def foo():

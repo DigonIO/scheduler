@@ -5,7 +5,8 @@ from helpers import CYCLIC_TYPE_ERROR_MSG, T_2021_5_26__3_55, utc
 
 import scheduler.trigger as trigger
 from scheduler import SchedulerError
-from scheduler.job import JobTimer, JobType, JobUtil
+from scheduler.base.definition import JobType
+from scheduler.base.job_util import JobTimer, sane_timing_types
 
 
 @pytest.mark.parametrize(
@@ -43,12 +44,8 @@ from scheduler.job import JobTimer, JobType, JobUtil
             JobType.MINUTELY,
             dt.time(second=1, tzinfo=utc),
             dt.datetime(year=2021, month=5, day=26, hour=11, minute=39, tzinfo=utc),
-            dt.datetime(
-                year=2021, month=5, day=26, hour=11, minute=39, second=1, tzinfo=utc
-            ),
-            dt.datetime(
-                year=2021, month=5, day=26, hour=11, minute=40, second=1, tzinfo=utc
-            ),
+            dt.datetime(year=2021, month=5, day=26, hour=11, minute=39, second=1, tzinfo=utc),
+            dt.datetime(year=2021, month=5, day=26, hour=11, minute=40, second=1, tzinfo=utc),
         ],
         [
             JobType.CYCLIC,
@@ -126,6 +123,6 @@ def test_skip(delta_m, offset_m, skip, res_delta_m):
 def test_sane_timing_types(job_type, timing, err):
     if err:
         with pytest.raises(SchedulerError, match=err):
-            JobUtil.sane_timing_types(job_type, timing)
+            sane_timing_types(job_type, timing)
     else:
-        JobUtil.sane_timing_types(job_type, timing)
+        sane_timing_types(job_type, timing)

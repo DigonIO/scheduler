@@ -20,8 +20,9 @@ For :py:func:`~scheduler.core.Scheduler.daily` we can embed several timers in on
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> def foo():

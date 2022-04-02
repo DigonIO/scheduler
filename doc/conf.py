@@ -73,7 +73,7 @@ pygments_style = "default"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
 html_theme_path = [
     "_themes",
 ]
@@ -86,6 +86,13 @@ html_logo = "logo_w_border.svg"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = []
 
+imgmath_latex_preamble = (
+    "\\usepackage{xcolor}\n\\definecolor{formulacolor}{RGB}{128,128,128}" "\\color{formulacolor}"
+)
+
+
 latex_elements = {
-    "preamble": r"\usepackage[columns=1]{idxlayout}\makeindex",
+    "preamble": [
+        r"\usepackage[columns=1]{idxlayout}\makeindex",
+    ],
 }
