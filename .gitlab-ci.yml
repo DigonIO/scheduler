@@ -73,7 +73,7 @@ pydoctest_3_10_3:
 
 #### release ####
 pypi:
-  image: python:3.9.11-alpine3.15
+  image: python:3.10.4-bullseye
   stage: release
   script:
     - pip install twine

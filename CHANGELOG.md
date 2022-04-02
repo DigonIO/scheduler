@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.1
+
+### Misc
+
++ Bump version in PKGBUILD.
++ Fix image for release stage.
+
 ## 0.7.0
 
 ### Features
