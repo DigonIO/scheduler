@@ -19,7 +19,6 @@ counts and automate Jobs.</p>
 [![Downloads Total](https://pepy.tech/badge/scheduler)](https://pepy.tech/project/scheduler)
 ---
 
-
 ## Features
 
 * Easy and user friendly in-process Job scheduling
@@ -31,7 +30,7 @@ counts and automate Jobs.</p>
   [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/timezones.html)
 * Job prioritization
   * Default linear prioritization
-    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/weights.html)
+    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/job_prioritization.html)
   * User definable prioritization functions
     [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/custom_prioritization.html)
 * Job tagging
