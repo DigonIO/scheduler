@@ -3,10 +3,10 @@ pytest==6.2.5
 pytest-cov==3.0.0
 pytest-asyncio==0.17.1
 coverage==6.1.1
-mypy==0.930
+mypy==0.942
 bandit==1.7.1
-pydocstyle==5.1.1
-Sphinx==4.3.1
+pydocstyle==6.1.1
+Sphinx==4.5.0
 numpydoc==1.1.0
 mistune==0.8.4
 m2r2==0.2.7
