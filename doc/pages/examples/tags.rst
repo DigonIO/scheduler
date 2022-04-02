@@ -13,6 +13,7 @@ For demonstration we mix the `tags` ``spam``, ``eggs``, ``ham`` and ``sausage``,
 .. code-block:: pycon
 
    >>> import datetime as dt
+
    >>> from scheduler import Scheduler
 
    >>> def foo():

@@ -1,5 +1,5 @@
 """
-Collection of useful utility objects.
+Collection of datetime and trigger related utility functions.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
@@ -7,27 +7,12 @@ from __future__ import annotations
 
 import datetime as dt
 import random
-from abc import ABC, abstractmethod
-from enum import Enum, auto
-from typing import Any, Callable, Optional
+import warnings
+from typing import Callable, Optional
 
+from scheduler.base.definition import JobType
+from scheduler.error import SchedulerError
 from scheduler.trigger.core import Weekday
-
-TZ_ERROR_MSG = "Can't use offset-naive and offset-aware datetimes together."
-
-
-class SchedulerError(Exception):
-    """Generic Scheduler exception."""
-
-
-class JobType(Enum):
-    """Indicate the `JobType` of a |Job|."""
-
-    CYCLIC = auto()
-    MINUTELY = auto()
-    HOURLY = auto()
-    DAILY = auto()
-    WEEKLY = auto()
 
 
 def days_to_weekday(wkdy_src: int, wkdy_dest: int) -> int:
@@ -180,6 +165,13 @@ def next_weekday_time_occurrence(
     return target + delta
 
 
+JOB_NEXT_DAYLIKE_MAPPING = {
+    JobType.MINUTELY: next_minutely_occurrence,
+    JobType.HOURLY: next_hourly_occurrence,
+    JobType.DAILY: next_daily_occurrence,
+}
+
+
 def are_times_unique(
     timelist: list[dt.time],
 ) -> bool:
@@ -210,9 +202,7 @@ def are_times_unique(
     return len(collection) == len(timelist)
 
 
-def are_weekday_times_unique(
-    weekday_list: list[Weekday], tzinfo: Optional[dt.tzinfo]
-) -> bool:
+def are_weekday_times_unique(weekday_list: list[Weekday], tzinfo: Optional[dt.tzinfo]) -> bool:
     """
     Check if list contains distinct weekday times.
 
@@ -237,90 +227,125 @@ def are_weekday_times_unique(
     return len(collection) == len(weekday_list)
 
 
-class AbstractJob(ABC):
+# NOTE: will be removed in next minor release (0.8.0)
+def _constant_weight_prioritization(
+    time_delta: float, job: Job, max_exec: int, job_count: int
+) -> float:
+    r"""
+    Interprets the `Job`'s weight as its priority.
+
+    Return the |Job|'s weight for overdue
+    |Job|\ s, otherwise return zero:
+
+    .. math::
+        \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
+        0 & :\ \mathtt{time\_delta}<0\\
+        \mathtt{weight} & :\ \mathtt{time\_delta}\geq0
+        \end{cases}
+
+    Parameters
+    ----------
+    time_delta : float
+        The time in seconds that a |Job| is overdue.
+    job : Job
+        The |Job| instance
+    max_exec : int
+        Limits the number of overdue |Job|\ s that can be executed
+        by calling function `Scheduler.exec_jobs()`.
+    job_count : int
+        Number of scheduled |Job|\ s
+
+    Returns
+    -------
+    float
+        The weight of a |Job| as priority.
     """
-    Abstract definition of the `Job` class.
+    _ = max_exec
+    _ = job_count
+    if time_delta < 0:
+        return 0
+    return job.weight
 
-    Notes
-    -----
-    Needed to provide linting and typing in the :mod:`~scheduler.util` module.
+
+# NOTE: will be removed in next minor release (0.8.0)
+def _linear_priority_function(time_delta: float, job: Job, max_exec: int, job_count: int) -> float:
+    r"""
+    Compute the |Job|\ s default linear priority.
+
+    Linear |Job| prioritization such that the priority increases
+    linearly with the amount of time that a |Job| is overdue.
+    At the exact time of the scheduled execution, the priority is equal to the
+    |Job|\ s weight.
+
+    The function is defined as
+
+    .. math::
+        \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
+        0 & :\ \mathtt{time\_delta}<0\\
+        {\left(\mathtt{time\_delta}+1\right)}\cdot\mathtt{weight} & :\ \mathtt{time\_delta}\geq0
+        \end{cases}
+
+    Parameters
+    ----------
+    time_delta : float
+        The time in seconds that a |Job| is overdue.
+    job : Job
+        The |Job| instance
+    max_exec : int
+        Limits the number of overdue |Job|\ s that can be executed
+        by calling function `Scheduler.exec_jobs()`.
+    job_count : int
+        Number of scheduled |Job|\ s
+
+    Returns
+    -------
+    float
+        The time dependant priority for a |Job|
     """
+    _ = max_exec
+    _ = job_count
 
-    @property
-    @abstractmethod
-    def type(self) -> JobType:
-        """Return the `JobType` of the `Job` instance."""
-
-    @property
-    @abstractmethod
-    def handle(self) -> Callable[..., None]:
-        """Get the callback function handle."""
-
-    @property
-    @abstractmethod
-    def kwargs(self) -> dict[str, Any]:
-        r"""Get the payload arguments to pass to the function handle within a `Job`."""
-
-    @property
-    @abstractmethod
-    def weight(self) -> float:
-        """Return the weight of the `Job` instance."""
-
-    @property
-    @abstractmethod
-    def delay(self) -> bool:
-        """Return ``True`` if the first `Job` execution will wait for the next scheduled time."""
-
-    @property
-    @abstractmethod
-    def start(self) -> Optional[dt.datetime]:
-        """Get the timestamp at which the `JobTimer` starts."""
-
-    @property
-    @abstractmethod
-    def stop(self) -> Optional[dt.datetime]:
-        """Get the timestamp after which no more executions of the `Job` should be scheduled."""
-
-    @property
-    @abstractmethod
-    def max_attempts(self) -> int:
-        """Get the execution limit for a `Job`."""
-
-    @property
-    @abstractmethod
-    def skip_missing(self) -> bool:
-        """Return ``True`` if `Job` will only schedule it's newest planned execution."""
-
-    @property
-    @abstractmethod
-    def tzinfo(self) -> Optional[dt.tzinfo]:
-        r"""Get the timezone of the `Job`'s next execution."""
-
-    @property
-    @abstractmethod
-    def _tzinfo(self) -> Optional[dt.tzinfo]:
-        """Get the timezone of the `Scheduler` in which the `Job` is living."""
-
-    @property
-    @abstractmethod
-    def has_attempts_remaining(self) -> bool:
-        """Check if a `Job` has remaining attempts."""
-
-    @property
-    @abstractmethod
-    def attempts(self) -> int:
-        """Get the number of executions for a `Job`."""
-
-    @property
-    @abstractmethod
-    def datetime(self) -> dt.datetime:
-        """Give the `datetime.datetime` object for the planed execution."""
-
-    @abstractmethod
-    def timedelta(self, dt_stamp: Optional[dt.datetime] = None) -> dt.timedelta:
-        """Get the `datetime.timedelta` until the next execution of this `Job`."""
+    if time_delta < 0:
+        return 0
+    return (time_delta + 1) * job.weight
 
 
+# NOTE: will be removed in next minor release (0.8.0)
+def _random_priority_function(time: float, job: Job, max_exec: int, job_count: int) -> float:
+    """
+    Generate random priority values from weights.
+
+    .. warning:: Not suitable for security relevant purposes.
+
+    The priority generator will return 1 if the random number
+    is lower then the |Job|'s weight, otherwise it will return 0.
+    """
+    _ = time
+    _ = max_exec
+    _ = job_count
+    if random.random() < job.weight:  # nosec
+        return 1
+    return 0
+
+
+def _warn_deprecated(
+    function: Callable[[float, Job, int, int], float]
+) -> Callable[[float, Job, int, int], float]:
+    def wrapped_function(time: float, job: Job, max_exec: int, job_count: int) -> float:
+        warnings.warn(
+            (
+                "Deprecated import! Use scheduler.prioritization instead of "
+                "scheduler.util.Prioritization."
+            ),
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return function(time, job, max_exec, job_count)
+
+    return wrapped_function
+
+
+# NOTE: will be removed in next minor release (0.8.0)
 class Prioritization:
     """
     Collection of prioritization functions.
@@ -329,157 +354,6 @@ class Prioritization:
     functions have to be of type ``Callable[[float, Job, int, int], float]``.
     """
 
-    @staticmethod
-    def constant_weight_prioritization(
-        time_delta: float, job: AbstractJob, max_exec: int, job_count: int
-    ) -> float:  # pragma: no cover
-        r"""
-        Interprete the `Job`'s weight as its priority.
-
-        Return the |Job|'s weight for overdue
-        |Job|\ s, otherwise return zero:
-
-        .. math::
-            \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
-            0 & :\ \mathtt{time\_delta}<0\\
-            \mathtt{weight} & :\ \mathtt{time\_delta}\geq0
-            \end{cases}
-
-        Parameters
-        ----------
-        time_delta : float
-            The time in seconds that a |Job| is overdue.
-        job : Job
-            The |Job| instance
-        max_exec : int
-            Limits the number of overdue |Job|\ s that can be executed
-            by calling function `Scheduler.exec_jobs()`.
-        job_count : int
-            Number of scheduled |Job|\ s
-
-        Returns
-        -------
-        float
-            The weight of a |Job| as priority.
-        """
-        _ = max_exec
-        _ = job_count
-        if time_delta < 0:
-            return 0
-        return job.weight
-
-    @staticmethod
-    def linear_priority_function(
-        time_delta: float, job: AbstractJob, max_exec: int, job_count: int
-    ) -> float:
-        r"""
-        Compute the |Job|\ s default linear priority.
-
-        Linear |Job| prioritization such that the priority increases
-        linearly with the amount of time that a |Job| is overdue.
-        At the exact time of the scheduled execution, the priority is equal to the
-        |Job|\ s weight.
-
-        The function is defined as
-
-        .. math::
-            \left(\mathtt{time\_delta},\mathtt{weight}\right)\ {\mapsto}\begin{cases}
-            0 & :\ \mathtt{time\_delta}<0\\
-            {\left(\mathtt{time\_delta}+1\right)}\cdot\mathtt{weight} & :\ \mathtt{time\_delta}\geq0
-            \end{cases}
-
-        Parameters
-        ----------
-        time_delta : float
-            The time in seconds that a |Job| is overdue.
-        job : Job
-            The |Job| instance
-        max_exec : int
-            Limits the number of overdue |Job|\ s that can be executed
-            by calling function `Scheduler.exec_jobs()`.
-        job_count : int
-            Number of scheduled |Job|\ s
-
-        Returns
-        -------
-        float
-            The time dependant priority for a |Job|
-        """
-        _ = max_exec
-        _ = job_count
-
-        if time_delta < 0:
-            return 0
-        return (time_delta + 1) * job.weight
-
-    @staticmethod
-    def random_priority_function(
-        time: float, job: AbstractJob, max_exec: int, job_count: int
-    ) -> float:  # pragma: no cover
-        """
-        Generate random priority values from weigths.
-
-        .. warning:: Not suitable for security relevant purposes.
-
-        The priority generator will return 1 if the random number
-        is lower then the |Job|'s weight, otherwise it will return 0.
-        """
-        _ = time
-        _ = max_exec
-        _ = job_count
-        if random.random() < job.weight:  # nosec
-            return 1
-        return 0
-
-
-def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
-    """
-    Abbreviate a string to a given length.
-
-    The resulting string will carry an indicator if it's abbreviated,
-    like ``stri#``.
-
-    Parameters
-    ----------
-    string : str
-        String which is to be cut.
-    max_length : int
-        Max resulting string length.
-    cut_tail : bool
-        ``False`` for string abbreviation from the front, else ``True``.
-
-    Returns
-    -------
-    str
-        Resulting string
-    """
-    if max_length < 1:
-        raise ValueError("max_length < 1 not allowed")
-
-    if len(string) > max_length:
-        pos = max_length - 1
-        return string[:pos] + "#" if cut_tail else "#" + string[-pos:]
-
-    return string
-
-
-def prettify_timedelta(timedelta: dt.timedelta) -> str:
-    """
-    Humanize timedelta string readibility for negative values.
-
-    Parameters
-    ----------
-    timedelta : datetime.timedelta
-        datetime instance
-
-    Returns
-    -------
-    str
-        Human readable string representation rounded to seconds
-    """
-    seconds = timedelta.total_seconds()
-    if seconds < 0:
-        res = f"-{-timedelta}"
-    else:
-        res = str(timedelta)
-    return res.split(",")[0].split(".")[0]
+    constant_weight_prioritization = _warn_deprecated(_constant_weight_prioritization)
+    linear_priority_function = _warn_deprecated(_linear_priority_function)
+    random_priority_function = _warn_deprecated(_random_priority_function)

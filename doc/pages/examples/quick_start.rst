@@ -7,6 +7,7 @@ module, create a |Scheduler| instance and the function `foo` to schedule:
 .. code-block:: pycon
 
     >>> import datetime as dt
+
     >>> from scheduler import Scheduler
     >>> import scheduler.trigger as trigger
 

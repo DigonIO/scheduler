@@ -22,8 +22,9 @@ For function with a positional argument use the `args` tuple as follows:
 
 .. code-block:: pycon
 
-    >>> import time
     >>> import datetime as dt
+    >>> import time
+
     >>> from scheduler import Scheduler
 
     >>> def foo(msg):

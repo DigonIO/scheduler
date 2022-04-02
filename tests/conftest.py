@@ -17,9 +17,16 @@ def two(one):
 def patch_datetime_now(monkeypatch, request):
     class DatetimePatch(dt.datetime):
         it = iter(request.param)
+        cached_time = None
 
         @classmethod
         def now(cls, tz=None):
-            return next(cls.it)
+            time = next(cls.it)
+            cls.cached_time = time
+            return time
+
+        @classmethod
+        def last_now(cls):
+            return cls.cached_time
 
     monkeypatch.setattr(dt, "datetime", DatetimePatch)

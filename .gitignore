@@ -4,8 +4,11 @@ __pycache__
 *.egg-info/
 
 # testing
+venv
 .coverage*
 *htmlcov/
+.mypy_cache/
+.pytest_cache/
 
 # sphinx-build
 doc/_build/

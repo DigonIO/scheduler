@@ -54,7 +54,6 @@ def test_general_readme():
     <BLANKLINE>
     type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
-    ...
     ONCE     foo()            ... 00:45:00  ...           0/1      1...
     <BLANKLINE>
 
@@ -65,8 +64,6 @@ def test_general_readme():
     ...     time.sleep(1)
     """
     DP = doctest.DocTestParser()
-    dt_readme = DP.get_doctest(
-        test_general_readme.__doc__, globals(), "README", None, None
-    )
+    dt_readme = DP.get_doctest(test_general_readme.__doc__, globals(), "README", None, None)
     DTR = doctest.DocTestRunner()
     assert doctest.TestResults(failed=0, attempted=16) == DTR.run(dt_readme)
