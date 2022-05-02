@@ -65,7 +65,7 @@ scheduled as expected.
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=UTC, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
-    type     function         due at              tzinfo          due in      attempts weight
+    type     function / alias due at              tzinfo          due in      attempts weight
     -------- ---------------- ------------------- ------------ --------- ------------- ------
     ONCE     useful()         2021-07-01 11:49:49 UTC-05:00     -0:00:00           0/1      1
     DAILY    useful()         2021-07-02 11:45:00 UTC+02:00     16:55:10         0/inf      1

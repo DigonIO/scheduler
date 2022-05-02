@@ -41,7 +41,7 @@ In consequence, this |Scheduler| instance only contains a single |Job| instance 
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     DAILY    foo()            2021-06-20 12:00:00   9:23:13         0/inf      1
     <BLANKLINE>

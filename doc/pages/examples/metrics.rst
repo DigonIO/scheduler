@@ -21,7 +21,7 @@ Starting with a |Scheduler| and two |Job|\ s:
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     foo()            2021-06-21 04:53:34   0:09:59           0/1      1
     <BLANKLINE>
