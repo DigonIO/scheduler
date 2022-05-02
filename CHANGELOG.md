@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.2
+
+### Misc
+
++ Skipping checksum in PKGBUILD (we do not know the hash in advance of pushing)
++ Added missing checkdepends: `python-pytest-asyncio`
+
+### Documentation
+
++ String fixes: `function / alias` and spaces
+
 ## 0.7.1
 
 ### Misc
