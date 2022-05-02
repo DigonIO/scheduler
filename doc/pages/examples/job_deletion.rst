@@ -1,3 +1,5 @@
+.. _examples.job_deletion:
+
 Job Deletion
 ============
 

@@ -47,7 +47,7 @@ observe the expected behaviour with the modified message.
     >>> def bar(msg = "bar"):
     ...     print(msg)
 
-    >>> schedule.once(dt.timedelta(), bar)  # doctest:+ELLIPSIS
+    >>> schedule.once(dt.timedelta(), bar)
     scheduler.Job(...bar...)
 
     >>> n_exec = schedule.exec_jobs()

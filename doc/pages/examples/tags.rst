@@ -21,10 +21,10 @@ For demonstration we mix the `tags` ``spam``, ``eggs``, ``ham`` and ``sausage``,
 
    >>> schedule = Scheduler()
 
-   >>> dish1 = schedule.once(dt.timedelta(), foo, tags = {"spam", "eggs"})  # doctest:+ELLIPSIS
-   >>> dish2 = schedule.once(dt.timedelta(), foo, tags = {"spam", "ham"})  # doctest:+ELLIPSIS
-   >>> dish3 = schedule.once(dt.timedelta(), foo, tags = {"spam", "ham", "eggs"})  # doctest:+ELLIPSIS
-   >>> dish4 = schedule.once(dt.timedelta(), foo, tags = {"spam", "sausage", "eggs"})  # doctest:+ELLIPSIS
+   >>> dish1 = schedule.once(dt.timedelta(), foo, tags = {"spam", "eggs"})
+   >>> dish2 = schedule.once(dt.timedelta(), foo, tags = {"spam", "ham"})
+   >>> dish3 = schedule.once(dt.timedelta(), foo, tags = {"spam", "ham", "eggs"})
+   >>> dish4 = schedule.once(dt.timedelta(), foo, tags = {"spam", "sausage", "eggs"})
 
 The default behaviour of |Job| selection by tags require a |Job| to contain all of the
 targeted tags for a match. If the `any_tag` flag is set to ``True``, only one of the targeted
@@ -64,3 +64,6 @@ With the `any_tag` flag set to ``True``, one matching tag is sufficient:
    >>> dishes = schedule.get_jobs({"eggs"}, any_tag=True)
    >>> dishes == {dish1, dish3, dish4}
    True
+
+.. note:: Additionally the tagging system is supported by the
+    :py:meth:`~scheduler.core.Scheduler.delete_jobs` method.

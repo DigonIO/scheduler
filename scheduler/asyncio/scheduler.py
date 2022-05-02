@@ -443,6 +443,7 @@ class Scheduler(BaseScheduler):
         args: tuple[Any] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
+        alias: str = None,
     ) -> Job:
         r"""
         Schedule a oneshot `Job`.
@@ -459,6 +460,8 @@ class Scheduler(BaseScheduler):
             Keyword arguments payload for the function handle within a |AioJob|.
         tags : Optional[set[str]]
             The tags of the |AioJob|.
+        alias : Optional[str]
+            Overwrites the function handle name in the string representation.
 
         Returns
         -------
@@ -478,6 +481,7 @@ class Scheduler(BaseScheduler):
                 kwargs=kwargs,
                 max_attempts=1,
                 tags=tags,
+                alias=alias,
                 delay=False,
                 start=timing,
             )
@@ -489,6 +493,7 @@ class Scheduler(BaseScheduler):
             kwargs=kwargs,
             max_attempts=1,
             tags=tags,
+            alias=alias,
         )
 
     @property
