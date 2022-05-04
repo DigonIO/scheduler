@@ -1,3 +1,5 @@
+.. _examples.job_deletion:
+
 Job Deletion
 ============
 
@@ -25,7 +27,7 @@ Setup a couple of |Job|\ s
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   foo()            2021-06-20 05:22:29   0:00:00         0/inf      1
     CYCLIC   foo()            2021-06-20 05:22:30   0:00:01         0/inf      1
@@ -41,7 +43,7 @@ the :py:meth:`~scheduler.core.Scheduler.delete_job` method:
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=2
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   foo()            2021-06-20 05:22:29   0:00:00         0/inf      1
     CYCLIC   foo()            2021-06-20 05:22:31   0:00:02         0/inf      1
@@ -73,7 +75,7 @@ Setup a couple of |Job|\ s
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=3
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   foo()            2021-06-20 05:22:29   0:00:00         0/inf      1
     CYCLIC   foo()            2021-06-20 05:22:30   0:00:01         0/inf      1
@@ -90,7 +92,7 @@ with a single function call to :py:meth:`~scheduler.core.Scheduler.delete_jobs`.
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=0
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     <BLANKLINE>
 

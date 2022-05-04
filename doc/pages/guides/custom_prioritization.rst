@@ -94,7 +94,7 @@ our |Job|\ s.
     >>> print(schedule)  # doctest:+SKIP
     max_exec=3, tzinfo=None, priority_function=constant_weight_prioritization, #jobs=4
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     print(?)         2021-07-02 20:43:47  -0:00:04           0/1      4
     ONCE     print(?)         2021-07-02 20:43:48  -0:00:03           0/1      2
@@ -122,7 +122,7 @@ in the |Scheduler|.
     >>> print(schedule)  # doctest:+SKIP
     max_exec=3, tzinfo=None, priority_function=constant_weight_prioritization, #jobs=1
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     print(?)         2021-07-02 21:07:17  -0:00:02           0/1      1
     <BLANKLINE>
@@ -199,7 +199,7 @@ We can verify that the expected number of |Job|\ s with the given probabilities 
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=random_priority_function, #jobs=11
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     CYCLIC   <lambda>()       2021-07-02 23:43:38  -0:00:00         0/inf    0.0
     CYCLIC   <lambda>()       2021-07-02 23:43:38  -0:00:00         0/inf    0.1

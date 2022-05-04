@@ -546,6 +546,7 @@ class Scheduler(BaseScheduler):
         args: tuple[Any] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
+        alias: str = None,
         weight: float = 1,
     ):
         r"""
@@ -563,6 +564,8 @@ class Scheduler(BaseScheduler):
             Keyword arguments payload for the function handle within a |Job|.
         tags : Optional[set[str]]
             The tags of the |Job|.
+        alias : Optional[str]
+            Overwrites the function handle name in the string representation.
         weight : float
             Relative weight against other |Job|\ s.
 
@@ -584,6 +587,7 @@ class Scheduler(BaseScheduler):
                 kwargs=kwargs,
                 max_attempts=1,
                 tags=tags,
+                alias=alias,
                 weight=weight,
                 delay=False,
                 start=timing,
@@ -596,6 +600,7 @@ class Scheduler(BaseScheduler):
             kwargs=kwargs,
             max_attempts=1,
             tags=tags,
+            alias=alias,
             weight=weight,
         )
 

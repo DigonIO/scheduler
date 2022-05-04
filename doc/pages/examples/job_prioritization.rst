@@ -55,7 +55,7 @@ of the highest weight:
     >>> print(schedule)  # doctest:+SKIP
     max_exec=3, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     print(?)         2021-06-21 03:24:23  -0:00:00           0/1      1
 
@@ -89,6 +89,6 @@ If several |Job|\ s of the same weight are overdue, the
     >>> print(schedule)  # doctest:+SKIP
     max_exec=3, tzinfo=None, priority_function=linear_priority_function, #jobs=1
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     ONCE     print(?)         2021-06-21 03:24:23  -0:00:00           0/1      1

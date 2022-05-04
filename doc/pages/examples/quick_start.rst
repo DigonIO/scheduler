@@ -86,7 +86,7 @@ A human readable overview of the scheduled jobs can be created with a simple `pr
     >>> print(schedule)  # doctest:+SKIP
     max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
     <BLANKLINE>
-    type     function         due at                 due in      attempts weight
+    type     function / alias due at                 due in      attempts weight
     -------- ---------------- ------------------- --------- ------------- ------
     MINUTELY foo(..)          2021-06-18 00:37:15   0:00:14         0/inf      1
     CYCLIC   foo()            2021-06-18 00:46:58   0:09:58         0/inf      1

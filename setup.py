@@ -15,8 +15,8 @@ setup(
     version=version,
     description=(
         "A simple in-process python scheduler library with asyncio, threading and timezone support."
-        "Use datetime standard library objects for planning of Jobs depending on time cycles,"
-        "fixed times, weekdays, dates, weights, offsets and execution counts."
+        " Use datetime standard library objects for planning of Jobs depending on time cycles,"
+        " fixed times, weekdays, dates, weights, offsets and execution counts."
     ),
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
