@@ -2,6 +2,10 @@
 
 ## 0.7.2
 
+### Features
+
++ aliases are now supported for Scheduler.once
+
 ### Misc
 
 + Skipping checksum in PKGBUILD (we do not know the hash in advance of pushing)
@@ -10,6 +14,10 @@
 ### Documentation
 
 + String fixes: `function / alias` and spaces
++ additional alias example
++ corrected alias_text
++ tag & parameters - remove unneeded `doctest:+ELLIPSIS` instruction
++ note added on tags
 
 ## 0.7.1
 
