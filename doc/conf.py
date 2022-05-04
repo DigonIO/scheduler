@@ -27,7 +27,7 @@ with open("../scheduler/__init__.py", "r") as file:
             author = line.split('"')[1]
 
 project = "scheduler"
-copyright = "2021, " + author
+copyright = "2022, " + author
 author = author
 
 # The full version, including alpha/beta/rc tags
