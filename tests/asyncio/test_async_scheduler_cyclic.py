@@ -14,7 +14,7 @@ import asyncio
 import datetime as dt
 
 import pytest
-from helpers import T_2021_5_26__3_55
+from ..helpers import T_2021_5_26__3_55
 
 from scheduler.asyncio.scheduler import Scheduler
 

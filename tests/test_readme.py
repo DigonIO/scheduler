@@ -2,7 +2,7 @@ import datetime as dt
 import doctest
 
 import pytest
-from helpers import T_2021_5_26__3_55
+from .helpers import T_2021_5_26__3_55
 
 
 # NOTE: We cannot test for the full table, as some Jobs depend on the time of execution

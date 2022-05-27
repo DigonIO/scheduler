@@ -1,7 +1,7 @@
 import datetime as dt
 
 import pytest
-from helpers import CYCLIC_TYPE_ERROR_MSG, foo, samples_days, samples_seconds, utc
+from ...helpers import CYCLIC_TYPE_ERROR_MSG, foo, samples_days, samples_seconds, utc
 
 import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
