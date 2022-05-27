@@ -164,6 +164,22 @@ To test the examples in the documentation run:
 pytest --doctest-modules doc/pages/*/*
 ```
 
+## Sponsor
+
+</br>
+<div align="center">
+  <a href="https://digon.io">
+    <img alt="scheduler" src="https://digon.io/landing/img/digon_name_right_grey.svg" width="50%">
+  </a>
+</div>
+</br>
+<div align="center">
+We would like to thank Digon.IO for sponsoring the development of this library.
+Digon.IO is building bridges between data science and software development.
+They enable companies to automate and accelerate their data-driven processes.
+Please visit their website: <a href="https://digon.io/">digon.io</a>
+</div>
+
 ## License
 
-This software is published under the [LGPLv3 license](https://www.gnu.org/licenses/lgpl-3.0.en.html).
+This free and open source software (FOSS) is published under the [LGPLv3 license](https://www.gnu.org/licenses/lgpl-3.0.en.html).
