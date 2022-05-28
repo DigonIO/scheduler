@@ -5,6 +5,7 @@
 ### Misc
 
 + formatting of README.md
++ CI file correction for coverage report
 
 ## 0.7.3
 
