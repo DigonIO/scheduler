@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.4
+
+### Misc
+
++ formatting of README.md
+
 ## 0.7.3
 
 ### Testing
