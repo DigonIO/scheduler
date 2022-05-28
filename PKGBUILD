@@ -1,6 +1,6 @@
 #!/bin/bash
 pkgname=python-scheduler
-pkgver=0.7.2
+pkgver=0.7.3
 pkgrel=1
 pkgdec='A simple in-process python scheduler'
 arch=('any')
@@ -13,18 +13,18 @@ source=("https://gitlab.com/DigonIO/scheduler/-/archive/$pkgver/scheduler-$pkgve
 b2sums=('SKIP')
 
 build() {
-  cd scheduler-$pkgver || exit
+  cd "$srcdir"/scheduler-"$pkgver" || exit
   python setup.py build
 }
 
 check() {
-  cd scheduler-$pkgver || exit
-  PYTHONPATH="$PWD/build/lib" MYPYPATH="$PWD/build/lib" pytest --cov=scheduler/ tests/
-  PYTHONPATH="$PWD/build/lib" MYPYPATH="$PWD/build/lib" pytest --doctest-modules doc/pages/*/*.rst
+  cd "$srcdir"/scheduler-"$pkgver" || exit
+  py.test --cov=scheduler tests/
+  py.test --doctest-modules doc/pages/*/*.rst
 }
 
 package() {
-  cd scheduler-$pkgver || exit
+  "$srcdir"/scheduler-"$pkgver" || exit
   python setup.py install --root="$pkgdir" --optimize=1
 
   install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/

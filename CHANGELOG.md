@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.3
+
+### Testing
+
++ `test_readme.py` now uses monkeypatched `datetime.now()`
++ Tests are contained in their own modules therefore installation before testing
+  is no longer necessary
++ testing requirements now include `typeguard`
++ coverage badge should work again
+
+### Misc
+
++ sponsor Digon.IO added
+
 ## 0.7.2
 
 ### Features

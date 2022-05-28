@@ -1,7 +1,7 @@
 import pdb
 
 import pytest
-from helpers import job_args, job_args_utc, job_reprs, job_reprs_utc
+from ...helpers import job_args, job_args_utc, job_reprs, job_reprs_utc
 
 from scheduler.threading.job import Job
 

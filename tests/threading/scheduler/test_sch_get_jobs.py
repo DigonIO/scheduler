@@ -2,7 +2,7 @@ import datetime as dt
 import random
 
 import pytest
-from helpers import foo
+from ...helpers import foo
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.base.definition import JobType

@@ -1,7 +1,7 @@
 import datetime as dt
 
 import pytest
-from helpers import START_STOP_ERROR, foo, samples_seconds
+from ...helpers import START_STOP_ERROR, foo, samples_seconds
 
 from scheduler import Scheduler, SchedulerError
 

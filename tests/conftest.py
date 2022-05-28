@@ -29,4 +29,8 @@ def patch_datetime_now(monkeypatch, request):
         def last_now(cls):
             return cls.cached_time
 
+        def __repr__(self):
+            s = super().__repr__()
+            return s.replace("DatetimePatch", "datetime.datetime")
+
     monkeypatch.setattr(dt, "datetime", DatetimePatch)

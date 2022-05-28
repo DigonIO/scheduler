@@ -1,4 +1,4 @@
-from helpers import samples, samples_utc
+from .helpers import samples, samples_utc
 
 from scheduler.trigger import (
     Friday,

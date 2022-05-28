@@ -1,7 +1,7 @@
 import datetime as dt
 
 import pytest
-from helpers import TZ_ERROR_MSG, foo, utc
+from ...helpers import TZ_ERROR_MSG, foo, utc
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.base.definition import JobType

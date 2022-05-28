@@ -1,7 +1,7 @@
 import datetime as dt
 
 import pytest
-from helpers import foo
+from ...helpers import foo
 
 from scheduler import Scheduler
 

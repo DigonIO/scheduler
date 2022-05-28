@@ -100,7 +100,7 @@ schedule.weekly(trigger.Monday(), foo)
 schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), foo)
 
 schedule.once(dt.timedelta(minutes=10), foo)
-schedule.once(trigger.Monday(), foo)
+schedule.once(trigger.Tuesday(), foo)
 schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)
 ```
 
@@ -115,15 +115,15 @@ max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=9
 
 type     function / alias due at                 due in      attempts weight
 -------- ---------------- ------------------- --------- ------------- ------
-MINUTELY bar(..)          2021-06-18 00:37:15   0:00:14         0/inf      1
-CYCLIC   foo()            2021-06-18 00:46:58   0:09:58         0/inf      1
-ONCE     foo()            2021-06-18 00:46:59   0:09:58           0/1      1
-HOURLY   foo()            2021-06-18 01:30:15   0:53:14         0/inf      1
-DAILY    bar(..)          2021-06-18 16:30:00  15:52:59         0/inf      1
-WEEKLY   foo()            2021-06-21 00:00:00    2 days         0/inf      1
-ONCE     bar(..)          2021-06-21 00:00:00    2 days           0/1      1
-WEEKLY   bar(..)          2021-06-21 16:30:00    3 days         0/inf      1
-ONCE     foo()            2022-02-15 00:45:00  242 days           0/1      1
+MINUTELY foo()            2021-05-26 03:55:15   0:00:14         0/inf      1
+CYCLIC   foo()            2021-05-26 04:05:00   0:09:59         0/inf      1
+ONCE     foo()            2021-05-26 04:05:00   0:09:59           0/1      1
+HOURLY   foo()            2021-05-26 04:30:15   0:35:14         0/inf      1
+DAILY    foo()            2021-05-26 16:30:00  12:34:59         0/inf      1
+WEEKLY   foo()            2021-05-31 00:00:00    4 days         0/inf      1
+WEEKLY   foo()            2021-05-31 16:30:00    5 days         0/inf      1
+ONCE     foo()            2021-06-01 00:00:00    5 days           0/1      1
+ONCE     foo()            2022-02-15 00:45:00  264 days           0/1      1
 ```
 
 Executing pending `Job`s periodically can be achieved with a simple loop:
@@ -164,6 +164,22 @@ To test the examples in the documentation run:
 pytest --doctest-modules doc/pages/*/*
 ```
 
+## Sponsor
+
+</br>
+<div align="center">
+  <a href="https://digon.io">
+    <img alt="scheduler" src="https://digon.io/landing/img/digon_name_right_grey.svg" width="50%">
+  </a>
+</div>
+</br>
+<div align="center">
+We would like to thank Digon.IO for sponsoring the development of this library.
+Digon.IO is building bridges between data science and software development.
+They enable companies to automate and accelerate their data-driven processes.
+Please visit their website: <a href="https://digon.io/">digon.io</a>
+</div>
+
 ## License
 
-This software is published under the [LGPLv3 license](https://www.gnu.org/licenses/lgpl-3.0.en.html).
+This free and open source software (FOSS) is published under the [LGPLv3 license](https://www.gnu.org/licenses/lgpl-3.0.en.html).
