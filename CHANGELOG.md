@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.4
+
+### Misc
+
++ formatting of README.md
++ CI file correction for coverage report
+
 ## 0.7.3
 
 ### Testing

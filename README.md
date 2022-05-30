@@ -166,13 +166,13 @@ pytest --doctest-modules doc/pages/*/*
 
 ## Sponsor
 
-</br>
+<br>
 <div align="center">
   <a href="https://digon.io">
-    <img alt="scheduler" src="https://digon.io/landing/img/digon_name_right_grey.svg" width="50%">
+    <img alt="Digon.IO GmbH - IT Dienstleister Wuppertal Softwareentwicklung und Datenwissenschaften" src="https://digon.io/static/landing/img/digon_name_right_grey.svg" width="50%">
   </a>
 </div>
-</br>
+<br>
 <div align="center">
 We would like to thank Digon.IO for sponsoring the development of this library.
 Digon.IO is building bridges between data science and software development.
