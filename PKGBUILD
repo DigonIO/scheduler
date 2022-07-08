@@ -24,7 +24,7 @@ check() {
 }
 
 package() {
-  "$srcdir"/scheduler-"$pkgver" || exit
+  cd "$srcdir"/scheduler-"$pkgver" || exit
   python setup.py install --root="$pkgdir" --optimize=1
 
   install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
