@@ -148,10 +148,9 @@ class Scheduler(BaseScheduler):
 
                 reference_dt = dt.datetime.now(tz=self.__tzinfo)
                 job._calc_next_exec(reference_dt)  # pylint: disable=protected-access
-
         except aio.CancelledError:  # TODO asyncio does not trigger this exception in pytest, why?
+            # raised, when `task.cancel()` in `delete_job` was run
             pass  # pragma: no cover
-
         else:
             self.delete_job(job)
 

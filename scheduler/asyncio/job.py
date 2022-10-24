@@ -57,7 +57,10 @@ class Job(BaseJob):
 
     async def _exec(self):
         coroutine = self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)
-        await coroutine
+        try:
+            await coroutine
+        except Exception:
+            self._BasJob__failed_attempts += 1
         self._BaseJob__attempts += 1
 
     # pylint: enable=no-member invalid-name

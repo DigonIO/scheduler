@@ -103,7 +103,10 @@ class Job(BaseJob):
     def _exec(self) -> None:
         """Execute the callback function."""
         with self.__lock:
-            self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)  # type: ignore
+            try:
+                self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)  # type: ignore
+            except Exception:
+                self._BasJob__failed_attempts += 1  # type: ignore
             self._BaseJob__attempts += 1  # type: ignore
 
     # pylint: enable=no-member invalid-name

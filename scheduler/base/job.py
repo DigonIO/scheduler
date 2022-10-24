@@ -44,6 +44,7 @@ class BaseJob(ABC):
 
     __mark_delete: bool
     __attempts: int
+    __failed_attempts: int
     __pending_timer: JobTimer
     __timers: list[JobTimer]
 
@@ -91,6 +92,7 @@ class BaseJob(ABC):
         # relativ to the self.__stop variable
         self.__mark_delete = False
         self.__attempts = 0
+        self.__failed_attempts = 0
 
         # create JobTimers
         self.__timers = [JobTimer(job_type, tim, self.__start, skip_missing) for tim in timing]
@@ -392,6 +394,18 @@ class BaseJob(ABC):
             Execution attempts.
         """
         return self.__attempts
+
+    @property
+    def failed_attempts(self) -> int:
+        """
+        Get the number of failed executions for a `Job`.
+
+        Returns
+        -------
+        int
+            Failed execution attempts.
+        """
+        return self.__failed_attempts
 
     @property
     def has_attempts_remaining(self) -> bool:
