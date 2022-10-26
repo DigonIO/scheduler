@@ -2,6 +2,7 @@ import datetime as dt
 
 import scheduler.trigger as trigger
 from scheduler.base.definition import JobType
+from scheduler.base.scheduler import LOGGER
 
 utc = dt.timezone.utc
 utc2 = dt.timezone(dt.timedelta(hours=2))

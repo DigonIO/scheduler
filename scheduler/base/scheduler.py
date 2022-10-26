@@ -7,6 +7,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional
+from logging import Logger
 
 from scheduler.base.job import BaseJob, BaseJobType
 from scheduler.base.timingtype import (
@@ -15,6 +16,8 @@ from scheduler.base.timingtype import (
     TimingOnceUnion,
     TimingWeeklyUnion,
 )
+
+LOGGER = Logger("scheduler")
 
 
 def select_jobs_by_tag(
@@ -63,6 +66,11 @@ class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than a
 
     Author: Jendrik A. Potyka, Fabian A. Preiss
     """
+
+    __logger: Logger
+
+    def __init__(self, logger: Optional[Logger] = None) -> None:
+        self.__logger = logger if logger else LOGGER
 
     @abstractmethod
     def delete_job(self, job: BaseJob) -> None:

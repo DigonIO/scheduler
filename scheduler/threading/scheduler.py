@@ -8,6 +8,7 @@ import datetime as dt
 import queue
 import threading
 from typing import Any, Callable, Optional
+from logging import Logger
 
 import typeguard as tg
 
@@ -35,7 +36,7 @@ from scheduler.prioritization import linear_priority_function
 from scheduler.threading.job import Job
 
 
-def _exec_job_worker(que: queue.Queue[Job]):
+def _exec_job_worker(que: queue.Queue[Job], logger: Logger):
     running = True
     while running:
         try:
@@ -43,7 +44,7 @@ def _exec_job_worker(que: queue.Queue[Job]):
         except queue.Empty:
             running = False
         else:
-            job._exec()  # pylint: disable=protected-access
+            job._exec(logger=logger)  # pylint: disable=protected-access
             que.task_done()
 
 
@@ -74,6 +75,8 @@ class Scheduler(BaseScheduler):
         A collection of job instances.
     n_threads : int
         The number of worker threads. 0 for unlimited, default 1.
+    logger : Optional[logging.Logger]
+        A custom Logger instance.
     """
 
     def __init__(
@@ -87,7 +90,9 @@ class Scheduler(BaseScheduler):
         ] = linear_priority_function,
         jobs: Optional[set[Job]] = None,
         n_threads: int = 1,
+        logger: Optional[Logger] = None,
     ):
+        super().__init__(logger=logger)
         self.__lock = threading.RLock()
         self.__max_exec = max_exec
         self.__tzinfo = tzinfo
@@ -186,7 +191,7 @@ class Scheduler(BaseScheduler):
 
         if self.__n_threads == 1:
             for job in jobs:
-                job._exec()  # pylint: disable=protected-access
+                job._exec(logger=self._BaseScheduler__logger)  # pylint: disable=protected-access
 
         else:
             que: queue.Queue[Job] = queue.Queue()
@@ -195,7 +200,7 @@ class Scheduler(BaseScheduler):
 
             workers = []
             for _ in range(self.__n_threads or n_jobs):
-                worker = threading.Thread(target=_exec_job_worker, args=(que,))
+                worker = threading.Thread(target=_exec_job_worker, args=(que, self._BaseScheduler__logger))
                 worker.daemon = True
                 worker.start()
                 workers.append(worker)

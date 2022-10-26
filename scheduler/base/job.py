@@ -10,6 +10,7 @@ import datetime as dt
 import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional, TypeVar, cast
+from logging import Logger
 
 from scheduler.base.definition import JobType
 from scheduler.base.job_timer import JobTimer
@@ -41,6 +42,7 @@ class BaseJob(ABC):
     __skip_missing: bool
     __alias: Optional[str]
     __tzinfo: Optional[dt.tzinfo]
+    __logger: Logger
 
     __mark_delete: bool
     __attempts: int

@@ -7,6 +7,7 @@ from ..helpers import T_2021_5_26__3_55, T_2021_5_26__3_55_UTC, job_args, job_ar
 
 from scheduler.asyncio.scheduler import Job
 from scheduler.base.definition import JobType
+from scheduler.base.scheduler import LOGGER
 
 async_job_args = copy.deepcopy(job_args)
 for ele in async_job_args:
@@ -31,10 +32,10 @@ async def test_async_job():
     )
     assert job.attempts == 0
 
-    await job._exec()
+    await job._exec(LOGGER)
     assert job.attempts == 1
 
-    await job._exec()
+    await job._exec(LOGGER)
     assert job.attempts == 2
 
     assert job.has_attempts_remaining == False

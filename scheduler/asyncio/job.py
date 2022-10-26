@@ -5,6 +5,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 
 from __future__ import annotations
+from logging import Logger
 
 from scheduler.base.job import BaseJob
 
@@ -55,12 +56,13 @@ class Job(BaseJob):
 
     # pylint: disable=no-member invalid-name
 
-    async def _exec(self):
+    async def _exec(self, logger: Logger):
         coroutine = self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)
         try:
             await coroutine
-        except Exception:
-            self._BasJob__failed_attempts += 1
+        except Exception as err:
+            logger.error("Unhandled exception `%s` in `%r`!", err, self)
+            self._BaseJob__failed_attempts += 1
         self._BaseJob__attempts += 1
 
     # pylint: enable=no-member invalid-name

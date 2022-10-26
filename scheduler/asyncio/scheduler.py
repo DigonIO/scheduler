@@ -9,6 +9,7 @@ from __future__ import annotations
 import asyncio as aio
 import datetime as dt
 from typing import Any, Callable, Optional, cast
+from logging import Logger
 
 import typeguard as tg
 
@@ -56,6 +57,8 @@ class Scheduler(BaseScheduler):
         Set a AsyncIO event loop, default is the global event loop
     tzinfo : datetime.tzinfo
         Set the timezone of the |AioScheduler|.
+    logger : Optional[logging.Logger]
+        A custom Logger instance.
     """
 
     def __init__(
@@ -63,7 +66,9 @@ class Scheduler(BaseScheduler):
         *,
         loop: Optional[aio.selector_events.BaseSelectorEventLoop] = None,
         tzinfo: Optional[dt.tzinfo] = None,
+        logger: Optional[Logger] = None,
     ):
+        super().__init__(logger=logger)
         try:
             self.__loop = loop if loop else aio.get_running_loop()
         except RuntimeError:
@@ -130,7 +135,9 @@ class Scheduler(BaseScheduler):
         **kwargs,
     ) -> Job:
         """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
-        job: Job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
+        job: Job = create_job_instance(
+            Job, tzinfo=self.__tzinfo, **kwargs
+        )
 
         task = self.__loop.create_task(self.__supervise_job(job))
         self.__jobs[job] = task
@@ -144,7 +151,7 @@ class Scheduler(BaseScheduler):
                 sleep_seconds: float = job.timedelta(reference_dt).total_seconds()
                 await aio.sleep(sleep_seconds)
 
-                await job._exec()  # pylint: disable=protected-access
+                await job._exec(logger=self._BaseScheduler__logger)  # pylint: disable=protected-access
 
                 reference_dt = dt.datetime.now(tz=self.__tzinfo)
                 job._calc_next_exec(reference_dt)  # pylint: disable=protected-access
