@@ -9,7 +9,6 @@ from ..helpers import (
     HOURLY_TYPE_ERROR_MSG,
     MINUTELY_TYPE_ERROR_MSG,
     ONCE_TYPE_ERROR_MSG,
-    T_2021_5_26__3_55,
     WEEKLY_TYPE_ERROR_MSG,
     MISSING_EVENT_LOOP_ERROR,
 )
@@ -89,6 +88,10 @@ async def test_delete_jobs_with_tags(event_loop, tags, any_tag, length):
     assert len(sch.jobs) == length
 
 
+# NOTE: In the following tests `sch.delete_jobs()` is run to suppress
+# the asyncio Warning "Task was destroyed but it is pending!" during testing
+
+
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "tags, any_tag, length",
@@ -107,12 +110,14 @@ async def test_get_jobs_with_tags(event_loop, tags, any_tag, length):
 
     jobs = sch.get_jobs(tags, any_tag)
     assert len(jobs) == length
+    sch.delete_jobs()
 
 
 @pytest.mark.asyncio
 async def test_async_list_timing(event_loop):
     sch = Scheduler(loop=event_loop)
     job0 = sch.minutely([dt.time(second=30), dt.time(second=45)], foo)
+    sch.delete_jobs()
 
 
 @pytest.mark.asyncio
@@ -130,6 +135,7 @@ async def test_async_cyclic(event_loop, timing, err_msg):
             job0 = sch.cyclic(timing, foo)
     else:
         job0 = sch.cyclic(timing, foo)
+    sch.delete_jobs()
 
 
 @pytest.mark.asyncio
@@ -147,6 +153,7 @@ async def test_async_minutely(event_loop, timing, err_msg):
             job0 = sch.minutely(timing, foo)
     else:
         job0 = sch.minutely(timing, foo)
+    sch.delete_jobs()
 
 
 @pytest.mark.asyncio
@@ -164,6 +171,7 @@ async def test_async_hourly(event_loop, timing, err_msg):
             job0 = sch.hourly(timing, foo)
     else:
         job0 = sch.hourly(timing, foo)
+    sch.delete_jobs()
 
 
 @pytest.mark.asyncio
@@ -181,6 +189,7 @@ async def test_async_daily(event_loop, timing, err_msg):
             job0 = sch.daily(timing, foo)
     else:
         job0 = sch.daily(timing, foo)
+    sch.delete_jobs()
 
 
 @pytest.mark.asyncio
@@ -198,6 +207,7 @@ async def test_async_weekly(event_loop, timing, err_msg):
             job0 = sch.weekly(timing, foo)
     else:
         job0 = sch.weekly(timing, foo)
+    sch.delete_jobs()
 
 
 @pytest.mark.asyncio
@@ -215,12 +225,14 @@ async def test_async_once(event_loop, timing, err_msg):
             job0 = sch.once(timing, foo)
     else:
         job0 = sch.once(timing, foo)
+    sch.delete_jobs()
 
 
 @pytest.mark.asyncio
 async def test_async_once_datetime(event_loop):
     sch = Scheduler(loop=event_loop)
     job0 = sch.once(dt.datetime.now(), foo)
+    sch.delete_jobs()
 
 
 def test_async_scheduler_without_running_loop():

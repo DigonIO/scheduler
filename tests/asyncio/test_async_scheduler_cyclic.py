@@ -79,6 +79,10 @@ def test_async_scheduler_cyclic1s(monkeypatch, patch_datetime_now, event_loop):
     event_loop.run_until_complete(main())
 
 
+# NOTE: In the following test `sch.delete_jobs()` is run to suppress
+# the asyncio Warning "Task was destroyed but it is pending!" during testing
+
+
 @pytest.mark.parametrize(
     "patch_datetime_now",
     [samples_secondly],
@@ -115,5 +119,6 @@ def test_async_scheduler_cyclic2s(monkeypatch, patch_datetime_now, event_loop):
             await asyncio.sleep(0)
             assert dt.datetime.last_now() == samples_secondly[5]
             assert cyclic_job.attempts == 2
+            schedule.delete_jobs()
 
     event_loop.run_until_complete(main())
