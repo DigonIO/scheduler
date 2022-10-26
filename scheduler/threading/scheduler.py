@@ -189,25 +189,22 @@ class Scheduler(BaseScheduler):
     def __exec_jobs(self, jobs: list[Job], ref_dt: dt.datetime) -> int:
         n_jobs = len(jobs)
 
-        if self.__n_threads == 1:
-            for job in jobs:
-                job._exec(logger=self._BaseScheduler__logger)  # pylint: disable=protected-access
+        que: queue.Queue[Job] = queue.Queue()
+        for job in jobs:
+            que.put(job)
 
-        else:
-            que: queue.Queue[Job] = queue.Queue()
-            for job in jobs:
-                que.put(job)
+        workers = []
+        for _ in range(self.__n_threads or n_jobs):
+            worker = threading.Thread(
+                target=_exec_job_worker, args=(que, self._BaseScheduler__logger)
+            )
+            worker.daemon = True
+            worker.start()
+            workers.append(worker)
 
-            workers = []
-            for _ in range(self.__n_threads or n_jobs):
-                worker = threading.Thread(target=_exec_job_worker, args=(que, self._BaseScheduler__logger))
-                worker.daemon = True
-                worker.start()
-                workers.append(worker)
-
-            que.join()
-            for worker in workers:
-                worker.join()
+        que.join()
+        for worker in workers:
+            worker.join()
 
         for job in jobs:
             job._calc_next_exec(ref_dt)  # pylint: disable=protected-access
