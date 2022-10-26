@@ -68,8 +68,8 @@ class BaseJob(ABC):
         timing = standardize_timing_format(job_type, timing)
 
         sane_timing_types(job_type, timing)
-        check_duplicate_effective_timings(job_type, timing, tzinfo)
         check_timing_tzinfo(job_type, timing, tzinfo)
+        check_duplicate_effective_timings(job_type, timing, tzinfo)
 
         self.__start = set_start_check_stop_tzinfo(start, stop, tzinfo)
 

@@ -56,7 +56,7 @@ FRIDAY_4_UTC = trigger.Friday(dt.time(hour=4, tzinfo=utc))
         [
             [trigger.Wednesday(), trigger.Wednesday()],
             [],
-            samples_weeks_utc,
+            samples_weeks,
             None,
             DUPLICATE_EFFECTIVE_TIME,
         ],
@@ -64,21 +64,21 @@ FRIDAY_4_UTC = trigger.Friday(dt.time(hour=4, tzinfo=utc))
             [MONDAY_23_UTC_AS_SUNDAY, MONDAY_23_UTC],
             [],
             samples_weeks_utc,
-            None,
+            utc,
             DUPLICATE_EFFECTIVE_TIME,
         ],
         [
             [MONDAY_23_UTC, MONDAY_23_UTC_AS_TUESDAY],
             [],
             samples_weeks_utc,
-            None,
+            utc,
             DUPLICATE_EFFECTIVE_TIME,
         ],
         [
             [MONDAY_23_UTC_AS_SUNDAY, MONDAY_23_UTC_AS_TUESDAY],
             [],
             samples_weeks_utc,
-            None,
+            utc,
             DUPLICATE_EFFECTIVE_TIME,
         ],
         [
