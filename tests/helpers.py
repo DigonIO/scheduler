@@ -253,6 +253,13 @@ def bar(msg="bar"):
     print(msg)
 
 
+ZERO_DIVISION_ERROR = ZeroDivisionError("division by zero")
+
+
+def fail():
+    raise ZERO_DIVISION_ERROR
+
+
 job_args = (
     {
         "job_type": JobType.CYCLIC,
