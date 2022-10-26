@@ -2,29 +2,30 @@ import datetime as dt
 
 import scheduler.trigger as trigger
 from scheduler.base.definition import JobType
+from scheduler.base.scheduler import LOGGER
 
 utc = dt.timezone.utc
 utc2 = dt.timezone(dt.timedelta(hours=2))
 T_2021_5_26__3_55 = dt.datetime(2021, 5, 26, 3, 55)  # a Wednesday
 T_2021_5_26__3_55_UTC = dt.datetime(2021, 5, 26, 3, 55, tzinfo=utc)
 
-CYCLIC_TYPE_ERROR_MSG = "Wrong input for Cyclic! Expected input type:\n" + "datetime.timedelta"
+CYCLIC_TYPE_ERROR_MSG = "Wrong input for Cyclic! Expected input type:\n" "datetime.timedelta"
 _DAILY_TYPE_ERROR_MSG = (
     "Wrong input for {0}! Select one of the following input types:\n"
-    + "datetime.time | list[datetime.time]"
+    "datetime.time | list[datetime.time]"
 )
 MINUTELY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Minutely")
 HOURLY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Hourly")
 DAILY_TYPE_ERROR_MSG = _DAILY_TYPE_ERROR_MSG.format("Daily")
 WEEKLY_TYPE_ERROR_MSG = (
     "Wrong input for Weekly! Select one of the following input types:\n"
-    + "DAY | list[DAY]\n"
-    + "where `DAY = Weekday`"
+    "DAY | list[DAY]\n"
+    "where `DAY = Weekday`"
 )
 
 ONCE_TYPE_ERROR_MSG = (
     "Wrong input for Once! Select one of the following input types:\n"
-    + "dt.datetime | dt.timedelta | Weekday | dt.time"
+    "dt.datetime | dt.timedelta | Weekday | dt.time"
 )
 
 DUPLICATE_EFFECTIVE_TIME = "Times that are effectively identical are not allowed."
@@ -35,6 +36,8 @@ TZ_ERROR_MSG = _TZ_ERROR_MSG[:-9] + "."
 START_STOP_ERROR = "Start argument must be smaller than the stop argument."
 
 DELETE_NOT_SCHEDULED_ERROR = "An unscheduled Job can not be deleted!"
+
+MISSING_EVENT_LOOP_ERROR = "The asyncio Scheduler requires a running event loop."
 
 samples = [
     T_2021_5_26__3_55,  # job creation
@@ -250,6 +253,13 @@ def bar(msg="bar"):
     print(msg)
 
 
+ZERO_DIVISION_ERROR = ZeroDivisionError("division by zero")
+
+
+def fail():
+    raise ZERO_DIVISION_ERROR
+
+
 job_args = (
     {
         "job_type": JobType.CYCLIC,
@@ -292,6 +302,7 @@ job_args = (
     },
 )
 
+# NOTE: using regex would give us a slightly cleaner solution here
 job_reprs = (
     [
         "scheduler.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",
@@ -368,6 +379,7 @@ job_args_utc = (
     },
 )
 
+# NOTE: using regex would give us a slightly cleaner solution here
 job_reprs_utc = (
     [
         "scheduler.Job(<JobType.CYCLIC: 1>, [datetime.timedelta(seconds=3600)], <function foo at 0x",

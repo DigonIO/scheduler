@@ -12,9 +12,10 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 import asyncio
 import datetime as dt
+import logging
 
 import pytest
-from ..helpers import T_2021_5_26__3_55
+from ..helpers import T_2021_5_26__3_55, fail, ZERO_DIVISION_ERROR
 
 from scheduler.asyncio.scheduler import Scheduler
 
@@ -79,6 +80,10 @@ def test_async_scheduler_cyclic1s(monkeypatch, patch_datetime_now, event_loop):
     event_loop.run_until_complete(main())
 
 
+# NOTE: In the following test `sch.delete_jobs()` is run to suppress
+# the asyncio Warning "Task was destroyed but it is pending!" during testing
+
+
 @pytest.mark.parametrize(
     "patch_datetime_now",
     [samples_secondly],
@@ -115,5 +120,55 @@ def test_async_scheduler_cyclic2s(monkeypatch, patch_datetime_now, event_loop):
             await asyncio.sleep(0)
             assert dt.datetime.last_now() == samples_secondly[5]
             assert cyclic_job.attempts == 2
+            schedule.delete_jobs()
+
+    event_loop.run_until_complete(main())
+
+
+async def async_fail():
+    return fail()
+
+
+@pytest.mark.parametrize(
+    "patch_datetime_now",
+    [samples_secondly],
+    indirect=["patch_datetime_now"],
+)
+def test_asyncio_fail(monkeypatch, patch_datetime_now, event_loop, caplog):
+    caplog.set_level(logging.DEBUG, logger="scheduler")
+
+    async def main():
+        with monkeypatch.context() as m:
+            m.setattr(asyncio, "sleep", fake_sleep)
+            schedule = Scheduler()
+            cyclic_job = schedule.cyclic(dt.timedelta(seconds=1), async_fail)
+            assert dt.datetime.last_now() == samples_secondly[0]
+            assert cyclic_job.datetime == samples_secondly[1]
+            assert cyclic_job.attempts == 0
+
+            RECORD = (
+                "scheduler",
+                logging.ERROR,
+                "Unhandled exception `%s` in `%r`!"
+                % (
+                    ZERO_DIVISION_ERROR,
+                    cyclic_job,
+                ),
+            )
+
+            await asyncio.sleep(0)
+            assert dt.datetime.last_now() == samples_secondly[1]
+            assert cyclic_job.attempts == 0
+
+            await asyncio.sleep(0)
+            assert dt.datetime.last_now() == samples_secondly[2]
+            assert cyclic_job.attempts == 1
+            assert cyclic_job.failed_attempts == 1
+            assert caplog.record_tuples == [RECORD]
+
+            await asyncio.sleep(0)
+            assert cyclic_job.attempts == 2
+            assert cyclic_job.failed_attempts == 2
+            assert caplog.record_tuples == [RECORD, RECORD]
 
     event_loop.run_until_complete(main())

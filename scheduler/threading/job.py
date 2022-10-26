@@ -7,6 +7,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 import threading
 from typing import Any, Callable, Optional
+from logging import Logger
 
 from scheduler.base.definition import JobType
 from scheduler.base.job import BaseJob
@@ -100,10 +101,14 @@ class Job(BaseJob):
 
     # pylint: disable=no-member invalid-name
 
-    def _exec(self) -> None:
+    def _exec(self, logger: Logger) -> None:
         """Execute the callback function."""
         with self.__lock:
-            self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)  # type: ignore
+            try:
+                self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)  # type: ignore
+            except Exception as err:
+                logger.error("Unhandled exception `%s` in `%r`!", err, self)
+                self._BaseJob__failed_attempts += 1  # type: ignore
             self._BaseJob__attempts += 1  # type: ignore
 
     # pylint: enable=no-member invalid-name

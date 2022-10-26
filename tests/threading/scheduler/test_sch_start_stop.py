@@ -79,9 +79,8 @@ def test_start_stop(timing, counts, patch_datetime_now, start, stop, err_msg):
         _ = dt.datetime.now()
 
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job = sch.cyclic(timing=timing, handle=foo, start=start, stop=stop)
-            assert msg == err_msg
     else:
         job = sch.cyclic(timing=timing, handle=foo, start=start, stop=stop)
 

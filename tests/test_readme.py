@@ -22,7 +22,7 @@ def test_general_readme(patch_datetime_now):
     r"""
     >>> import datetime as dt
     >>> from scheduler import Scheduler
-    >>> import scheduler.trigger as trigger
+    >>> from scheduler.trigger import Monday, Tuesday
 
     >>> def foo():
     ...     print("foo")
@@ -41,16 +41,16 @@ def test_general_readme(patch_datetime_now):
     >>> schedule.daily(dt.time(hour=16, minute=30), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.DAILY...>, [datetime.time(16, 30)], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
-    >>> schedule.weekly(trigger.Monday(), foo)  # doctest:+ELLIPSIS
+    >>> schedule.weekly(Monday(), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
-    >>> schedule.weekly(trigger.Monday(dt.time(hour=16, minute=30)), foo)  # doctest:+ELLIPSIS
+    >>> schedule.weekly(Monday(dt.time(hour=16, minute=30)), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.WEEKLY...>, [Monday(time=datetime.time(16, 30))], <function foo at 0x...>, (), {}, 0, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.once(dt.timedelta(minutes=10), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.CYCLIC...>, [datetime.timedelta(seconds=600)], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None, None)
 
-    >>> schedule.once(trigger.Tuesday(), foo)  # doctest:+ELLIPSIS
+    >>> schedule.once(Tuesday(), foo)  # doctest:+ELLIPSIS
     scheduler.Job(<JobType.WEEKLY...>, [Tuesday(time=datetime.time(0, 0))], <function foo at 0x...>, (), {}, 1, 1, True, datetime.datetime(...), None, False, None, None)
 
     >>> schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS

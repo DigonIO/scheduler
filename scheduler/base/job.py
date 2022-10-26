@@ -10,6 +10,7 @@ import datetime as dt
 import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Optional, TypeVar, cast
+from logging import Logger
 
 from scheduler.base.definition import JobType
 from scheduler.base.job_timer import JobTimer
@@ -41,9 +42,11 @@ class BaseJob(ABC):
     __skip_missing: bool
     __alias: Optional[str]
     __tzinfo: Optional[dt.tzinfo]
+    __logger: Logger
 
     __mark_delete: bool
     __attempts: int
+    __failed_attempts: int
     __pending_timer: JobTimer
     __timers: list[JobTimer]
 
@@ -67,8 +70,8 @@ class BaseJob(ABC):
         timing = standardize_timing_format(job_type, timing)
 
         sane_timing_types(job_type, timing)
-        check_duplicate_effective_timings(job_type, timing, tzinfo)
         check_timing_tzinfo(job_type, timing, tzinfo)
+        check_duplicate_effective_timings(job_type, timing, tzinfo)
 
         self.__start = set_start_check_stop_tzinfo(start, stop, tzinfo)
 
@@ -91,6 +94,7 @@ class BaseJob(ABC):
         # relativ to the self.__stop variable
         self.__mark_delete = False
         self.__attempts = 0
+        self.__failed_attempts = 0
 
         # create JobTimers
         self.__timers = [JobTimer(job_type, tim, self.__start, skip_missing) for tim in timing]
@@ -392,6 +396,18 @@ class BaseJob(ABC):
             Execution attempts.
         """
         return self.__attempts
+
+    @property
+    def failed_attempts(self) -> int:
+        """
+        Get the number of failed executions for a `Job`.
+
+        Returns
+        -------
+        int
+            Failed execution attempts.
+        """
+        return self.__failed_attempts
 
     @property
     def has_attempts_remaining(self) -> bool:

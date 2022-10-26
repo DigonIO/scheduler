@@ -2,11 +2,9 @@ import datetime as dt
 
 import pytest
 
-import scheduler
 import scheduler.trigger as trigger
 from scheduler.base.scheduler_util import str_cutoff
 from scheduler.error import SchedulerError
-from scheduler.util import Prioritization as Prio
 from scheduler.util import (
     days_to_weekday,
     next_daily_occurrence,
@@ -15,7 +13,7 @@ from scheduler.util import (
     next_weekday_time_occurrence,
 )
 
-err_msg = "Weekday enumeration interval: [0,6] <=> [Monday, Sunday]"
+err_msg = r"Weekday enumeration interval: \[0,6\] <=> \[Monday, Sunday\]"
 
 
 @pytest.mark.parametrize(
@@ -34,9 +32,8 @@ err_msg = "Weekday enumeration interval: [0,6] <=> [Monday, Sunday]"
 )
 def test_days_to_weekday(wkdy_src, wkdy_dest, days, err_msg):
     if err_msg:
-        with pytest.raises(SchedulerError) as err:
+        with pytest.raises(SchedulerError, match=err_msg):
             days_to_weekday(wkdy_src, wkdy_dest)
-            assert err_msg == str(err.value)
     else:
         assert days_to_weekday(wkdy_src.value, wkdy_dest.value) == days
 
@@ -166,56 +163,7 @@ def test_next_minutely_occurence(now, target_time, target_datetime):
 )
 def test_str_cutoff(string, max_length, cut_tail, result, err):
     if err:
-        with pytest.raises(ValueError, match=err) as execinfo:
+        with pytest.raises(ValueError, match=err):
             str_cutoff(string, max_length, cut_tail)
     else:
         assert str_cutoff(string, max_length, cut_tail) == result
-
-
-@pytest.mark.parametrize(
-    "timedelta, executions",
-    [
-        [dt.timedelta(seconds=0), 1],
-        [dt.timedelta(seconds=100), 0],
-    ],
-)
-@pytest.mark.parametrize(
-    "priority_function",
-    [
-        Prio.constant_weight_prioritization,
-        Prio.linear_priority_function,
-    ],
-)
-def test_deprecated_prioritization(timedelta, executions, priority_function, recwarn):
-    schedule = scheduler.Scheduler(max_exec=3, priority_function=priority_function)
-    schedule.once(
-        dt.datetime.now() + timedelta,
-        print,
-    )
-    assert schedule.exec_jobs() == executions
-    warn = recwarn.pop(DeprecationWarning)
-    assert (
-        str(warn.message)
-        == "Deprecated import! Use scheduler.prioritization instead of scheduler.util.Prioritization."
-    )
-
-
-@pytest.mark.parametrize(
-    "timedelta, executions",
-    [
-        [dt.timedelta(seconds=0), 1],
-        [dt.timedelta(seconds=100), 1],
-    ],
-)
-def test_deprecated_rnd_prioritization(timedelta, executions, recwarn):
-    schedule = scheduler.Scheduler(max_exec=3, priority_function=Prio.random_priority_function)
-    schedule.once(
-        dt.datetime.now() + timedelta,
-        print,
-    )
-    assert schedule.exec_jobs() == executions
-    warn = recwarn.pop(DeprecationWarning)
-    assert (
-        str(warn.message)
-        == "Deprecated import! Use scheduler.prioritization instead of scheduler.util.Prioritization."
-    )

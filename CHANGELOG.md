@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.8.0
+
+### Features
+
++ Catching unhandled exceptions of scheduled functions
+  ([Issue#13](https://gitlab.com/DigonIO/scheduler/-/issues/13)):
+  + Introduced logging for unhandled exceptions.
+  + The scheduler takes a custom logger instance as argument.
+  + Jobs are now counting the number of unhandled exceptions.
+
+### Misc
+
++ Improved some exception messages.
++ Minor documentation corrections.
++ Minor README.md corrections and simplifications.
++ Removed deprecated Prioritization code from `util.py`.
+
+### Bugfix
+
++ Some exception messages that previously were wrongly tested and therefore ignored.
+  are now matched using the `match` argument in `pytest.raises`.
++ Bugfix in PKGBUILD's package() function.
+
 ## 0.7.4
 
 ### Misc
