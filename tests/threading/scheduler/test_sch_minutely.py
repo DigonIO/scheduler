@@ -51,9 +51,8 @@ def test_minutely(timing, counts, patch_datetime_now, tzinfo, err_msg):
     sch = Scheduler(tzinfo=tzinfo)
 
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job = sch.minutely(timing=timing, handle=foo)
-            assert msg == err_msg
     else:
         job = sch.minutely(timing=timing, handle=foo)
         attempts = []

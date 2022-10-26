@@ -22,7 +22,7 @@ MONDAY_23_UTC_AS_SUNDAY = trigger.Sunday(
         tzinfo=dt.timezone(-dt.timedelta(hours=23, minutes=30)),
     )
 )
-MONDAY_23_UTC_AS_TUESDAY = trigger.Thursday(
+MONDAY_23_UTC_AS_TUESDAY = trigger.Tuesday(
     dt.time(hour=1, tzinfo=dt.timezone(dt.timedelta(hours=2))),
 )
 FRIDAY_4 = trigger.Friday(dt.time(hour=4, tzinfo=None))
@@ -104,9 +104,8 @@ def test_weekly(timing, counts, patch_datetime_now, tzinfo, err_msg):
     sch = Scheduler(tzinfo=tzinfo)
 
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job = sch.weekly(timing=timing, handle=foo)
-            assert msg == err_msg
     else:
         job = sch.weekly(timing=timing, handle=foo)
         for count in counts:

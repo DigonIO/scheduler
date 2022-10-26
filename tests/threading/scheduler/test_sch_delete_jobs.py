@@ -33,9 +33,8 @@ def test_delete_job(n_jobs):
     assert len(sch.jobs) == n_jobs - 1
 
     # test error if the job is not scheduled
-    with pytest.raises(SchedulerError) as msg:
+    with pytest.raises(SchedulerError, match=DELETE_NOT_SCHEDULED_ERROR):
         sch.delete_job(job)
-        assert msg == DELETE_NOT_SCHEDULED_ERROR
 
 
 @pytest.mark.parametrize(

@@ -1,6 +1,5 @@
 import asyncio
 import datetime as dt
-import pdb
 
 import pytest
 from ..helpers import (
@@ -12,6 +11,7 @@ from ..helpers import (
     ONCE_TYPE_ERROR_MSG,
     T_2021_5_26__3_55,
     WEEKLY_TYPE_ERROR_MSG,
+    MISSING_EVENT_LOOP_ERROR,
 )
 
 from scheduler.asyncio.scheduler import Scheduler
@@ -66,9 +66,8 @@ async def test_delete_job(event_loop):
     sch.delete_job(job1)
 
     # test error if the job is not scheduled
-    with pytest.raises(SchedulerError) as msg:
+    with pytest.raises(SchedulerError, match=DELETE_NOT_SCHEDULED_ERROR):
         sch.delete_job(job1)
-        assert msg == DELETE_NOT_SCHEDULED_ERROR
 
 
 @pytest.mark.asyncio
@@ -127,9 +126,8 @@ async def test_async_list_timing(event_loop):
 async def test_async_cyclic(event_loop, timing, err_msg):
     sch = Scheduler(loop=event_loop)
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job0 = sch.cyclic(timing, foo)
-            assert msg == err_msg
     else:
         job0 = sch.cyclic(timing, foo)
 
@@ -145,9 +143,8 @@ async def test_async_cyclic(event_loop, timing, err_msg):
 async def test_async_minutely(event_loop, timing, err_msg):
     sch = Scheduler(loop=event_loop)
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job0 = sch.minutely(timing, foo)
-            assert msg == err_msg
     else:
         job0 = sch.minutely(timing, foo)
 
@@ -163,9 +160,8 @@ async def test_async_minutely(event_loop, timing, err_msg):
 async def test_async_hourly(event_loop, timing, err_msg):
     sch = Scheduler(loop=event_loop)
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job0 = sch.hourly(timing, foo)
-            assert msg == err_msg
     else:
         job0 = sch.hourly(timing, foo)
 
@@ -181,9 +177,8 @@ async def test_async_hourly(event_loop, timing, err_msg):
 async def test_async_daily(event_loop, timing, err_msg):
     sch = Scheduler(loop=event_loop)
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job0 = sch.daily(timing, foo)
-            assert msg == err_msg
     else:
         job0 = sch.daily(timing, foo)
 
@@ -199,9 +194,8 @@ async def test_async_daily(event_loop, timing, err_msg):
 async def test_async_weekly(event_loop, timing, err_msg):
     sch = Scheduler(loop=event_loop)
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job0 = sch.weekly(timing, foo)
-            assert msg == err_msg
     else:
         job0 = sch.weekly(timing, foo)
 
@@ -217,9 +211,8 @@ async def test_async_weekly(event_loop, timing, err_msg):
 async def test_async_once(event_loop, timing, err_msg):
     sch = Scheduler(loop=event_loop)
     if err_msg:
-        with pytest.raises(SchedulerError) as msg:
+        with pytest.raises(SchedulerError, match=err_msg):
             job0 = sch.once(timing, foo)
-            assert msg == err_msg
     else:
         job0 = sch.once(timing, foo)
 
@@ -231,6 +224,5 @@ async def test_async_once_datetime(event_loop):
 
 
 def test_async_scheduler_without_running_loop():
-    with pytest.raises(SchedulerError) as msg:
+    with pytest.raises(SchedulerError, match=MISSING_EVENT_LOOP_ERROR):
         sch = Scheduler()
-        assert msg == "The asyncio Scheduler requires a running event loop."
