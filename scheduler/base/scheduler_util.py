@@ -53,7 +53,7 @@ def check_tzname(tzinfo: Optional[dt.tzinfo]) -> Optional[str]:
     if tzinfo is None:
         return None
     name: Optional[str] = tzinfo.tzname(None)
-    if name is not None and not isinstance(name, str):
+    if not isinstance(name, str):
         raise SchedulerError(f"tzinfo.tzname() must return None or string, not {type(name)}")
     return name
 
