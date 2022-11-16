@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.8.1
+
+### Misc
+
++ Python 3.11 support.
+
+### Testing
+
++ The library is now also tested against python version 3.11.
++ Update patches for other python versions.
+
 ## 0.8.0
 
 ### Features
@@ -93,7 +104,7 @@
 ### Deprecation warnings
 
 + The `delay` argument used when scheduling jobs of different types will be removed
-  in the 0.8.0 release.
+  in a future release.
 
 ### Known issues
 
