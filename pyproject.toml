@@ -4,6 +4,7 @@ target-version = ['py39', 'py310']
 
 [tool.isort]
 py_version = 39
+profile = "black"
 
 [tool.pydocstyle]
 convention = "numpy"

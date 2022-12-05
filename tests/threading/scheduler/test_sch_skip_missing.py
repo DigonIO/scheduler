@@ -1,11 +1,12 @@
 import datetime as dt
 
 import pytest
-from ...helpers import sample_seconds_interference_lag, samples_days
 
 from scheduler.base.definition import JobType
 from scheduler.threading.job import Job
 from scheduler.threading.scheduler import Scheduler
+
+from ...helpers import sample_seconds_interference_lag, samples_days
 
 
 @pytest.mark.parametrize(

@@ -2,20 +2,21 @@ import asyncio
 import datetime as dt
 
 import pytest
+
+from scheduler.asyncio.scheduler import Scheduler
+from scheduler.error import SchedulerError
+from scheduler.trigger import Monday
+
 from ..helpers import (
     CYCLIC_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
     DELETE_NOT_SCHEDULED_ERROR,
     HOURLY_TYPE_ERROR_MSG,
     MINUTELY_TYPE_ERROR_MSG,
+    MISSING_EVENT_LOOP_ERROR,
     ONCE_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
-    MISSING_EVENT_LOOP_ERROR,
 )
-
-from scheduler.asyncio.scheduler import Scheduler
-from scheduler.error import SchedulerError
-from scheduler.trigger import Monday
 
 
 async def foo():
@@ -86,6 +87,7 @@ async def test_delete_jobs_with_tags(event_loop, tags, any_tag, length):
     assert len(sch.jobs) == 2
     sch.delete_jobs(tags, any_tag)
     assert len(sch.jobs) == length
+    sch.delete_jobs()
 
 
 # NOTE: In the following tests `sch.delete_jobs()` is run to suppress

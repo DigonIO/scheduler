@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.2
+
+### Misc
+
++ Add `CONTRIBUTING.md`.
++ Include `pre-commit` config.
+
+### Bugfix
+
++ Fix deadlock bug [Issue#15](https://gitlab.com/DigonIO/scheduler/-/issues/15).
++ Fix displaying of DeprecationWarning for the `delay` flag.
+
 ## 0.8.1
 
 ### Misc

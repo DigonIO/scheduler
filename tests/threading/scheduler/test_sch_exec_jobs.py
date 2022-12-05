@@ -1,9 +1,10 @@
 import datetime as dt
 
 import pytest
-from ...helpers import foo
 
 from scheduler import Scheduler
+
+from ...helpers import foo
 
 
 @pytest.mark.parametrize(

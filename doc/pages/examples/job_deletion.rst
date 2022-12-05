@@ -19,6 +19,7 @@ Setup a couple of |Job|\ s
 
     >>> def foo():
     ...     print("foo")
+    ...
 
     >>> schedule = Scheduler()
     >>> j1 = schedule.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS
@@ -64,6 +65,7 @@ Setup a couple of |Job|\ s
 
     >>> def foo():
     ...     print("foo")
+    ...
 
     >>> schedule = Scheduler()
     >>> schedule.cyclic(dt.timedelta(seconds=1), foo)  # doctest:+ELLIPSIS

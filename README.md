@@ -12,6 +12,7 @@ counts and automate Jobs.</p>
 [![coverage report](https://gitlab.com/DigonIO/scheduler/badges/master/coverage.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![Documentation Status](https://readthedocs.org/projects/python-scheduler/badge/?version=latest)](https://python-scheduler.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://gitlab.com/DigonIO/scheduler/-/raw/master/doc/_assets/code_style_black.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
 [![pkgversion](https://img.shields.io/pypi/v/scheduler)](https://pypi.org/project/scheduler/)
 [![versionsupport](https://img.shields.io/pypi/pyversions/scheduler)](https://pypi.org/project/scheduler/)
@@ -138,31 +139,7 @@ while True:
 
 ## Documentation
 
-The API documentation can either be viewed
-[online](https://python-scheduler.readthedocs.io/en/latest/readme.html)
-or generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)
-formatting. To build, run:
-
-```bash
-sphinx-build -b html doc/ doc/_build/html
-```
-
-## Testing
-
-Testing is done using [pytest](https://pypi.org/project/pytest/). With
-[pytest-cov](https://pypi.org/project/pytest-cov/) and
-[coverage](https://pypi.org/project/coverage/) a report for the test coverage can be generated:
-
-```bash
-pytest --cov=scheduler/ tests/
-coverage html
-```
-
-To test the examples in the documentation run:
-
-```bash
-pytest --doctest-modules doc/pages/*/*
-```
+View the API documentation [online](https://python-scheduler.readthedocs.io/en/latest/readme.html).
 
 ## Sponsor
 

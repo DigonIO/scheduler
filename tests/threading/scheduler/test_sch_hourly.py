@@ -1,6 +1,10 @@
 import datetime as dt
 
 import pytest
+
+import scheduler.trigger as trigger
+from scheduler import Scheduler, SchedulerError
+
 from ...helpers import (
     HOURLY_TYPE_ERROR_MSG,
     TZ_ERROR_MSG,
@@ -9,9 +13,6 @@ from ...helpers import (
     samples_hours_utc,
     utc,
 )
-
-import scheduler.trigger as trigger
-from scheduler import Scheduler, SchedulerError
 
 
 @pytest.mark.parametrize(

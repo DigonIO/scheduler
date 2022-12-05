@@ -27,6 +27,7 @@ For :py:func:`~scheduler.core.Scheduler.daily` we can embed several timers in on
 
     >>> def foo():
     ...     print("foo")
+    ...
 
     >>> schedule = Scheduler()
 

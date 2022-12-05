@@ -15,9 +15,10 @@ import datetime as dt
 import logging
 
 import pytest
-from ..helpers import T_2021_5_26__3_55, fail, ZERO_DIVISION_ERROR
 
 from scheduler.asyncio.scheduler import Scheduler
+
+from ..helpers import T_2021_5_26__3_55, ZERO_DIVISION_ERROR, fail
 
 samples_secondly = [T_2021_5_26__3_55 + dt.timedelta(seconds=x) for x in range(12)]
 async_real_sleep = asyncio.sleep

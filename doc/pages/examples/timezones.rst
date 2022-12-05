@@ -22,6 +22,7 @@ First create the timezones of a few known cities and a useful function to schedu
 
     >>> def useful():
     ...     print("Very useful function.")
+    ...
 
     >>> tz_new_york = dt.timezone(dt.timedelta(hours=-5))
     >>> tz_wuppertal = dt.timezone(dt.timedelta(hours=2))

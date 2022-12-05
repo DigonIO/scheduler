@@ -6,8 +6,8 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import warnings
 from abc import ABC, abstractmethod
+from logging import Logger, getLogger
 from typing import Any, Callable, Optional
-from logging import getLogger, Logger
 
 from scheduler.base.job import BaseJob, BaseJobType
 from scheduler.base.timingtype import (
@@ -56,7 +56,7 @@ def _warn_deprecated_delay(delay: Optional[bool] = None, **kwargs):
                 "be removed in the next minor release."
             ),
             DeprecationWarning,
-            stacklevel=2,
+            stacklevel=3,
         )
 
 

@@ -1,7 +1,8 @@
 import pytest
-from ...helpers import T_2021_5_26__3_55, T_2021_5_26__3_55_UTC, job_args, job_args_utc
 
 from scheduler.threading.job import Job
+
+from ...helpers import T_2021_5_26__3_55, T_2021_5_26__3_55_UTC, job_args, job_args_utc
 
 
 @pytest.mark.parametrize(

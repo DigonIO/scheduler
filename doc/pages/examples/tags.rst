@@ -18,13 +18,14 @@ For demonstration we mix the `tags` ``spam``, ``eggs``, ``ham`` and ``sausage``,
 
    >>> def foo():
    ...     print("foo")
+   ...
 
    >>> schedule = Scheduler()
 
-   >>> dish1 = schedule.once(dt.timedelta(), foo, tags = {"spam", "eggs"})
-   >>> dish2 = schedule.once(dt.timedelta(), foo, tags = {"spam", "ham"})
-   >>> dish3 = schedule.once(dt.timedelta(), foo, tags = {"spam", "ham", "eggs"})
-   >>> dish4 = schedule.once(dt.timedelta(), foo, tags = {"spam", "sausage", "eggs"})
+   >>> dish1 = schedule.once(dt.timedelta(), foo, tags={"spam", "eggs"})
+   >>> dish2 = schedule.once(dt.timedelta(), foo, tags={"spam", "ham"})
+   >>> dish3 = schedule.once(dt.timedelta(), foo, tags={"spam", "ham", "eggs"})
+   >>> dish4 = schedule.once(dt.timedelta(), foo, tags={"spam", "sausage", "eggs"})
 
 The default behaviour of |Job| selection by tags require a |Job| to contain all of the
 targeted tags for a match. If the `any_tag` flag is set to ``True``, only one of the targeted

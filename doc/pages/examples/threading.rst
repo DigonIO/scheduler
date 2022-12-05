@@ -29,6 +29,7 @@ run times.
 
     >>> def sleep(secs: float):
     ...     time.sleep(secs)
+    ...
 
     >>> schedule = Scheduler()
     >>> job_1 = schedule.once(dt.timedelta(), sleep, kwargs={"secs": 0.1})
@@ -59,6 +60,7 @@ will spawn a seperate worker thread for every pending |Job|.
 
     >>> def sleep(secs: float):
     ...     time.sleep(secs)
+    ...
 
     >>> schedule = Scheduler(n_threads=0)
     >>> job_1 = schedule.once(dt.timedelta(), sleep, kwargs={"secs": 0.1})

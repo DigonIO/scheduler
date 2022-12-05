@@ -1,5 +1,3 @@
-from .helpers import samples, samples_utc
-
 from scheduler.trigger import (
     Friday,
     Monday,
@@ -10,6 +8,8 @@ from scheduler.trigger import (
     Wednesday,
     weekday,
 )
+
+from .helpers import samples, samples_utc
 
 
 def test_trigger_misc():

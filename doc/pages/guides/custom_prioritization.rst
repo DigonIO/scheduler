@@ -51,6 +51,7 @@ available in :mod:`~scheduler.prioritization` as :meth:`~scheduler.prioritizatio
 
     import scheduler
 
+
     def constant_weight_prioritization(
         time_delta: float, job: scheduler.threading.job.Job, max_exec: int, job_count: int
     ) -> float:
@@ -85,6 +86,7 @@ Schedule some |Job|\ s at different points in the past with distinct weights:
     ...         kwargs={"end": f"{weight = }; {delayed_by = }s\n"},
     ...         weight=weight,
     ...     )
+    ...
 
 Note how the columns ``due in`` and ``weight`` in the following table reflect the definitions of
 our |Job|\ s.
@@ -154,6 +156,7 @@ available in :mod:`~scheduler.util` as
 
     import scheduler
 
+
     def random_priority_function(
         time: float, job: scheduler.threading.job.Job, max_exec: int, job_count: int
     ) -> float:
@@ -185,12 +188,13 @@ some generic |Job|\ s with probabilities from ``0%`` to ``100%``:
     >>> schedule = Scheduler(priority_function=sp.random_priority_function)
 
     >>> jobs = {}
-    >>> for percentage in range(0,101,10):
+    >>> for percentage in range(0, 101, 10):
     ...     jobs[percentage] = schedule.cyclic(
     ...         dt.timedelta(),
     ...         lambda: None,
-    ...         weight=0.01*percentage,
+    ...         weight=0.01 * percentage,
     ...     )
+    ...
 
 We can verify that the expected number of |Job|\ s with the given probabilities are scheduled:
 
@@ -222,6 +226,7 @@ with the |Scheduler|.
     >>> total_counts = 10_000
     >>> for _ in range(total_counts):
     ...     exec_count = schedule.exec_jobs()
+    ...
 
 Utilizing the :meth:`~scheduler.job.Job.attempts` property we can observe the number of executions. For
 direct comparision with the target probabilities we normalize the results by the total counts.
@@ -231,7 +236,8 @@ probabilities with for increasing total counts.
 .. code-block:: pycon
 
     >>> for percentage, job in jobs.items():  # doctest:+SKIP
-    ...     print("{:>3} {:>5.1f}".format(percentage, 100*job.attempts/total_counts))
+    ...     print("{:>3} {:>5.1f}".format(percentage, 100 * job.attempts / total_counts))
+    ...
       0   0.0
      10  10.2
      20  19.9

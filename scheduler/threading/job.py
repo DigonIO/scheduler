@@ -6,8 +6,8 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import datetime as dt
 import threading
-from typing import Any, Callable, Optional
 from logging import Logger
+from typing import Any, Callable, Optional
 
 from scheduler.base.definition import JobType
 from scheduler.base.job import BaseJob
