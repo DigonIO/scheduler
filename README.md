@@ -138,31 +138,7 @@ while True:
 
 ## Documentation
 
-The API documentation can either be viewed
-[online](https://python-scheduler.readthedocs.io/en/latest/readme.html)
-or generated using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)
-formatting. To build, run:
-
-```bash
-sphinx-build -b html doc/ doc/_build/html
-```
-
-## Testing
-
-Testing is done using [pytest](https://pypi.org/project/pytest/). With
-[pytest-cov](https://pypi.org/project/pytest-cov/) and
-[coverage](https://pypi.org/project/coverage/) a report for the test coverage can be generated:
-
-```bash
-pytest --cov=scheduler/ tests/
-coverage html
-```
-
-To test the examples in the documentation run:
-
-```bash
-pytest --doctest-modules doc/pages/*/*
-```
+View the API documentation [online](https://python-scheduler.readthedocs.io/en/latest/readme.html).
 
 ## Sponsor
 
