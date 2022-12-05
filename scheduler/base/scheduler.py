@@ -56,7 +56,7 @@ def _warn_deprecated_delay(delay: Optional[bool] = None, **kwargs):
                 "be removed in the next minor release."
             ),
             DeprecationWarning,
-            stacklevel=2,
+            stacklevel=3,
         )
 
 
