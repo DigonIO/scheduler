@@ -87,6 +87,7 @@ async def test_delete_jobs_with_tags(event_loop, tags, any_tag, length):
     assert len(sch.jobs) == 2
     sch.delete_jobs(tags, any_tag)
     assert len(sch.jobs) == length
+    sch.delete_jobs()
 
 
 # NOTE: In the following tests `sch.delete_jobs()` is run to suppress
