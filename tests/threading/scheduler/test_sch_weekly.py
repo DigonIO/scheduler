@@ -1,6 +1,10 @@
 import datetime as dt
 
 import pytest
+
+import scheduler.trigger as trigger
+from scheduler import Scheduler, SchedulerError
+
 from ...helpers import (
     DUPLICATE_EFFECTIVE_TIME,
     TZ_ERROR_MSG,
@@ -10,9 +14,6 @@ from ...helpers import (
     samples_weeks_utc,
     utc,
 )
-
-import scheduler.trigger as trigger
-from scheduler import Scheduler, SchedulerError
 
 MONDAY_23_UTC = trigger.Monday(dt.time(hour=23, tzinfo=dt.timezone.utc))
 MONDAY_23_UTC_AS_SUNDAY = trigger.Sunday(

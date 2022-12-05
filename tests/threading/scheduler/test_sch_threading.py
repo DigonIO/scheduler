@@ -86,6 +86,7 @@ def test_threading_slow_jobs(job_sleep, n_threads, max_exec, n_jobs, res_n_exec,
         str(warn.message)
         == "Using the `delay` argument is deprecated and will be removed in the next minor release."
     )
+
     results = []
     for _ in range(len(res_n_exec)):
         results.append(sch.exec_jobs())

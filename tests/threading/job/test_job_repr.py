@@ -1,9 +1,10 @@
 import pdb
 
 import pytest
-from ...helpers import job_args, job_args_utc, job_reprs, job_reprs_utc
 
 from scheduler.threading.job import Job
+
+from ...helpers import job_args, job_args_utc, job_reprs, job_reprs_utc
 
 
 @pytest.mark.parametrize(

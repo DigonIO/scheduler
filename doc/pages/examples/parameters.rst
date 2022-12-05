@@ -29,10 +29,11 @@ For function with a positional argument use the `args` tuple as follows:
 
     >>> def foo(msg):
     ...     print(msg)
+    ...
 
     >>> schedule = Scheduler()
 
-    >>> schedule.once(dt.timedelta(), foo, args=('foo',))  # doctest:+ELLIPSIS
+    >>> schedule.once(dt.timedelta(), foo, args=("foo",))  # doctest:+ELLIPSIS
     scheduler.Job(...function foo..., ('foo',)...)
 
     >>> n_exec = schedule.exec_jobs()
@@ -44,8 +45,9 @@ observe the expected behaviour with the modified message.
 
 .. code-block:: pycon
 
-    >>> def bar(msg = "bar"):
+    >>> def bar(msg="bar"):
     ...     print(msg)
+    ...
 
     >>> schedule.once(dt.timedelta(), bar)
     scheduler.Job(...bar...)
@@ -64,8 +66,9 @@ below when specifying `args` and `kwargs` together:
 
 .. code-block:: pycon
 
-    >>> def foobar(foo, bar = "bar"):
+    >>> def foobar(foo, bar="bar"):
     ...     print(foo, bar)
+    ...
 
     >>> schedule.once(dt.timedelta(), foobar, args=("foo",), kwargs={"bar": "123"})
     scheduler.Job(...function foobar...('foo',), {'bar': '123'}...)

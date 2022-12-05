@@ -19,8 +19,10 @@ The following example shows how to use the asyncio |AioScheduler| with a simple 
 
   from scheduler.asyncio import Scheduler
 
+
   async def foo():
       print("foo")
+
 
   async def main():
       schedule = Scheduler()
@@ -30,6 +32,7 @@ The following example shows how to use the asyncio |AioScheduler| with a simple 
 
       while True:
           await asyncio.sleep(1)
+
 
   asyncio.run(main())
 
@@ -44,8 +47,10 @@ argument:
 
   from scheduler.asyncio import Scheduler
 
+
   async def foo():
       print("foo")
+
 
   async def main():
       loop = asyncio.get_running_loop()

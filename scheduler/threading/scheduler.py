@@ -7,8 +7,8 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 import queue
 import threading
-from typing import Any, Callable, Optional
 from logging import Logger
+from typing import Any, Callable, Optional
 
 import typeguard as tg
 

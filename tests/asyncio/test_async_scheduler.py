@@ -2,20 +2,21 @@ import asyncio
 import datetime as dt
 
 import pytest
+
+from scheduler.asyncio.scheduler import Scheduler
+from scheduler.error import SchedulerError
+from scheduler.trigger import Monday
+
 from ..helpers import (
     CYCLIC_TYPE_ERROR_MSG,
     DAILY_TYPE_ERROR_MSG,
     DELETE_NOT_SCHEDULED_ERROR,
     HOURLY_TYPE_ERROR_MSG,
     MINUTELY_TYPE_ERROR_MSG,
+    MISSING_EVENT_LOOP_ERROR,
     ONCE_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
-    MISSING_EVENT_LOOP_ERROR,
 )
-
-from scheduler.asyncio.scheduler import Scheduler
-from scheduler.error import SchedulerError
-from scheduler.trigger import Monday
 
 
 async def foo():

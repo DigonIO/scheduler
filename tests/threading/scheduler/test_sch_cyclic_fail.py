@@ -2,9 +2,10 @@ import datetime as dt
 import logging
 
 import pytest
-from ...helpers import fail, samples_seconds, ZERO_DIVISION_ERROR
 
 from scheduler import Scheduler
+
+from ...helpers import ZERO_DIVISION_ERROR, fail, samples_seconds
 
 
 @pytest.mark.parametrize(

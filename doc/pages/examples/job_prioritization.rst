@@ -46,6 +46,7 @@ of the highest weight:
 
     >>> for weight in (2, 3, 1, 4):
     ...     job = schedule.once(now, print, weight=weight, kwargs={"end": f"{weight = }\n"})
+    ...
 
     >>> exec_count = schedule.exec_jobs()
     weight = 4
@@ -80,6 +81,7 @@ If several |Job|\ s of the same weight are overdue, the
     >>> for delayed_by in (2, 3, 1, 4):
     ...     exec_time = now - dt.timedelta(seconds=delayed_by)
     ...     job = schedule.once(exec_time, print, kwargs={"end": f"{delayed_by = }s\n"})
+    ...
 
     >>> exec_count = schedule.exec_jobs()
     delayed_by = 4s

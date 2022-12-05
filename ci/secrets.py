@@ -40,9 +40,7 @@ def main():
                 f"index-url = {prot}://{user}:{passw}@{repo}/simple\n"
             )
             if prot == "http":
-                outfile.write(
-                    f"trusted-host = {repo.split('/')[0]}"
-                )
+                outfile.write(f"trusted-host = {repo.split('/')[0]}")
         print("Created config ~/.config/pip/pip.conf")
 
 

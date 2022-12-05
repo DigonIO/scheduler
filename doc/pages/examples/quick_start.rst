@@ -13,6 +13,7 @@ module, create a |Scheduler| instance and the function `foo` to schedule:
 
     >>> def foo():
     ...     print("foo")
+    ...
 
     >>> schedule = Scheduler()
 
@@ -76,7 +77,9 @@ Schedule a job that runs exactly once at the given date at ``2022-02-15 00:45:00
 
 .. code-block:: pycon
 
-    >>> schedule.once(dt.datetime(year=2022, month=2, day=15, minute=45), foo)  # doctest:+ELLIPSIS
+    >>> schedule.once(
+    ...     dt.datetime(year=2022, month=2, day=15, minute=45), foo
+    ... )  # doctest:+ELLIPSIS
     scheduler.Job(...CYCLIC...foo...1, 1...datetime(2022, 2, 15, 0, 45)...)
 
 A human readable overview of the scheduled jobs can be created with a simple `print` statement:
@@ -113,3 +116,4 @@ be embedded in a loop of the host program:
     >>> while True:  # doctest:+SKIP
     ...     schedule.exec_jobs()
     ...     time.sleep(1)
+    ...

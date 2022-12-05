@@ -1,10 +1,11 @@
 import datetime as dt
 
 import pytest
-from ...helpers import ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples, samples_utc, utc
 
 import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
+
+from ...helpers import ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples, samples_utc, utc
 
 
 @pytest.mark.parametrize(

@@ -20,6 +20,7 @@ cannot be uniquely identified in the table below for the given orders.
 
    >>> def order(unit):
    ...     print(f"ordering {unit} units")
+   ...
 
    >>> schedule = Scheduler()
 
@@ -41,8 +42,8 @@ keyword as listed below:
 
    >>> schedule = Scheduler()
 
-   >>> job1 = schedule.cyclic(dt.timedelta(seconds=1), order, alias='small order', args=(2,))
-   >>> job2 = schedule.cyclic(dt.timedelta(seconds=2), order, alias='medium order', args=(9,))
+   >>> job1 = schedule.cyclic(dt.timedelta(seconds=1), order, alias="small order", args=(2,))
+   >>> job2 = schedule.cyclic(dt.timedelta(seconds=2), order, alias="medium order", args=(9,))
    >>> print(schedule)  # doctest:+SKIP
    max_exec=inf, tzinfo=None, priority_function=linear_priority_function, #jobs=2
    <BLANKLINE>

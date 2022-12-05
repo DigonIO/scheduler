@@ -9,8 +9,8 @@ from __future__ import annotations
 import datetime as dt
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Optional, TypeVar, cast
 from logging import Logger
+from typing import Any, Callable, Optional, TypeVar, cast
 
 from scheduler.base.definition import JobType
 from scheduler.base.job_timer import JobTimer

@@ -6,8 +6,8 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import warnings
 from abc import ABC, abstractmethod
+from logging import Logger, getLogger
 from typing import Any, Callable, Optional
-from logging import getLogger, Logger
 
 from scheduler.base.job import BaseJob, BaseJobType
 from scheduler.base.timingtype import (

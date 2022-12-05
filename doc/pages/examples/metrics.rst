@@ -15,6 +15,7 @@ Starting with a |Scheduler| and two |Job|\ s:
 
     >>> def foo():
     ...     print("foo")
+    ...
 
     >>> schedule = Scheduler()
     >>> job = schedule.once(dt.timedelta(minutes=10), foo)

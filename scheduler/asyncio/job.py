@@ -5,6 +5,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 """
 
 from __future__ import annotations
+
 from logging import Logger
 
 from scheduler.base.job import BaseJob

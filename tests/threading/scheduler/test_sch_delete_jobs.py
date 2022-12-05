@@ -2,11 +2,12 @@ import datetime as dt
 import random
 
 import pytest
-from ...helpers import DELETE_NOT_SCHEDULED_ERROR, foo
 
 from scheduler import Scheduler, SchedulerError
 from scheduler.base.definition import JobType
 from scheduler.threading.job import Job
+
+from ...helpers import DELETE_NOT_SCHEDULED_ERROR, foo
 
 
 @pytest.mark.parametrize(

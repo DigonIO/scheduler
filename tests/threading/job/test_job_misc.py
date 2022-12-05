@@ -1,6 +1,11 @@
 import datetime as dt
 
 import pytest
+
+import scheduler.trigger as trigger
+from scheduler.base.definition import JobType
+from scheduler.threading.job import Job
+
 from ...helpers import (
     T_2021_5_26__3_55,
     T_2021_5_26__3_55_UTC,
@@ -10,10 +15,6 @@ from ...helpers import (
     utc,
     utc2,
 )
-
-import scheduler.trigger as trigger
-from scheduler.base.definition import JobType
-from scheduler.threading.job import Job
 
 
 def test_misc_properties(recwarn):
