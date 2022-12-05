@@ -32,13 +32,13 @@ repos:
         pass_filenames: false
         always_run: true
         args: [tests/]
-      # - id: pytest-docs
-      #   name: pytest-docs
-      #   entry: pytest
-      #   language: system
-      #   pass_filenames: false
-      #   always_run: true
-      #   args: [--doctest-modules, '--doctest-glob="*.rst"', doc/pages/]
+      - id: pytest-docs
+        name: pytest-docs
+        entry: pytest
+        language: system
+        pass_filenames: false
+        always_run: true
+        args: [--doctest-glob=*.rst, doc/pages/]
       - id: sphinx
         name: sphinx
         entry: sphinx-build
