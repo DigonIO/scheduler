@@ -1,6 +1,6 @@
 #!/bin/bash
 pkgname=python-scheduler
-pkgver=0.8.1
+pkgver=0.8.2
 pkgrel=1
 pkgdec='A simple in-process python scheduler'
 arch=('any')
