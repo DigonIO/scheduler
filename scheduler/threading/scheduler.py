@@ -93,7 +93,6 @@ class Scheduler(BaseScheduler):
         logger: Optional[Logger] = None,
     ):
         super().__init__(logger=logger)
-        self.__lock = threading.RLock()
         self.__max_exec = max_exec
         self.__tzinfo = tzinfo
         self.__priority_function = priority_function
@@ -107,7 +106,7 @@ class Scheduler(BaseScheduler):
         self.__tz_str = check_tzname(tzinfo=tzinfo)
 
     def __repr__(self) -> str:
-        with self.__lock:
+        with self.__jobs_lock:
             return "scheduler.Scheduler({0}, jobs={{{1}}})".format(
                 ", ".join(
                     (
@@ -123,7 +122,7 @@ class Scheduler(BaseScheduler):
             )
 
     def __str__(self) -> str:
-        with self.__lock:
+        with self.__jobs_lock:
             # Scheduler meta heading
             scheduler_headings = "{0}, {1}, {2}, {3}\n\n".format(*self.__headings())
 
@@ -148,8 +147,9 @@ class Scheduler(BaseScheduler):
                 form = form[:3] + form[4:]
 
             fstring = " ".join(form) + "\n"
-            job_table = fstring.format(*c_name)
-            job_table += fstring.format(*("-" * width for width in c_width))
+            job_table = fstring.format(*c_name) + fstring.format(
+                *("-" * width for width in c_width)
+            )
             for job in sorted(self.jobs):
                 row = job._str()
                 entries = (
@@ -166,7 +166,7 @@ class Scheduler(BaseScheduler):
             return scheduler_headings + job_table
 
     def __headings(self) -> list[str]:
-        with self.__lock, self.__jobs_lock:
+        with self.__jobs_lock:
             headings = [
                 f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
                 f"tzinfo={self.__tz_str}",
@@ -182,7 +182,7 @@ class Scheduler(BaseScheduler):
         """Encapsulate the `Job` and add the `Scheduler`'s timezone."""
         job: Job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
         if job.has_attempts_remaining:
-            with self.__lock:
+            with self.__jobs_lock:
                 self.__jobs.add(job)
         return job
 
@@ -237,31 +237,32 @@ class Scheduler(BaseScheduler):
         int
             Number of executed |Job|\ s.
         """
-        with self.__lock, self.__jobs_lock:
-            ref_dt = dt.datetime.now(tz=self.__tzinfo)
+        ref_dt = dt.datetime.now(tz=self.__tzinfo)
 
-            if force_exec_all:
-                return self.__exec_jobs(list(self.__jobs), ref_dt)
+        if force_exec_all:
+            return self.__exec_jobs(list(self.__jobs), ref_dt)
+        #  collect the current priority for all jobs
 
-            #  collect the current priority for all jobs
-            job_priority: dict[Job, float] = {}
+        job_priority: dict[Job, float] = {}
+        n_jobs = len(self.__jobs)
+        with self.__jobs_lock:
             for job in self.__jobs:
                 delta_seconds = job.timedelta(ref_dt).total_seconds()
                 job_priority[job] = self.__priority_function(
                     -delta_seconds,
                     job,
                     self.__max_exec,
-                    len(self.__jobs),
+                    n_jobs,
                 )
-            # sort the jobs by priority
-            sorted_jobs = sorted(job_priority, key=job_priority.get, reverse=True)  # type: ignore
-            # filter jobs by max_exec and priority greater zero
-            filtered_jobs = [
-                job
-                for idx, job in enumerate(sorted_jobs)
-                if (self.__max_exec == 0 or idx < self.__max_exec) and job_priority[job] > 0
-            ]
-            return self.__exec_jobs(filtered_jobs, ref_dt)
+        # sort the jobs by priority
+        sorted_jobs = sorted(job_priority, key=job_priority.get, reverse=True)  # type: ignore
+        # filter jobs by max_exec and priority greater zero
+        filtered_jobs = [
+            job
+            for idx, job in enumerate(sorted_jobs)
+            if (self.__max_exec == 0 or idx < self.__max_exec) and job_priority[job] > 0
+        ]
+        return self.__exec_jobs(filtered_jobs, ref_dt)
 
     def delete_job(self, job: Job) -> None:
         """
@@ -277,11 +278,11 @@ class Scheduler(BaseScheduler):
         SchedulerError
             Raises if the |Job| of the argument is not scheduled.
         """
-        with self.__jobs_lock:
-            try:
+        try:
+            with self.__jobs_lock:
                 self.__jobs.remove(job)
-            except KeyError:
-                raise SchedulerError("An unscheduled Job can not be deleted!") from None
+        except KeyError:
+            raise SchedulerError("An unscheduled Job can not be deleted!") from None
 
     def delete_jobs(
         self,
@@ -338,7 +339,7 @@ class Scheduler(BaseScheduler):
         set[Job]
             Currently scheduled |Job|\ s.
         """
-        with self.__lock:
+        with self.__jobs_lock:
             if tags is None or tags == {}:
                 return self.__jobs.copy()
             return select_jobs_by_tag(self.__jobs, tags, any_tag)
@@ -616,5 +617,4 @@ class Scheduler(BaseScheduler):
         set[Job]
             Currently scheduled |Job|\ s.
         """
-        with self.__lock:
-            return self.__jobs.copy()
+        return self.__jobs.copy()
