@@ -10,82 +10,82 @@ stages:
   - release
 
 #### analysis ####
-pylint_3_9_11:
+pylint_3_9_16:
   stage: analysis
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - pylint scheduler
   allow_failure: true
 
-mypy_3_9_11:
+mypy_3_9_16:
   stage: analysis
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - mypy scheduler
   allow_failure: true
 
-pydocstyle_3_9_11:
+pydocstyle_3_9_16:
   stage: analysis
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - pydocstyle scheduler
   allow_failure: true
 
-bandit_3_9_11:
+bandit_3_9_16:
   stage: analysis
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - bandit -r scheduler
   allow_failure: false
 
 #### documentation ####
-doc_3_9_11:
+doc_3_9_16:
   stage: documentation
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - sphinx-build -b html doc/ doc/_build/html
 
 #### testing ####
-pytest_3_9_15:
+pytest_3_9_16:
   stage: testing
-  image: "python:3.9.15-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - pytest --cov=scheduler/ tests/
 
-pydoctest_3_9_15:
+pydoctest_3_9_16:
   stage: testing
-  image: "python:3.9.15-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
-pytest_3_10_8:
+pytest_3_10_9:
   stage: testing
-  image: "python:3.10.4-alpine3.16"
+  image: "python:3.10.9-alpine3.17"
   script:
     - pytest --cov=scheduler/ tests/
 
-pydoctest_3_10_8:
+pydoctest_3_10_9:
   stage: testing
-  image: "python:3.10.8-alpine3.16"
+  image: "python:3.10.9-alpine3.17"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
-pytest_3_11_0:
+pytest_3_11_1:
   stage: testing
-  image: "python:3.11.0-alpine3.16"
+  image: "python:3.11.1-alpine3.17"
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
     - pytest --cov=scheduler/ tests/
 
-pydoctest_3_11_0:
+pydoctest_3_11_1:
   stage: testing
-  image: "python:3.11.0-alpine3.16"
+  image: "python:3.11.1-alpine3.17"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
 #### release ####
 pypi:
-  image: python:3.10.4-bullseye
+  image: python:3.10.9-bullseye
   stage: release
   script:
     - pip install twine
