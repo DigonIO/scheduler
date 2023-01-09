@@ -10,7 +10,6 @@ counts and automate Jobs.</p>
 [![license](https://img.shields.io/badge/license-LGPLv3-orange)](https://gitlab.com/DigonIO/scheduler/-/blob/master/LICENSE)
 [![pipeline status](https://gitlab.com/DigonIO/scheduler/badges/master/pipeline.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
 [![coverage report](https://gitlab.com/DigonIO/scheduler/badges/master/coverage.svg)](https://gitlab.com/DigonIO/scheduler/-/pipelines)
-[![Documentation Status](https://readthedocs.org/projects/python-scheduler/badge/?version=latest)](https://python-scheduler.readthedocs.io/en/latest/?badge=latest)
 [![Code style: black](https://gitlab.com/DigonIO/scheduler/-/raw/master/doc/_assets/code_style_black.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
@@ -18,31 +17,34 @@ counts and automate Jobs.</p>
 [![versionsupport](https://img.shields.io/pypi/pyversions/scheduler)](https://pypi.org/project/scheduler/)
 [![Downloads Week](https://pepy.tech/badge/scheduler/week)](https://pepy.tech/project/scheduler)
 [![Downloads Total](https://pepy.tech/badge/scheduler)](https://pepy.tech/project/scheduler)
+[![Documentation](https://img.shields.io/badge/Docs-HostYourDocs-blue)](https://digon.io/hyd/project/scheduler/t/master)
 ---
 
 ## Features
 
+https://digon.io/hyd/project/scheduler/t/master/pages/examples/quick_start.html
+
 * Easy and user friendly in-process Job scheduling
-[(Quick Start)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/quick_start.html)
-* Asyncio scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/asyncio.html)
-* Threading scheduler [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/threading.html)
-* Timezone compatibility [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/timezones.html)
+[(Quick Start)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/quick_start.html)
+* Asyncio scheduler [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/asyncio.html)
+* Threading scheduler [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/threading.html)
+* Timezone compatibility [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/timezones.html)
 * Passing of parameters
-  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/parameters.html)
+  [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/parameters.html)
 * Job prioritization
   * Default linear prioritization
-    [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/job_prioritization.html)
+    [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/job_prioritization.html)
   * User definable prioritization functions
-    [(Guide)](https://python-scheduler.readthedocs.io/en/latest/pages/guides/custom_prioritization.html)
+    [(Guide)](https://digon.io/hyd/project/scheduler/t/master/pages/guides/custom_prioritization.html)
 * Job tagging
-  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/tags.html)
+  [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/tags.html)
 * Job batching
-  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/job_batching.html)
+  [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/job_batching.html)
 * Job metadata
-  [(Example)](https://python-scheduler.readthedocs.io/en/latest/pages/examples/metrics.html)
+  [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/metrics.html)
 * Lightweight
 * High test coverage
-* [Online documentation](https://python-scheduler.readthedocs.io/en/latest/readme.html)
+* [Online documentation](https://digon.io/hyd/project/scheduler/t/master/readme.html)
 
 ## Installation
 
@@ -77,7 +79,7 @@ makepkg -i
 
 The following example shows how the `Scheduler` is instantiated and how basic `Job`s are created.
 For advanced scheduling examples please visit the online
-[documentation](https://python-scheduler.readthedocs.io/en/latest/examples.html).
+[documentation](https://digon.io/hyd/project/scheduler/t/master/examples.html).
 
 [//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
 
@@ -139,7 +141,7 @@ while True:
 
 ## Documentation
 
-View the API documentation [online](https://python-scheduler.readthedocs.io/en/latest/readme.html).
+View the API documentation [online](https://digon.io/hyd/project/scheduler/t/master/readme.html).
 
 ## Sponsor
 

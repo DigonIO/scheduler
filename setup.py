@@ -51,7 +51,7 @@ setup(
     python_requires=">=3.9",
     url="https://gitlab.com/DigonIO/scheduler",
     project_urls={
-        "Documentation": "https://python-scheduler.readthedocs.io/en/latest/",
+        "Documentation": "https://digon.io/hyd/project/scheduler/t/master",
         "Source Code": "https://gitlab.com/DigonIO/scheduler",
         "Bug Tracker": "https://gitlab.com/DigonIO/scheduler/-/issues",
         "Changelog": "https://gitlab.com/DigonIO/scheduler/-/blob/master/CHANGELOG.md",
