@@ -22,8 +22,6 @@ counts and automate Jobs.</p>
 
 ## Features
 
-https://digon.io/hyd/project/scheduler/t/master/pages/examples/quick_start.html
-
 * Easy and user friendly in-process Job scheduling
 [(Quick Start)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/quick_start.html)
 * Asyncio scheduler [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/asyncio.html)
