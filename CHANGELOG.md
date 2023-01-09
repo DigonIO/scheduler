@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.3
+
+### Misc
+
++ Migrate from [ReadTheDocs](https://readthedocs.org/) to [HostYourDocs](https://github.com/DigonIO/hostyourdocs).
++ Custom docs colour theme.
+
 ## 0.8.2
 
 ### Misc

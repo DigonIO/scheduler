@@ -1,0 +1,62 @@
+/* Colours */
+.black { color: black; }
+.gray { color: gray; }
+.silver { color: silver; }
+.white { color: white; }
+.maroon { color: maroon; }
+.red { color: red; }
+.fuchsia { color: fuchsia; }
+.pink { color: pink; }
+.orange { color: orange; }
+.yellow { color: yellow; }
+.lime { color: lime; }
+.green { color: green; }
+.olive { color: olive; }
+.teal { color: teal; }
+.cyan { color: cyan; }
+.aqua { color: aqua; }
+.blue { color: blue; }
+.navy { color: navy; }
+.purple { color: purple; }
+
+/* Text Sizes */
+.huge { font-size: huge; }
+.big { font-size: big; }
+.small { font-size: small; }
+.tiny { font-size: tiny; }
+
+/* Text markup */
+
+body {
+    --color-brand-primary: #204a87;
+    --color-brand-content: #204a87;
+}
+
+.incremental { color: #CC3300;; font-style: italic; }
+.pre:not(:where(dl *)) { color: #204a87; }
+.pre:not(:where(a *, dl *)) { color: #7694c2; }
+
+@media not print {
+body[data-theme="dark"] .incremental { color: #CE9178; font-style: italic; }
+body[data-theme="dark"] .pre:not(:where(dl *)) { color: #368ce2; }
+body[data-theme="dark"] .pre:not(:where(a *, dl *)) { color: #9CDCFE; /* color: #ed9d13; */ }
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) .incremental { color: #CE9178; font-style: italic; }
+    body:not([data-theme="light"]) .pre:not(:where(dl *)) { color: #368ce2; }
+    body:not([data-theme="light"]) .pre:not(:where(a *, dl *)) { color: #9CDCFE; /* color: #ed9d13; */ }
+}
+}
+
+
+/*
+@media not print {
+    @media (prefers-color-scheme: dark) {
+        body:not([data-theme="light"]) {
+            --color-api-keyword: #569CD6;
+            --color-problematic: green;
+            --color-api-pre-name: #4EC9B0;
+            --color-api-name: #DCDCAA;
+        }
+    }
+}
+*/

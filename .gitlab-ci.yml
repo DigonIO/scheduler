@@ -5,87 +5,148 @@ before_script:
 
 stages:
   - analysis
-  - documentation
-  - testing
+  - test
   - release
 
-#### analysis ####
-pylint_3_9_11:
+####################################################################################################
+### Analysis Stage
+####################################################################################################
+
+pylint_3_9_16:
   stage: analysis
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - pylint scheduler
   allow_failure: true
 
-mypy_3_9_11:
+mypy_3_9_16:
   stage: analysis
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - mypy scheduler
   allow_failure: true
 
-pydocstyle_3_9_11:
+pydocstyle_3_9_16:
   stage: analysis
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - pydocstyle scheduler
   allow_failure: true
 
-bandit_3_9_11:
+bandit_3_9_16:
   stage: analysis
-  image: "python:3.9.11-alpine3.15"
+  image: "python:3.9.16-alpine3.17"
   script:
     - bandit -r scheduler
   allow_failure: false
 
-#### documentation ####
-doc_3_9_11:
-  stage: documentation
-  image: "python:3.9.11-alpine3.15"
+####################################################################################################
+### Test Stage
+####################################################################################################
+
+doc_3_9_16:
+  stage: test
+  image: "python:3.9.16-alpine3.17"
   script:
     - sphinx-build -b html doc/ doc/_build/html
+  artifacts:
+    paths:
+    - doc/_build/html/
 
-#### testing ####
-pytest_3_9_15:
-  stage: testing
-  image: "python:3.9.15-alpine3.15"
+pytest_3_9_16:
+  stage: test
+  image: "python:3.9.16-alpine3.17"
   script:
     - pytest --cov=scheduler/ tests/
 
-pydoctest_3_9_15:
-  stage: testing
-  image: "python:3.9.15-alpine3.15"
+pydoctest_3_9_16:
+  stage: test
+  image: "python:3.9.16-alpine3.17"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
-pytest_3_10_8:
-  stage: testing
-  image: "python:3.10.4-alpine3.16"
+pytest_3_10_9:
+  stage: test
+  image: "python:3.10.9-alpine3.17"
   script:
     - pytest --cov=scheduler/ tests/
 
-pydoctest_3_10_8:
-  stage: testing
-  image: "python:3.10.8-alpine3.16"
+pydoctest_3_10_9:
+  stage: test
+  image: "python:3.10.9-alpine3.17"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
-pytest_3_11_0:
-  stage: testing
-  image: "python:3.11.0-alpine3.16"
+pytest_3_11_1:
+  stage: test
+  image: "python:3.11.1-alpine3.17"
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
     - pytest --cov=scheduler/ tests/
+    - python -m coverage html
+  artifacts:
+    paths:
+    - htmlcov/
 
-pydoctest_3_11_0:
-  stage: testing
-  image: "python:3.11.0-alpine3.16"
+pydoctest_3_11_1:
+  stage: test
+  image: "python:3.11.1-alpine3.17"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
-#### release ####
+####################################################################################################
+### Release Stage
+####################################################################################################
+
+push_doc:
+  image: archlinux:base-20230108.0.116909
+  stage: release
+  before_script: []
+  script:
+    - tar -C ./doc/_build/html -cpz . -f ./doc_build.tar.gz
+    - >
+      curl -X 'POST'
+      'https://digon.io/hyd/api/v1/version/upload'
+      -H 'accept: application/json'
+      -H "Authorization: Bearer ${HYD_TOKEN}"
+      -H 'Content-Type: multipart/form-data'
+      -F 'file=@doc_build.tar.gz;type=application/gzip'
+      -F "project_id=${HYD_PROJECT_ID}"
+      -F "version=${CI_COMMIT_SHORT_SHA}"
+    - >
+      curl -X 'PATCH'
+      "https://digon.io/hyd/api/v1/tag/move?project_id=${HYD_PROJECT_ID}&tag=${CI_COMMIT_BRANCH}&version=${CI_COMMIT_SHORT_SHA}"
+      -H 'accept: application/json'
+      -H "Authorization: Bearer ${HYD_TOKEN}"
+  only:
+  - master
+  - development
+
+push_cov:
+  image: archlinux:base-20230108.0.116909
+  stage: release
+  before_script: []
+  script:
+    - tar -C ./htmlcov -cpz . -f ./cov_report.tar.gz
+    - >
+      curl -X 'POST'
+      'https://digon.io/hyd/api/v1/version/upload'
+      -H 'accept: application/json'
+      -H "Authorization: Bearer ${HYD_TOKEN}"
+      -H 'Content-Type: multipart/form-data'
+      -F 'file=@cov_report.tar.gz;type=application/gzip'
+      -F "project_id=${HYD_PROJECT_ID}"
+      -F "version=${CI_COMMIT_SHORT_SHA}_coverage_report"
+    - >
+      curl -X 'PATCH'
+      "https://digon.io/hyd/api/v1/tag/move?project_id=${HYD_PROJECT_ID}&tag=${CI_COMMIT_BRANCH}_coverage_report&version=${CI_COMMIT_SHORT_SHA}_coverage_report"
+      -H 'accept: application/json'
+      -H "Authorization: Bearer ${HYD_TOKEN}"
+  only:
+  - development
+
 pypi:
-  image: python:3.10.4-bullseye
+  image: python:3.10.9-bullseye
   stage: release
   script:
     - pip install twine
