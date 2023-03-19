@@ -33,7 +33,7 @@ setup(
     package_data={"scheduler": ["py.typed"]},
     keywords="scheduler schedule asyncio threading datetime date time timedelta timezone timing",
     install_requires=[
-        "typeguard>=2.6.0",
+        "typeguard>=3.0.0",
     ],
     classifiers=[
         "Development Status :: 4 - Beta",

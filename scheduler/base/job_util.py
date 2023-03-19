@@ -76,7 +76,7 @@ def sane_timing_types(job_type: JobType, timing: TimingJobUnion) -> None:
         If the `timing` object has the wrong `Type` for a specific `JobType`.
     """
     try:
-        tg.check_type("timing", timing, JOB_TIMING_TYPE_MAPPING[job_type]["type"])
+        tg.check_type(timing, JOB_TIMING_TYPE_MAPPING[job_type]["type"])
         if job_type == JobType.CYCLIC:
             if not len(timing) == 1:
                 raise TypeError
