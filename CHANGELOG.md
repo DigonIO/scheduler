@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.4
+
+### Bugfix
+
++ [Issues#16](https://gitlab.com/DigonIO/scheduler/-/issues/16#note_1316075776) `Typeguard` API
+  migration.
+
 ## 0.8.3
 
 ### Misc
