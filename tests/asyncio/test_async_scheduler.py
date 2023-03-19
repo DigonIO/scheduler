@@ -134,9 +134,6 @@ async def test_async_cyclic(event_loop, timing, err_msg):
     sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError, match=err_msg):
-            # import pdb
-
-            # pdb.set_trace()
             job0 = sch.cyclic(timing, foo)
     else:
         job0 = sch.cyclic(timing, foo)
