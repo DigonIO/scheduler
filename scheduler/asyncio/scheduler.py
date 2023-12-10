@@ -18,7 +18,7 @@ from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.scheduler import (
     BaseJob,
     BaseScheduler,
-    _warn_deprecated_delay,
+    deprecated,
     select_jobs_by_tag,
 )
 from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
@@ -244,6 +244,7 @@ class Scheduler(BaseScheduler):
             return self.jobs
         return cast(set[Job], select_jobs_by_tag(cast(set[BaseJob], self.jobs), tags, any_tag))
 
+    @deprecated(["delay"])
     def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a cyclic `Job`.
@@ -274,13 +275,13 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/aio_kwargs.rst
         """
-        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type(timing, TimingCyclic)
         except tg.TypeCheckError as err:
             raise SchedulerError(CYCLIC_TYPE_ERROR_MSG) from err
         return self.__schedule(job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs)
 
+    @deprecated(["delay"])
     def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a minutely `Job`.
@@ -316,13 +317,13 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/aio_kwargs.rst
         """
-        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type(timing, TimingDailyUnion)
         except tg.TypeCheckError as err:
             raise SchedulerError(MINUTELY_TYPE_ERROR_MSG) from err
         return self.__schedule(job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs)
 
+    @deprecated(["delay"])
     def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule an hourly `Job`.
@@ -358,13 +359,13 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/aio_kwargs.rst
         """
-        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type(timing, TimingDailyUnion)
         except tg.TypeCheckError as err:
             raise SchedulerError(HOURLY_TYPE_ERROR_MSG) from err
         return self.__schedule(job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs)
 
+    @deprecated(["delay"])
     def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a daily `Job`.
@@ -395,13 +396,13 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/aio_kwargs.rst
         """
-        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type(timing, TimingDailyUnion)
         except tg.TypeCheckError as err:
             raise SchedulerError(DAILY_TYPE_ERROR_MSG) from err
         return self.__schedule(job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs)
 
+    @deprecated(["delay"])
     def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a weekly `Job`.
@@ -434,7 +435,6 @@ class Scheduler(BaseScheduler):
 
             .. include:: ../_assets/aio_kwargs.rst
         """
-        _warn_deprecated_delay(**kwargs)
         try:
             tg.check_type(timing, TimingWeeklyUnion)
         except tg.TypeCheckError as err:
