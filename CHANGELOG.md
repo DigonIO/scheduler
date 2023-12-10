@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.5
+
+### Misc
+
++ Python 3.12 support.
++ [Issue#18](https://gitlab.com/DigonIO/scheduler/-/issues/18) fixed
+  (Thanks [@bshakur8 (Bhaa Shakur)](https://github.com/bshakur8),
+  [PR #7](https://github.com/DigonIO/scheduler/pull/7))
++ Improved deprecation warnings
+  (Thanks [@bshakur8 (Bhaa Shakur)](https://github.com/bshakur8),
+  [PR #6](https://github.com/DigonIO/scheduler/pull/6))
+
 ## 0.8.4
 
 ### Bugfix
