@@ -6,9 +6,9 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import warnings
 from abc import ABC, abstractmethod
-from logging import Logger, getLogger
 from functools import wraps
-from typing import Any, Callable, Optional, List
+from logging import Logger, getLogger
+from typing import Any, Callable, List, Optional
 
 from scheduler.base.job import BaseJob, BaseJobType
 from scheduler.base.timingtype import (
@@ -49,7 +49,24 @@ def select_jobs_by_tag(
     return {job for job in jobs if tags <= job.tags}
 
 
-def deprecated(fields: List[str]):
+def deprecated(fields: List[str]) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """
+    Decorator for marking specified function arguments as deprecated.
+
+    Parameters
+    ----------
+    fields : List[str]
+        A list of strings representing the names of the function arguments that are deprecated.
+
+    Examples
+    --------
+    @deprecated(['old_arg'])
+    def some_function(new_arg, old_arg=None):
+        pass
+
+    Calling `some_function(new_arg=5, old_arg=3)` generates a deprecation warning for using 'old_arg'.
+    """
+
     def wrapper(func):
         @wraps(func)
         def real_wrapper(*args, **kwargs):
@@ -65,6 +82,7 @@ def deprecated(fields: List[str]):
                         stacklevel=3,
                     )
             return func(*args, **kwargs)
+
         return real_wrapper
 
     return wrapper
@@ -128,7 +146,7 @@ class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than a
         timing: TimingOnceUnion,
         handle: Callable[..., None],
         *,
-        args: tuple[Any] = None,
+        args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
     ) -> BaseJob:
