@@ -5,7 +5,7 @@ import pytest
 
 from scheduler import Scheduler
 
-from ...helpers import ZERO_DIVISION_ERROR, fail, samples_seconds
+from ...helpers import fail, samples_seconds
 
 
 @pytest.mark.parametrize(
@@ -21,11 +21,7 @@ def test_threading_fail(timing, counts, patch_datetime_now, caplog):
     RECORD = (
         "scheduler",
         logging.ERROR,
-        "Unhandled exception `%s` in `%r`!"
-        % (
-            ZERO_DIVISION_ERROR,
-            job,
-        ),
+        "Unhandled exception in `%r`!" % (job,),
     )
 
     for count in counts:

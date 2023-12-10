@@ -18,7 +18,7 @@ import pytest
 
 from scheduler.asyncio.scheduler import Scheduler
 
-from ..helpers import T_2021_5_26__3_55, ZERO_DIVISION_ERROR, fail
+from ..helpers import T_2021_5_26__3_55, fail
 
 samples_secondly = [T_2021_5_26__3_55 + dt.timedelta(seconds=x) for x in range(12)]
 async_real_sleep = asyncio.sleep
@@ -150,11 +150,7 @@ def test_asyncio_fail(monkeypatch, patch_datetime_now, event_loop, caplog):
             RECORD = (
                 "scheduler",
                 logging.ERROR,
-                "Unhandled exception `%s` in `%r`!"
-                % (
-                    ZERO_DIVISION_ERROR,
-                    cyclic_job,
-                ),
+                "Unhandled exception in `%r`!" % (cyclic_job,),
             )
 
             await asyncio.sleep(0)

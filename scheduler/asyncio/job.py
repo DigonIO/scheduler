@@ -58,13 +58,13 @@ class Job(BaseJob):
     # pylint: disable=no-member invalid-name
 
     async def _exec(self, logger: Logger):
-        coroutine = self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)
+        coroutine = self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)  # type: ignore
         try:
             await coroutine
-        except Exception as err:
-            logger.exception("Unhandled exception `%s` in `%r`!", err, self)
-            self._BaseJob__failed_attempts += 1
-        self._BaseJob__attempts += 1
+        except Exception:
+            logger.exception("Unhandled exception in `%r`!", self)
+            self._BaseJob__failed_attempts += 1  # type: ignore
+        self._BaseJob__attempts += 1  # type: ignore
 
     # pylint: enable=no-member invalid-name
 
