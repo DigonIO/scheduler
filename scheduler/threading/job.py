@@ -107,7 +107,7 @@ class Job(BaseJob):
             try:
                 self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)  # type: ignore
             except Exception as err:
-                logger.error("Unhandled exception `%s` in `%r`!", err, self)
+                logger.exception("Unhandled exception `%s` in `%r`!", err, self)
                 self._BaseJob__failed_attempts += 1  # type: ignore
             self._BaseJob__attempts += 1  # type: ignore
 
