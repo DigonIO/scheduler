@@ -6,8 +6,9 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import warnings
 from abc import ABC, abstractmethod
+from functools import wraps
 from logging import Logger, getLogger
-from typing import Any, Callable, Optional
+from typing import Any, Callable, List, Optional
 
 from scheduler.base.job import BaseJob, BaseJobType
 from scheduler.base.timingtype import (
@@ -48,16 +49,43 @@ def select_jobs_by_tag(
     return {job for job in jobs if tags <= job.tags}
 
 
-def _warn_deprecated_delay(delay: Optional[bool] = None, **kwargs):
-    if delay is not None:
-        warnings.warn(
-            (
-                "Using the `delay` argument is deprecated and will "
-                "be removed in the next minor release."
-            ),
-            DeprecationWarning,
-            stacklevel=3,
-        )
+def deprecated(fields: List[str]) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    """
+    Decorator for marking specified function arguments as deprecated.
+
+    Parameters
+    ----------
+    fields : List[str]
+        A list of strings representing the names of the function arguments that are deprecated.
+
+    Examples
+    --------
+    @deprecated(['old_arg'])
+    def some_function(new_arg, old_arg=None):
+        pass
+
+    Calling `some_function(new_arg=5, old_arg=3)` generates a deprecation warning for using 'old_arg'.
+    """
+
+    def wrapper(func):
+        @wraps(func)
+        def real_wrapper(*args, **kwargs):
+            for f in fields:
+                if f in kwargs and kwargs[f] is not None:
+                    # keep it in kwargs
+                    warnings.warn(
+                        (
+                            f"Using the `{f}` argument is deprecated and will "
+                            "be removed in the next minor release."
+                        ),
+                        DeprecationWarning,
+                        stacklevel=3,
+                    )
+            return func(*args, **kwargs)
+
+        return real_wrapper
+
+    return wrapper
 
 
 class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than an ABC class
@@ -118,7 +146,7 @@ class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than a
         timing: TimingOnceUnion,
         handle: Callable[..., None],
         *,
-        args: tuple[Any] = None,
+        args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
     ) -> BaseJob:

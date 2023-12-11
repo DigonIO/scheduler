@@ -80,6 +80,18 @@ pydoctest_3_10_9:
 pytest_3_11_1:
   stage: test
   image: "python:3.11.1-alpine3.17"
+  script:
+    - pytest --cov=scheduler/ tests/
+
+pydoctest_3_11_1:
+  stage: test
+  image: "python:3.11.1-alpine3.17"
+  script:
+    - pytest --doctest-modules doc/pages/*/*.rst
+
+pytest_3_12_1:
+  stage: test
+  image: "python:3.12.1-alpine3.19"
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
     - pytest --cov=scheduler/ tests/
@@ -88,9 +100,9 @@ pytest_3_11_1:
     paths:
     - htmlcov/
 
-pydoctest_3_11_1:
+pydoctest_3_12_1:
   stage: test
-  image: "python:3.11.1-alpine3.17"
+  image: "python:3.12.1-alpine3.19"
   script:
     - pytest --doctest-modules doc/pages/*/*.rst
 
