@@ -77,7 +77,7 @@ class Job(BaseJob):
         start: Optional[dt.datetime] = None,
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
-        alias: str = None,
+        alias: Optional[str] = None,
         tzinfo: Optional[dt.tzinfo] = None,
         weight: float = 1,
     ):

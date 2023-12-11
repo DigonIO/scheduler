@@ -64,7 +64,7 @@ class BaseJob(ABC):
         start: Optional[dt.datetime] = None,
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
-        alias: str = None,
+        alias: Optional[str] = None,
         tzinfo: Optional[dt.tzinfo] = None,
     ):
         timing = standardize_timing_format(job_type, timing)
