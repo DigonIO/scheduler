@@ -1,7 +1,10 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "scheduler"
-dynamic = ["version"]
-readme = { file = "README.md", content-type = "text/markdown" }
+dynamic = ["readme", "version"]
 authors = [
     { name = "Fabian A. Preiss", email = "fpreiss@digon.io" },
     { name = "Jendrik A. Potyka", email = "jpotyka@digon.io" },
@@ -47,6 +50,11 @@ Repository = "https://gitlab.com/DigonIO/scheduler"
 Documentation = "https://digon.io/hyd/project/scheduler/t/master"
 Changelog = "https://gitlab.com/DigonIO/scheduler/-/blob/master/CHANGELOG.md"
 "Bug Tracker" = "https://gitlab.com/DigonIO/scheduler/-/issues"
+
+[tool.setuptools.dynamic]
+version = { attr = "scheduler.__version__" }
+readme = { file = "README.md", content-type = "text/markdown" }
+
 
 [tool.black]
 line-length = 100
