@@ -78,9 +78,9 @@ def test_delete_jobs(n_jobs, any_tag, empty_set):
             num_del = sch.delete_jobs(any_tag=any_tag)
     else:
         if any_tag is None:
-            num_del = sch.delete_jobs(tags={})
+            num_del = sch.delete_jobs(tags=set())
         else:
-            num_del = sch.delete_jobs(tags={}, any_tag=any_tag)
+            num_del = sch.delete_jobs(tags=set(), any_tag=any_tag)
 
     assert len(sch.jobs) == 0
     assert num_del == n_jobs

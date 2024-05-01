@@ -67,9 +67,9 @@ def deprecated(fields: List[str]) -> Callable[[Callable[..., Any]], Callable[...
     Calling `some_function(new_arg=5, old_arg=3)` generates a deprecation warning for using 'old_arg'.
     """
 
-    def wrapper(func):
+    def wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
-        def real_wrapper(*args, **kwargs):
+        def real_wrapper(*args, **kwargs) -> Any:
             for f in fields:
                 if f in kwargs and kwargs[f] is not None:
                     # keep it in kwargs

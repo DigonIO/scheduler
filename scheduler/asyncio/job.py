@@ -57,7 +57,7 @@ class Job(BaseJob):
 
     # pylint: disable=no-member invalid-name
 
-    async def _exec(self, logger: Logger):
+    async def _exec(self, logger: Logger) -> None:
         coroutine = self._BaseJob__handle(*self._BaseJob__args, **self._BaseJob__kwargs)  # type: ignore
         try:
             await coroutine

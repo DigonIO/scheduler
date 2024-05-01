@@ -36,7 +36,7 @@ from scheduler.prioritization import linear_priority_function
 from scheduler.threading.job import Job
 
 
-def _exec_job_worker(que: queue.Queue[Job], logger: Logger):
+def _exec_job_worker(que: queue.Queue[Job], logger: Logger) -> None:
     running = True
     while running:
         try:
@@ -302,7 +302,7 @@ class Scheduler(BaseScheduler[Job]):
             True: To deleta a |Job| at least one tag has to match.
         """
         with self.__jobs_lock:
-            if tags is None or tags == {}:
+            if tags is None or tags == set():
                 n_jobs = len(self.__jobs)
                 self.__jobs = set()
                 return n_jobs
@@ -338,12 +338,12 @@ class Scheduler(BaseScheduler[Job]):
             Currently scheduled |Job|\ s.
         """
         with self.__jobs_lock:
-            if tags is None or tags == {}:
+            if tags is None or tags == set():
                 return self.__jobs.copy()
             return select_jobs_by_tag(self.__jobs, tags, any_tag)
 
     @deprecated(["delay"])
-    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs):
+    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a cyclic `Job`.
 
@@ -380,7 +380,7 @@ class Scheduler(BaseScheduler[Job]):
         return self.__schedule(job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a minutely `Job`.
 
@@ -422,7 +422,7 @@ class Scheduler(BaseScheduler[Job]):
         return self.__schedule(job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule an hourly `Job`.
 
@@ -464,7 +464,7 @@ class Scheduler(BaseScheduler[Job]):
         return self.__schedule(job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a daily `Job`.
 
@@ -501,7 +501,7 @@ class Scheduler(BaseScheduler[Job]):
         return self.__schedule(job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs):
+    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a weekly `Job`.
 

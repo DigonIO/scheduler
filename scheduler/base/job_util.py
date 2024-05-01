@@ -101,7 +101,7 @@ def check_timing_tzinfo(
     job_type: JobType,
     timing: TimingJobUnion,
     tzinfo: Optional[dt.tzinfo],
-):
+) -> None:
     """Raise if `timing` incompatible with `tzinfo` for `job_type`."""
     if job_type is JobType.WEEKLY:
         for weekday in cast(list[Weekday], timing):
@@ -117,7 +117,7 @@ def check_duplicate_effective_timings(
     job_type: JobType,
     timing: TimingJobUnion,
     tzinfo: Optional[dt.tzinfo],
-):
+) -> None:
     """Raise given timings are not effectively duplicates."""
     if job_type is JobType.WEEKLY:
         if not are_weekday_times_unique(cast(list[Weekday], timing), tzinfo):

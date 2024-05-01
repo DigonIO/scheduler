@@ -69,7 +69,8 @@ convention = "numpy"
 add-ignore = ["D105"]
 
 [tool.mypy]
-python_version = 3.9
+python_version = "3.9"
+# strict = true
 warn_return_any = true
 warn_unused_configs = true
 disallow_any_generics = true

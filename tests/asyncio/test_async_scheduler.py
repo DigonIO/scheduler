@@ -98,7 +98,7 @@ async def test_delete_jobs_with_tags(event_loop, tags, any_tag, length):
 @pytest.mark.parametrize(
     "tags, any_tag, length",
     [
-        ({}, False, 2),
+        (set(), False, 2),
         (None, False, 2),
         (None, True, 2),
         ({"foo"}, False, 1),

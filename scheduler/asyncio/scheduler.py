@@ -196,7 +196,7 @@ class Scheduler(BaseScheduler[Job]):
         all_jobs: set[Job] = set(self.__jobs.keys())
         jobs_to_delete: set[Job]
 
-        if tags is None or tags == {}:
+        if tags is None or tags == set():
             jobs_to_delete = all_jobs
         else:
             jobs_to_delete = select_jobs_by_tag(all_jobs, tags, any_tag)
@@ -231,7 +231,7 @@ class Scheduler(BaseScheduler[Job]):
         set[Job]
             Currently scheduled |AioJob|\ s.
         """
-        if tags is None or tags == {}:
+        if tags is None or tags == set():
             return self.jobs
         return select_jobs_by_tag(self.jobs, tags, any_tag)
 

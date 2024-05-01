@@ -69,10 +69,7 @@ def create_job_instance(
     else:
         timing_list = cast(TimingJobUnion, timing)
 
-    return cast(
-        BaseJobType,
-        job_class(
-            timing=timing_list,
-            **kwargs,
-        ),
+    return job_class(
+        timing=timing_list,
+        **kwargs,
     )

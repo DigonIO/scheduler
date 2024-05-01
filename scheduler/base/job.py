@@ -79,7 +79,7 @@ class BaseJob(ABC):
         self.__timing = timing  # pylint: disable=unused-private-member
         # NOTE: https://github.com/python/mypy/issues/708
         #       https://github.com/python/mypy/issues/2427
-        self.__handle = handle  # type: ignore
+        self.__handle = handle
         self.__args = () if args is None else args
         self.__kwargs = {} if kwargs is None else kwargs.copy()
         self.__max_attempts = max_attempts
@@ -104,7 +104,7 @@ class BaseJob(ABC):
             if self.__pending_timer.datetime > self.__stop:
                 self.__mark_delete = True
 
-    def __lt__(self, other: BaseJob):
+    def __lt__(self, other: BaseJob) -> bool:
         return self.datetime < other.datetime
 
     def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
