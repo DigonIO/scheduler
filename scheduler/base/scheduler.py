@@ -8,9 +8,9 @@ import warnings
 from abc import ABC, abstractmethod
 from functools import wraps
 from logging import Logger, getLogger
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Generic, List, Optional
 
-from scheduler.base.job import BaseJob, BaseJobType
+from scheduler.base.job import BaseJobType
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
@@ -88,20 +88,22 @@ def deprecated(fields: List[str]) -> Callable[[Callable[..., Any]], Callable[...
     return wrapper
 
 
-class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than an ABC class
+class BaseScheduler(
+    ABC, Generic[BaseJobType]
+):  # NOTE maybe a typing Protocol class is better than an ABC class
     """
     Interface definition of an abstract scheduler.
 
     Author: Jendrik A. Potyka, Fabian A. Preiss
     """
 
-    __logger: Logger
+    _logger: Logger
 
     def __init__(self, logger: Optional[Logger] = None) -> None:
-        self.__logger = logger if logger else LOGGER
+        self._logger = logger if logger else LOGGER
 
     @abstractmethod
-    def delete_job(self, job: BaseJob) -> None:
+    def delete_job(self, job: BaseJobType) -> None:
         """Delete a |BaseJob| from the `BaseScheduler`."""
 
     @abstractmethod
@@ -117,27 +119,33 @@ class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than a
         self,
         tags: Optional[set[str]] = None,
         any_tag: bool = False,
-    ) -> set[BaseJob]:
+    ) -> set[BaseJobType]:
         r"""Get a set of |BaseJob|\ s from the `BaseScheduler` by tags."""
 
     @abstractmethod
-    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> BaseJob:
+    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> BaseJobType:
         """Schedule a cyclic |BaseJob|."""
 
     @abstractmethod
-    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> BaseJob:
+    def minutely(
+        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
+    ) -> BaseJobType:
         """Schedule a minutely |BaseJob|."""
 
     @abstractmethod
-    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> BaseJob:
+    def hourly(
+        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
+    ) -> BaseJobType:
         """Schedule an hourly |BaseJob|."""
 
     @abstractmethod
-    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> BaseJob:
+    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> BaseJobType:
         """Schedule a daily |BaseJob|."""
 
     @abstractmethod
-    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> BaseJob:
+    def weekly(
+        self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs
+    ) -> BaseJobType:
         """Schedule a weekly |BaseJob|."""
 
     @abstractmethod
@@ -149,10 +157,11 @@ class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than a
         args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
-    ) -> BaseJob:
+        alias: Optional[str] = None,
+    ) -> BaseJobType:
         """Schedule a oneshot |BaseJob|."""
 
     @property
     @abstractmethod
-    def jobs(self) -> set[BaseJob]:
+    def jobs(self) -> set[BaseJobType]:
         r"""Get the set of all |BaseJob|\ s."""

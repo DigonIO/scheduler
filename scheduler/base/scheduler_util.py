@@ -59,7 +59,7 @@ def check_tzname(tzinfo: Optional[dt.tzinfo]) -> Optional[str]:
 
 
 def create_job_instance(
-    job_class: type,
+    job_class: type[BaseJobType],
     timing: Union[TimingCyclic, TimingDailyUnion, TimingWeeklyUnion],
     **kwargs,
 ) -> BaseJobType:

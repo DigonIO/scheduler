@@ -15,12 +15,7 @@ import typeguard as tg
 
 from scheduler.asyncio.job import Job
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
-from scheduler.base.scheduler import (
-    BaseJob,
-    BaseScheduler,
-    deprecated,
-    select_jobs_by_tag,
-)
+from scheduler.base.scheduler import BaseScheduler, deprecated, select_jobs_by_tag
 from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
@@ -39,7 +34,7 @@ from scheduler.message import (
 )
 
 
-class Scheduler(BaseScheduler):
+class Scheduler(BaseScheduler[Job]):
     r"""
     Implementation of an asyncio scheduler.
 
@@ -149,9 +144,7 @@ class Scheduler(BaseScheduler):
                 sleep_seconds: float = job.timedelta(reference_dt).total_seconds()
                 await aio.sleep(sleep_seconds)
 
-                await job._exec(
-                    logger=self._BaseScheduler__logger
-                )  # pylint: disable=protected-access
+                await job._exec(logger=self._logger)  # pylint: disable=protected-access
 
                 reference_dt = dt.datetime.now(tz=self.__tzinfo)
                 job._calc_next_exec(reference_dt)  # pylint: disable=protected-access
@@ -206,9 +199,7 @@ class Scheduler(BaseScheduler):
         if tags is None or tags == {}:
             jobs_to_delete = all_jobs
         else:
-            jobs_to_delete = cast(
-                set[Job], select_jobs_by_tag(cast(set[BaseJob], all_jobs), tags, any_tag)
-            )
+            jobs_to_delete = select_jobs_by_tag(all_jobs, tags, any_tag)
 
         for job in jobs_to_delete:
             self.delete_job(job)
@@ -242,7 +233,7 @@ class Scheduler(BaseScheduler):
         """
         if tags is None or tags == {}:
             return self.jobs
-        return cast(set[Job], select_jobs_by_tag(cast(set[BaseJob], self.jobs), tags, any_tag))
+        return select_jobs_by_tag(self.jobs, tags, any_tag)
 
     @deprecated(["delay"])
     def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> Job:
@@ -446,10 +437,10 @@ class Scheduler(BaseScheduler):
         timing: TimingOnceUnion,
         handle: Callable[..., None],
         *,
-        args: tuple[Any] = None,
+        args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
-        alias: str = None,
+        alias: Optional[str] = None,
     ) -> Job:
         r"""
         Schedule a oneshot `Job`.

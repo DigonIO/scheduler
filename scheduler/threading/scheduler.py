@@ -48,7 +48,7 @@ def _exec_job_worker(que: queue.Queue[Job], logger: Logger):
             que.task_done()
 
 
-class Scheduler(BaseScheduler):
+class Scheduler(BaseScheduler[Job]):
     r"""
     Implementation of a scheduler for callback functions.
 
@@ -85,7 +85,7 @@ class Scheduler(BaseScheduler):
         max_exec: int = 0,
         tzinfo: Optional[dt.tzinfo] = None,
         priority_function: Callable[
-            [float, BaseJob, int, int],
+            [float, Job, int, int],
             float,
         ] = linear_priority_function,
         jobs: Optional[set[Job]] = None,
@@ -195,9 +195,7 @@ class Scheduler(BaseScheduler):
 
         workers = []
         for _ in range(self.__n_threads or n_jobs):
-            worker = threading.Thread(
-                target=_exec_job_worker, args=(que, self._BaseScheduler__logger)
-            )
+            worker = threading.Thread(target=_exec_job_worker, args=(que, self._logger))
             worker.daemon = True
             worker.start()
             workers.append(worker)
@@ -546,12 +544,12 @@ class Scheduler(BaseScheduler):
         timing: TimingOnceUnion,
         handle: Callable[..., None],
         *,
-        args: tuple[Any] = None,
+        args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[list[str]] = None,
-        alias: str = None,
+        alias: Optional[str] = None,
         weight: float = 1,
-    ):
+    ) -> Job:
         r"""
         Schedule a oneshot `Job`.
 
