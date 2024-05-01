@@ -1,3 +1,6 @@
+import datetime as dt
+from typing import Any, Optional
+
 import pytest
 
 from scheduler.threading.job import Job
@@ -36,7 +39,13 @@ sch_repr_utc = (
     ],
     indirect=["patch_datetime_now"],
 )
-def test_sch_repr(patch_datetime_now, job_kwargs, tzinfo, j_results, s_results):
+def test_sch_repr(
+    patch_datetime_now: Any,
+    job_kwargs: tuple[dict[str, Any], ...],
+    tzinfo: Optional[dt.tzinfo],
+    j_results: list[str],
+    s_results: tuple[str],
+) -> None:
     jobs = [Job(**kwargs) for kwargs in job_kwargs]
     sch = Scheduler(tzinfo=tzinfo, jobs=jobs)
     rep = repr(sch)

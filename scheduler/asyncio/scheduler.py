@@ -8,8 +8,10 @@ from __future__ import annotations
 
 import asyncio as aio
 import datetime as dt
+from asyncio.selector_events import BaseSelectorEventLoop
+from collections.abc import Iterable
 from logging import Logger
-from typing import Any, Callable, Optional, cast
+from typing import Any, Callable, Optional
 
 import typeguard as tg
 
@@ -59,7 +61,7 @@ class Scheduler(BaseScheduler[Job]):
     def __init__(
         self,
         *,
-        loop: Optional[aio.selector_events.BaseSelectorEventLoop] = None,
+        loop: Optional[BaseSelectorEventLoop] = None,
         tzinfo: Optional[dt.tzinfo] = None,
         logger: Optional[Logger] = None,
     ):
@@ -71,7 +73,7 @@ class Scheduler(BaseScheduler[Job]):
         self.__tzinfo = tzinfo
         self.__tz_str = check_tzname(tzinfo=tzinfo)
 
-        self.__jobs: dict[Job, aio.Task[None]] = {}
+        self._jobs: dict[Job, aio.Task[None]] = {}
 
     def __repr__(self) -> str:
         return "scheduler.asyncio.scheduler.Scheduler({0}, jobs={{{1}}})".format(
@@ -121,7 +123,7 @@ class Scheduler(BaseScheduler[Job]):
     def __headings(self) -> list[str]:
         headings = [
             f"tzinfo={self.__tz_str}",
-            f"#jobs={len(self.__jobs)}",
+            f"#jobs={len(self._jobs)}",
         ]
         return headings
 
@@ -133,7 +135,7 @@ class Scheduler(BaseScheduler[Job]):
         job: Job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
 
         task = self.__loop.create_task(self.__supervise_job(job))
-        self.__jobs[job] = task
+        self._jobs[job] = task
 
         return job
 
@@ -169,7 +171,7 @@ class Scheduler(BaseScheduler[Job]):
             Raises if the |AioJob| of the argument is not scheduled.
         """
         try:
-            task: aio.Task[None] = self.__jobs.pop(job)
+            task: aio.Task[None] = self._jobs.pop(job)
             _: bool = task.cancel()
         except KeyError:
             raise SchedulerError("An unscheduled Job can not be deleted!") from None
@@ -193,7 +195,7 @@ class Scheduler(BaseScheduler[Job]):
             False: To delete a |AioJob| all tags have to match.
             True: To delete a |AioJob| at least one tag has to match.
         """
-        all_jobs: set[Job] = set(self.__jobs.keys())
+        all_jobs: set[Job] = set(self._jobs.keys())
         jobs_to_delete: set[Job]
 
         if tags is None or tags == set():
@@ -439,7 +441,7 @@ class Scheduler(BaseScheduler[Job]):
         *,
         args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
-        tags: Optional[list[str]] = None,
+        tags: Optional[Iterable[str]] = None,
         alias: Optional[str] = None,
     ) -> Job:
         r"""
@@ -455,7 +457,7 @@ class Scheduler(BaseScheduler[Job]):
             Positional argument payload for the function handle within a |AioJob|.
         kwargs : Optional[dict[str, Any]]
             Keyword arguments payload for the function handle within a |AioJob|.
-        tags : Optional[set[str]]
+        tags : Optional[Iterable[str]]
             The tags of the |AioJob|.
         alias : Optional[str]
             Overwrites the function handle name in the string representation.
@@ -477,7 +479,7 @@ class Scheduler(BaseScheduler[Job]):
                 args=args,
                 kwargs=kwargs,
                 max_attempts=1,
-                tags=tags,
+                tags=set(tags) if tags else set(),
                 alias=alias,
                 delay=False,
                 start=timing,
@@ -503,4 +505,4 @@ class Scheduler(BaseScheduler[Job]):
         set[Job]
             Currently scheduled |AioJob|\ s.
         """
-        return set(self.__jobs.keys())
+        return set(self._jobs.keys())

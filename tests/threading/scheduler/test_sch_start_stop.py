@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Any, Optional
 
 import pytest
 
@@ -73,7 +74,14 @@ from ...helpers import START_STOP_ERROR, foo, samples_seconds
     ),
     indirect=["patch_datetime_now"],
 )
-def test_start_stop(timing, counts, patch_datetime_now, start, stop, err_msg):
+def test_start_stop(
+    timing: dt.timedelta,
+    counts: list[int],
+    patch_datetime_now: Any,
+    start: Optional[dt.datetime],
+    stop: Optional[dt.datetime],
+    err_msg: Optional[str],
+) -> None:
     sch = Scheduler()
 
     if start:

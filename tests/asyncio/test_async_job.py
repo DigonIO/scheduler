@@ -1,10 +1,11 @@
 import asyncio
 import copy
 import datetime as dt
+from typing import Any
 
 import pytest
 
-from scheduler.asyncio.scheduler import Job
+from scheduler.asyncio.job import Job
 from scheduler.base.definition import JobType
 from scheduler.base.scheduler import LOGGER
 
@@ -19,12 +20,12 @@ for ele in async_job_args_utc:
     ele.pop("weight")
 
 
-async def foo():
+async def foo() -> None:
     await asyncio.sleep(0.01)
 
 
 @pytest.mark.asyncio
-async def test_async_job():
+async def test_async_job() -> None:
     job = Job(
         JobType.CYCLIC,
         [dt.timedelta(seconds=0.01)],
@@ -101,15 +102,15 @@ job_reprs_utc = (
 
 
 @pytest.mark.parametrize(
-    "job_kwargs, result",
+    "kwargs, result",
     [(args, reprs) for args, reprs in zip(async_job_args, job_reprs)]
     + [(args, reprs) for args, reprs in zip(async_job_args_utc, job_reprs_utc)],
 )
 def test_async_job_repr(
-    job_kwargs,
-    result,
-):
-    rep = repr(Job(**job_kwargs))
+    kwargs: dict[str, Any],
+    result: list[str],
+) -> None:
+    rep = repr(Job(**kwargs))
     for substring in result:
         assert substring in rep
         rep = rep.replace(substring, "", 1)
@@ -144,9 +145,9 @@ def test_async_job_repr(
     indirect=["patch_datetime_now"],
 )
 def test_job_str(
-    patch_datetime_now,
-    job_kwargs,
-    results,
-):
+    patch_datetime_now: Any,
+    job_kwargs: tuple[dict[str, Any], ...],
+    results: list[str],
+) -> None:
     for kwargs, result in zip(job_kwargs, results):
         assert result == str(Job(**kwargs))

@@ -7,13 +7,13 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 import queue
 import threading
+from collections.abc import Iterable
 from logging import Logger
 from typing import Any, Callable, Optional
 
 import typeguard as tg
 
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
-from scheduler.base.job import BaseJob
 from scheduler.base.scheduler import BaseScheduler, deprecated, select_jobs_by_tag
 from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
 from scheduler.base.timingtype import (
@@ -88,7 +88,7 @@ class Scheduler(BaseScheduler[Job]):
             [float, Job, int, int],
             float,
         ] = linear_priority_function,
-        jobs: Optional[set[Job]] = None,
+        jobs: Optional[Iterable[Job]] = None,
         n_threads: int = 1,
         logger: Optional[Logger] = None,
     ):
@@ -97,7 +97,13 @@ class Scheduler(BaseScheduler[Job]):
         self.__tzinfo = tzinfo
         self.__priority_function = priority_function
         self.__jobs_lock = threading.RLock()
-        self.__jobs: set[Job] = jobs or set()
+        if not jobs:
+            self.__jobs = set()
+        elif isinstance(jobs, set):
+            self.__jobs = jobs
+        else:
+            self.__jobs = set(jobs)
+
         for job in self.__jobs:
             if job._tzinfo != self.__tzinfo:
                 raise SchedulerError(TZ_ERROR_MSG)
@@ -546,7 +552,7 @@ class Scheduler(BaseScheduler[Job]):
         *,
         args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
-        tags: Optional[list[str]] = None,
+        tags: Optional[Iterable[str]] = None,
         alias: Optional[str] = None,
         weight: float = 1,
     ) -> Job:
@@ -563,7 +569,7 @@ class Scheduler(BaseScheduler[Job]):
             Positional argument payload for the function handle within a |Job|.
         kwargs : Optional[dict[str, Any]]
             Keyword arguments payload for the function handle within a |Job|.
-        tags : Optional[set[str]]
+        tags : Optional[Iterable[str]]
             The tags of the |Job|.
         alias : Optional[str]
             Overwrites the function handle name in the string representation.
@@ -587,7 +593,7 @@ class Scheduler(BaseScheduler[Job]):
                 args=args,
                 kwargs=kwargs,
                 max_attempts=1,
-                tags=tags,
+                tags=set(tags) if tags else set(),
                 alias=alias,
                 weight=weight,
                 delay=False,

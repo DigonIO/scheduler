@@ -6,6 +6,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import datetime as dt
 from abc import ABC, abstractmethod
+from typing import Union
 
 
 class Weekday(ABC):
@@ -109,7 +110,9 @@ class Sunday(Weekday):  # pylint: disable=missing-class-docstring  # noqa: D101
         super().__init__(time, 6)
 
 
-_weekday_mapping = {
+_Weekday = Union[Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
+
+_weekday_mapping: dict[int, type[_Weekday]] = {
     0: Monday,
     1: Tuesday,
     2: Wednesday,
@@ -140,4 +143,6 @@ def weekday(value: int, time: dt.time = dt.time()) -> Weekday:
     Weekday
         |Weekday| object with given time.
     """
-    return _weekday_mapping[value](time)  # type: ignore
+    weekday_cls: type[_Weekday] = _weekday_mapping[value]
+    weekday_instance = weekday_cls(time)
+    return weekday_instance

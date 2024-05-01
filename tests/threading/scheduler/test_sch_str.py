@@ -1,9 +1,18 @@
+import datetime as dt
+from typing import Any, Optional
+
 import pytest
 
 from scheduler.threading.job import Job
 from scheduler.threading.scheduler import Scheduler
 
-from ...helpers import T_2021_5_26__3_55, T_2021_5_26__3_55_UTC, job_args, job_args_utc, utc
+from ...helpers import (
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55_UTC,
+    job_args,
+    job_args_utc,
+    utc,
+)
 
 patch_samples = [T_2021_5_26__3_55] * 7
 patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11
@@ -38,7 +47,12 @@ table_utc = (
     ],
     indirect=["patch_datetime_now"],
 )
-def test_sch_str(patch_datetime_now, job_kwargs, tzinfo, res):
+def test_sch_str(
+    patch_datetime_now: Any,
+    job_kwargs: tuple[dict[str, Any], ...],
+    tzinfo: Optional[dt.tzinfo],
+    res: str,
+) -> None:
     jobs = [Job(**kwargs) for kwargs in job_kwargs]
     sch = Scheduler(tzinfo=tzinfo, jobs=jobs)
     assert str(sch) == res

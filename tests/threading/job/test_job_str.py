@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from scheduler.threading.job import Job
@@ -31,9 +33,10 @@ from ...helpers import T_2021_5_26__3_55, T_2021_5_26__3_55_UTC, job_args, job_a
     indirect=["patch_datetime_now"],
 )
 def test_job_str(
-    patch_datetime_now,
-    job_kwargs,
-    results,
-):
+    patch_datetime_now: Any,
+    job_kwargs: tuple[dict[str, Any], ...],
+    results: list[str],
+) -> None:
     for kwargs, result in zip(job_kwargs, results):
-        assert result == str(Job(**kwargs))
+        job = Job(**kwargs)
+        assert result == str(job)

@@ -69,7 +69,7 @@ class Job(BaseJob):
         timing: TimingJobUnion,
         handle: Callable[..., None],
         *,
-        args: Optional[tuple[Any]] = None,
+        args: Optional[tuple[Any, ...]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         tags: Optional[set[str]] = None,

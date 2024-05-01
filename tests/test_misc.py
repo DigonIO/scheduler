@@ -12,12 +12,13 @@ from scheduler.trigger import (
 from .helpers import samples, samples_utc
 
 
-def test_trigger_misc():
+def test_trigger_misc() -> None:
     for sample in samples + samples_utc:
         for day, wkday in zip(
             range(7), (Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday)
         ):
-            res = weekday(day, sample)
+
+            res = weekday(value=day, time=sample.time())
             assert isinstance(res, wkday)
             assert res.value == day
-            assert res.time == sample
+            assert res.time == sample.time()

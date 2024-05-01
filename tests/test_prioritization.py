@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Callable
 
 import pytest
 
@@ -8,6 +9,7 @@ from scheduler.prioritization import (
     linear_priority_function,
     random_priority_function,
 )
+from scheduler.threading.job import Job
 
 
 @pytest.mark.parametrize(
@@ -24,7 +26,14 @@ from scheduler.prioritization import (
         linear_priority_function,
     ],
 )
-def test_deprecated_prioritization(timedelta, executions, priority_function):
+def test_deprecated_prioritization(
+    timedelta: dt.timedelta,
+    executions: int,
+    priority_function: Callable[
+        [float, Job, int, int],
+        float,
+    ],
+) -> None:
     schedule = scheduler.Scheduler(max_exec=3, priority_function=priority_function)
     schedule.once(
         dt.datetime.now() + timedelta,
@@ -41,7 +50,9 @@ def test_deprecated_prioritization(timedelta, executions, priority_function):
         [dt.timedelta(seconds=100), 1, 1],
     ],
 )
-def test_deprecated_rnd_prioritization(timedelta, weight, executions):
+def test_deprecated_rnd_prioritization(
+    timedelta: dt.timedelta, weight: int, executions: int
+) -> None:
     schedule = scheduler.Scheduler(max_exec=3, priority_function=random_priority_function)
     schedule.once(dt.datetime.now() + timedelta, print, weight=weight)
     assert schedule.exec_jobs() == executions

@@ -6,6 +6,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import warnings
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from functools import wraps
 from logging import Logger, getLogger
 from typing import Any, Callable, Generic, List, Optional
@@ -17,6 +18,14 @@ from scheduler.base.timingtype import (
     TimingOnceUnion,
     TimingWeeklyUnion,
 )
+
+# TODO:
+# import sys
+# if sys.version_info < (3, 10):
+#     from typing_extensions import ParamSpec
+# else:
+#     from typing import ParamSpec
+
 
 LOGGER = getLogger("scheduler")
 
@@ -69,7 +78,7 @@ def deprecated(fields: List[str]) -> Callable[[Callable[..., Any]], Callable[...
 
     def wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
-        def real_wrapper(*args, **kwargs) -> Any:
+        def real_wrapper(*args: tuple[Any, ...], **kwargs: dict[str, Any]) -> Any:
             for f in fields:
                 if f in kwargs and kwargs[f] is not None:
                     # keep it in kwargs
@@ -156,7 +165,7 @@ class BaseScheduler(
         *,
         args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
-        tags: Optional[list[str]] = None,
+        tags: Optional[Iterable[str]] = None,
         alias: Optional[str] = None,
     ) -> BaseJobType:
         """Schedule a oneshot |BaseJob|."""

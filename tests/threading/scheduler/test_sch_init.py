@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Any, Callable, Optional
 
 import pytest
 
@@ -39,7 +40,16 @@ def priority_function_dummy(seconds: float, job: Job, max_exec: int, job_count: 
         ],
     ),
 )
-def test_sch_init(max_exec, tzinfo, priority_function, jobs, err):
+def test_sch_init(
+    max_exec: int,
+    tzinfo: dt.tzinfo,
+    priority_function: Callable[
+        [float, Job, int, int],
+        float,
+    ],
+    jobs: set[Job],
+    err: Optional[str],
+) -> None:
     if err:
         with pytest.raises(SchedulerError, match=err):
             Scheduler(

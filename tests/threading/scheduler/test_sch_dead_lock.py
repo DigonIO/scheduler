@@ -8,7 +8,7 @@ tags = {"to_delete"}
 n_execs = {0: 2, 1: 2, 2: 2, 3: 0}
 
 
-def useful():
+def useful() -> None:
     ...
 
 
@@ -25,7 +25,7 @@ def scheduler_in_handle(scheduler: Scheduler, counter: dict[str, int]) -> None:
         assert len(scheduler.jobs) == 0
 
 
-def test_dead_lock():
+def test_dead_lock() -> None:
     counter = {"val": 0}
 
     schedule = Scheduler()

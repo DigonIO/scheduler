@@ -10,9 +10,12 @@ Heavy use of monkey-patching with the following behaviour:
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
+
 import asyncio
 import datetime as dt
 import logging
+from asyncio.selector_events import BaseSelectorEventLoop
+from typing import Any, NoReturn
 
 import pytest
 
@@ -24,7 +27,7 @@ samples_secondly = [T_2021_5_26__3_55 + dt.timedelta(seconds=x) for x in range(1
 async_real_sleep = asyncio.sleep
 
 
-async def fake_sleep(delay, result=None):
+async def fake_sleep(delay: float, result: None = None) -> None:
     """Fake asyncio.sleep, depends on monkeypatch `patch_datetime_now`"""
     t_start = dt.datetime.last_now()
     while True:
@@ -36,7 +39,7 @@ async def fake_sleep(delay, result=None):
     return result
 
 
-async def bar():
+async def bar() -> None:
     ...
 
 
@@ -45,8 +48,10 @@ async def bar():
     [samples_secondly],
     indirect=["patch_datetime_now"],
 )
-def test_async_scheduler_cyclic1s(monkeypatch, patch_datetime_now, event_loop):
-    async def main():
+def test_async_scheduler_cyclic1s(
+    monkeypatch: pytest.MonkeyPatch, patch_datetime_now: Any, event_loop: BaseSelectorEventLoop
+) -> None:
+    async def main() -> None:
         with monkeypatch.context() as m:
             m.setattr(asyncio, "sleep", fake_sleep)
             schedule = Scheduler()
@@ -90,8 +95,10 @@ def test_async_scheduler_cyclic1s(monkeypatch, patch_datetime_now, event_loop):
     [samples_secondly],
     indirect=["patch_datetime_now"],
 )
-def test_async_scheduler_cyclic2s(monkeypatch, patch_datetime_now, event_loop):
-    async def main():
+def test_async_scheduler_cyclic2s(
+    monkeypatch: pytest.MonkeyPatch, patch_datetime_now: Any, event_loop: BaseSelectorEventLoop
+) -> None:
+    async def main() -> None:
         with monkeypatch.context() as m:
             m.setattr(asyncio, "sleep", fake_sleep)
             schedule = Scheduler()
@@ -126,8 +133,8 @@ def test_async_scheduler_cyclic2s(monkeypatch, patch_datetime_now, event_loop):
     event_loop.run_until_complete(main())
 
 
-async def async_fail():
-    return fail()
+async def async_fail() -> NoReturn:
+    fail()
 
 
 @pytest.mark.parametrize(
@@ -135,10 +142,15 @@ async def async_fail():
     [samples_secondly],
     indirect=["patch_datetime_now"],
 )
-def test_asyncio_fail(monkeypatch, patch_datetime_now, event_loop, caplog):
+def test_asyncio_fail(
+    monkeypatch: pytest.MonkeyPatch,
+    patch_datetime_now: Any,
+    event_loop: BaseSelectorEventLoop,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     caplog.set_level(logging.DEBUG, logger="scheduler")
 
-    async def main():
+    async def main() -> None:
         with monkeypatch.context() as m:
             m.setattr(asyncio, "sleep", fake_sleep)
             schedule = Scheduler()

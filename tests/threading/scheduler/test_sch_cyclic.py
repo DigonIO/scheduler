@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Any, Optional
 
 import pytest
 
@@ -20,7 +21,13 @@ from ...helpers import CYCLIC_TYPE_ERROR_MSG, foo, samples_days, samples_seconds
     ),
     indirect=["patch_datetime_now"],
 )
-def test_cyclic(timing, counts, patch_datetime_now, tzinfo, err_msg):
+def test_cyclic(
+    timing: dt.timedelta,
+    counts: list[int],
+    patch_datetime_now: Any,
+    tzinfo: dt.tzinfo,
+    err_msg: Optional[str],
+) -> None:
     sch = Scheduler(tzinfo=tzinfo)
 
     if err_msg:

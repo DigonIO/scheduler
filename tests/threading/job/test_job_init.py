@@ -1,10 +1,12 @@
 import datetime as dt
+from typing import Optional
 
 import pytest
 
 import scheduler.trigger as trigger
 from scheduler import SchedulerError
 from scheduler.base.definition import JobType
+from scheduler.base.timingtype import TimingJobUnion
 from scheduler.threading.job import Job
 
 from ...helpers import _TZ_ERROR_MSG, START_STOP_ERROR, TZ_ERROR_MSG, utc
@@ -90,13 +92,13 @@ from ...helpers import _TZ_ERROR_MSG, START_STOP_ERROR, TZ_ERROR_MSG, utc
     ),
 )
 def test_job_init(
-    job_type,
-    timing,
-    start,
-    stop,
-    tzinfo,
-    err,
-):
+    job_type: JobType,
+    timing: TimingJobUnion,
+    start: Optional[dt.datetime],
+    stop: Optional[dt.datetime],
+    tzinfo: Optional[dt.tzinfo],
+    err: Optional[str],
+) -> None:
     if err:
         with pytest.raises(SchedulerError, match=err):
             Job(

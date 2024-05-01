@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Any, Optional
 
 import pytest
 
@@ -48,7 +49,13 @@ from ...helpers import (
     ),
     indirect=["patch_datetime_now"],
 )
-def test_minutely(timing, counts, patch_datetime_now, tzinfo, err_msg):
+def test_minutely(
+    timing: dt.time,
+    counts: list[int],
+    patch_datetime_now: Any,
+    tzinfo: Optional[dt.tzinfo],
+    err_msg: Optional[str],
+) -> None:
     sch = Scheduler(tzinfo=tzinfo)
 
     if err_msg:

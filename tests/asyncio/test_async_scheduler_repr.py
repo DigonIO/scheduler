@@ -1,11 +1,19 @@
 import copy
+import datetime as dt
+from typing import Any, Optional
 
 import pytest
 
 from scheduler.asyncio.job import Job
 from scheduler.asyncio.scheduler import Scheduler
 
-from ..helpers import T_2021_5_26__3_55, T_2021_5_26__3_55_UTC, job_args, job_args_utc, utc
+from ..helpers import (
+    T_2021_5_26__3_55,
+    T_2021_5_26__3_55_UTC,
+    job_args,
+    job_args_utc,
+    utc,
+)
 
 patch_samples = [T_2021_5_26__3_55] * 7
 patch_samples_utc = [T_2021_5_26__3_55_UTC] * 11
@@ -94,12 +102,18 @@ async_job_reprs_utc = (
     ],
     indirect=["patch_datetime_now"],
 )
-async def test_async_scheduler_repr(patch_datetime_now, job_kwargs, tzinfo, j_results, s_results):
+async def test_async_scheduler_repr(
+    patch_datetime_now: Any,
+    job_kwargs: tuple[dict[str, Any], ...],
+    tzinfo: Optional[dt.tzinfo],
+    j_results: str,
+    s_results: str,
+) -> None:
     jobs = [Job(**kwargs) for kwargs in job_kwargs]
 
     sch = Scheduler(tzinfo=tzinfo)
     for job in jobs:
-        sch._Scheduler__jobs[job] = None
+        sch._jobs[job] = None
     rep = repr(sch)
     n_j_addr = 0  # number of address strings in jobs
     for j_result in j_results:
