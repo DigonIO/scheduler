@@ -10,7 +10,7 @@ import datetime as dt
 import warnings
 from abc import ABC, abstractmethod
 from logging import Logger
-from typing import Any, Callable, Optional, TypeVar, cast
+from typing import Any, Callable, Generic, Optional, TypeVar, cast
 
 from scheduler.base.definition import JobType
 from scheduler.base.job_timer import JobTimer
@@ -25,13 +25,15 @@ from scheduler.base.job_util import (
 )
 from scheduler.base.timingtype import TimingJobUnion
 
+T = TypeVar("T", bound=Callable[[], Any])
 
-class BaseJob(ABC):
+
+class BaseJob(ABC, Generic[T]):
     """Abstract definition basic interface for a job class."""
 
     __type: JobType
     __timing: TimingJobUnion
-    __handle: Callable[..., None]
+    __handle: T
     __args: tuple[Any, ...]
     __kwargs: dict[str, Any]
     __max_attempts: int
@@ -54,7 +56,7 @@ class BaseJob(ABC):
         self,
         job_type: JobType,
         timing: TimingJobUnion,
-        handle: Callable[..., None],
+        handle: T,
         *,
         args: Optional[tuple[Any, ...]] = None,
         kwargs: Optional[dict[str, Any]] = None,
@@ -104,7 +106,7 @@ class BaseJob(ABC):
             if self.__pending_timer.datetime > self.__stop:
                 self.__mark_delete = True
 
-    def __lt__(self, other: BaseJob) -> bool:
+    def __lt__(self, other: BaseJob[T]) -> bool:
         return self.datetime < other.datetime
 
     def _calc_next_exec(self, ref_dt: dt.datetime) -> None:
@@ -222,7 +224,7 @@ class BaseJob(ABC):
         return self.__type
 
     @property
-    def handle(self) -> Callable[..., None]:
+    def handle(self) -> T:
         """
         Get the callback function.
 
@@ -430,4 +432,4 @@ class BaseJob(ABC):
         return self.__attempts < self.__max_attempts
 
 
-BaseJobType = TypeVar("BaseJobType", bound=BaseJob)
+BaseJobType = TypeVar("BaseJobType", bound=BaseJob[Any])

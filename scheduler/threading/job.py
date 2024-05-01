@@ -14,7 +14,7 @@ from scheduler.base.job import BaseJob
 from scheduler.base.timingtype import TimingJobUnion
 
 
-class Job(BaseJob):
+class Job(BaseJob[Callable[..., None]]):
     r"""
     |Job| class bundling time and callback function methods.
 

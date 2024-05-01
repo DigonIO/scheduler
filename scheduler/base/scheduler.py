@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from functools import wraps
 from logging import Logger, getLogger
-from typing import Any, Callable, Generic, List, Optional
+from typing import Any, Callable, Generic, List, Optional, TypeVar
 
 from scheduler.base.job import BaseJobType
 from scheduler.base.timingtype import (
@@ -97,8 +97,11 @@ def deprecated(fields: List[str]) -> Callable[[Callable[..., Any]], Callable[...
     return wrapper
 
 
+T = TypeVar("T", bound=Callable[[], Any])
+
+
 class BaseScheduler(
-    ABC, Generic[BaseJobType]
+    ABC, Generic[BaseJobType, T]
 ):  # NOTE maybe a typing Protocol class is better than an ABC class
     """
     Interface definition of an abstract scheduler.
@@ -132,36 +135,30 @@ class BaseScheduler(
         r"""Get a set of |BaseJob|\ s from the `BaseScheduler` by tags."""
 
     @abstractmethod
-    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> BaseJobType:
+    def cyclic(self, timing: TimingCyclic, handle: T, **kwargs) -> BaseJobType:
         """Schedule a cyclic |BaseJob|."""
 
     @abstractmethod
-    def minutely(
-        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
-    ) -> BaseJobType:
+    def minutely(self, timing: TimingDailyUnion, handle: T, **kwargs) -> BaseJobType:
         """Schedule a minutely |BaseJob|."""
 
     @abstractmethod
-    def hourly(
-        self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs
-    ) -> BaseJobType:
+    def hourly(self, timing: TimingDailyUnion, handle: T, **kwargs) -> BaseJobType:
         """Schedule an hourly |BaseJob|."""
 
     @abstractmethod
-    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> BaseJobType:
+    def daily(self, timing: TimingDailyUnion, handle: T, **kwargs) -> BaseJobType:
         """Schedule a daily |BaseJob|."""
 
     @abstractmethod
-    def weekly(
-        self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs
-    ) -> BaseJobType:
+    def weekly(self, timing: TimingWeeklyUnion, handle: T, **kwargs) -> BaseJobType:
         """Schedule a weekly |BaseJob|."""
 
     @abstractmethod
     def once(
         self,
         timing: TimingOnceUnion,
-        handle: Callable[..., None],
+        handle: T,
         *,
         args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,

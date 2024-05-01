@@ -7,11 +7,12 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 from __future__ import annotations
 
 from logging import Logger
+from typing import Any, Callable, Coroutine
 
 from scheduler.base.job import BaseJob
 
 
-class Job(BaseJob):
+class Job(BaseJob[Callable[..., Coroutine[Any, Any, None]]]):
     r"""
     |AioJob| class bundling time and callback function methods.
 

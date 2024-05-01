@@ -48,7 +48,7 @@ def _exec_job_worker(que: queue.Queue[Job], logger: Logger) -> None:
             que.task_done()
 
 
-class Scheduler(BaseScheduler[Job]):
+class Scheduler(BaseScheduler[Job, Callable[..., None]]):
     r"""
     Implementation of a scheduler for callback functions.
 

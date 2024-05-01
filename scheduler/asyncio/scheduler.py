@@ -11,7 +11,7 @@ import datetime as dt
 from asyncio.selector_events import BaseSelectorEventLoop
 from collections.abc import Iterable
 from logging import Logger
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Coroutine, Optional
 
 import typeguard as tg
 
@@ -36,7 +36,7 @@ from scheduler.message import (
 )
 
 
-class Scheduler(BaseScheduler[Job]):
+class Scheduler(BaseScheduler[Job, Callable[..., Coroutine[Any, Any, None]]]):
     r"""
     Implementation of an asyncio scheduler.
 
@@ -238,7 +238,9 @@ class Scheduler(BaseScheduler[Job]):
         return select_jobs_by_tag(self.jobs, tags, any_tag)
 
     @deprecated(["delay"])
-    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> Job:
+    def cyclic(
+        self, timing: TimingCyclic, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule a cyclic `Job`.
 
@@ -249,7 +251,7 @@ class Scheduler(BaseScheduler[Job]):
         ----------
         timing : TimingTypeCyclic
             Desired execution time.
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -275,7 +277,9 @@ class Scheduler(BaseScheduler[Job]):
         return self.__schedule(job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+    def minutely(
+        self, timing: TimingDailyUnion, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule a minutely `Job`.
 
@@ -291,7 +295,7 @@ class Scheduler(BaseScheduler[Job]):
         ----------
         timing : TimingDailyUnion
             Desired execution time(s).
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -317,7 +321,9 @@ class Scheduler(BaseScheduler[Job]):
         return self.__schedule(job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+    def hourly(
+        self, timing: TimingDailyUnion, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule an hourly `Job`.
 
@@ -333,7 +339,7 @@ class Scheduler(BaseScheduler[Job]):
         ----------
         timing : TimingDailyUnion
             Desired execution time(s).
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -359,7 +365,9 @@ class Scheduler(BaseScheduler[Job]):
         return self.__schedule(job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+    def daily(
+        self, timing: TimingDailyUnion, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule a daily `Job`.
 
@@ -370,7 +378,7 @@ class Scheduler(BaseScheduler[Job]):
         ----------
         timing : TimingDailyUnion
             Desired execution time(s).
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -396,7 +404,9 @@ class Scheduler(BaseScheduler[Job]):
         return self.__schedule(job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> Job:
+    def weekly(
+        self, timing: TimingWeeklyUnion, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule a weekly `Job`.
 
@@ -409,7 +419,7 @@ class Scheduler(BaseScheduler[Job]):
         ----------
         timing : TimingWeeklyUnion
             Desired execution time(s).
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -437,7 +447,7 @@ class Scheduler(BaseScheduler[Job]):
     def once(
         self,
         timing: TimingOnceUnion,
-        handle: Callable[..., None],
+        handle: Callable[..., Coroutine[Any, Any, None]],
         *,
         args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
@@ -451,7 +461,7 @@ class Scheduler(BaseScheduler[Job]):
         ----------
         timing : TimingOnceUnion
             Desired execution time.
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
         args : tuple[Any]
             Positional argument payload for the function handle within a |AioJob|.
