@@ -161,8 +161,8 @@ pypi:
   image: python:3.10.9-bullseye
   stage: release
   script:
-    - pip install twine
-    - python setup.py sdist bdist_wheel
+    - pip install twine build
+    - python -m build
     - twine upload dist/*
   rules:
     - if: '$CI_COMMIT_TAG =~ /^\d+.\d+.\d+/'

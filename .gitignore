@@ -1,7 +1,18 @@
 __pycache__
+tmp.*
 
 # pip
 *.egg-info/
+.python-version
+
+# build directories
+build/
+dist/
+pkg/
+src/
+*.zst
+*.gz
+*.whl
 
 # testing
 venv
