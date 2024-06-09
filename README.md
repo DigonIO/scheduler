@@ -151,7 +151,7 @@ View the API documentation [online](https://digon.io/hyd/project/scheduler/t/mas
 <br>
 <div align="center">
   <a href="https://digon.io">
-    <img alt="Digon.IO GmbH - IT Dienstleister Wuppertal Softwareentwicklung und Datenwissenschaften" src="https://digon.io/static/landing/img/digon_name_right_grey.svg" width="35%">
+    <img alt="Digon.IO GmbH - Fine-Tuned AI services for developers" src="https://digon.io/static/modules/img/digon_name_right_grey.svg" width="35%">
   </a>
 </div>
 <br>

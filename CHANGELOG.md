@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.8.6
+
+### Bugfix
+
++ Fixed misue of `tags` argument (was dict where it should have been set)
+  and allowed to pass as `Iterable`.
+
+### Misc
+
++ Fix a number of type annotations
+  + `BaseScheduler` is now generic
+  + `BaseJob` is now generic
+  + Fixed annotations for Coroutines in asyncio scheduler
+  + Disable mypy's strict mode for now (ignores `**kwargs` typing for now)
++ Added type annotations into testing code
++ Migrate from `setup.py` to `pyproject.toml`
+
 ## 0.8.5
 
 ### Misc
