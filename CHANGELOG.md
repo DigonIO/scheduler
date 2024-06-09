@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.7
+
++ Version bump to fix CI/CD process
+
 ## 0.8.6
 
 ### Bugfix
