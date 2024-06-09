@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import NoReturn
 
 import scheduler.trigger as trigger
 from scheduler.base.definition import JobType
@@ -245,18 +246,18 @@ samples_weeks_utc = [
 ]
 
 
-def foo():
+def foo() -> None:
     print("foo")
 
 
-def bar(msg="bar"):
+def bar(msg: str = "bar") -> None:
     print(msg)
 
 
 ZERO_DIVISION_ERROR = ZeroDivisionError("division by zero")
 
 
-def fail():
+def fail() -> NoReturn:
     raise ZERO_DIVISION_ERROR
 
 

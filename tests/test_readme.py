@@ -1,5 +1,6 @@
 import datetime as dt
 import doctest
+from typing import Any
 
 import pytest
 
@@ -19,7 +20,7 @@ from .helpers import T_2021_5_26__3_55
     [[T_2021_5_26__3_55 + dt.timedelta(microseconds=x) for x in range(17)]],
     indirect=["patch_datetime_now"],
 )
-def test_general_readme(patch_datetime_now):
+def test_general_readme(patch_datetime_now: Any) -> None:
     r"""
     >>> import datetime as dt
     >>> from scheduler import Scheduler
@@ -81,6 +82,7 @@ def test_general_readme(patch_datetime_now):
     ...     time.sleep(1)
     """
     DP = doctest.DocTestParser()
+    assert test_general_readme.__doc__
     dt_readme = DP.get_doctest(test_general_readme.__doc__, globals(), "README", None, None)
     DTR = doctest.DocTestRunner()
     assert doctest.TestResults(failed=0, attempted=16) == DTR.run(dt_readme)

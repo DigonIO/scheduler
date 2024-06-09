@@ -14,7 +14,7 @@ from scheduler.base.job import BaseJob
 from scheduler.base.timingtype import TimingJobUnion
 
 
-class Job(BaseJob):
+class Job(BaseJob[Callable[..., None]]):
     r"""
     |Job| class bundling time and callback function methods.
 
@@ -69,7 +69,7 @@ class Job(BaseJob):
         timing: TimingJobUnion,
         handle: Callable[..., None],
         *,
-        args: Optional[tuple[Any]] = None,
+        args: Optional[tuple[Any, ...]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         max_attempts: int = 0,
         tags: Optional[set[str]] = None,
@@ -77,7 +77,7 @@ class Job(BaseJob):
         start: Optional[dt.datetime] = None,
         stop: Optional[dt.datetime] = None,
         skip_missing: bool = False,
-        alias: str = None,
+        alias: Optional[str] = None,
         tzinfo: Optional[dt.tzinfo] = None,
         weight: float = 1,
     ):

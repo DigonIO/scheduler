@@ -1,10 +1,12 @@
 import datetime as dt
+from typing import Optional, Union
 
 import pytest
 
 import scheduler.trigger as trigger
 from scheduler.base.scheduler_util import str_cutoff
 from scheduler.error import SchedulerError
+from scheduler.trigger.core import Weekday, _Weekday
 from scheduler.util import (
     days_to_weekday,
     next_daily_occurrence,
@@ -30,11 +32,17 @@ err_msg = r"Weekday enumeration interval: \[0,6\] <=> \[Monday, Sunday\]"
         [-1, 2, 0, err_msg],
     ),
 )
-def test_days_to_weekday(wkdy_src, wkdy_dest, days, err_msg):
+def test_days_to_weekday(
+    wkdy_src: Union[int, _Weekday], wkdy_dest: int, days: int, err_msg: Optional[str]
+) -> None:
     if err_msg:
+        assert isinstance(wkdy_src, int)
         with pytest.raises(SchedulerError, match=err_msg):
             days_to_weekday(wkdy_src, wkdy_dest)
     else:
+        assert isinstance(wkdy_src, Weekday)
+        assert isinstance(wkdy_dest, Weekday)
+
         assert days_to_weekday(wkdy_src.value, wkdy_dest.value) == days
 
 
@@ -75,7 +83,9 @@ def test_days_to_weekday(wkdy_src, wkdy_dest, days, err_msg):
         ],
     ),
 )
-def test_next_weekday_time_occurrence(now, wkdy, timestamp, target):
+def test_next_weekday_time_occurrence(
+    now: dt.datetime, wkdy: _Weekday, timestamp: dt.time, target: dt.datetime
+) -> None:
     assert next_weekday_time_occurrence(now, wkdy, timestamp) == target
 
 
@@ -99,7 +109,9 @@ def test_next_weekday_time_occurrence(now, wkdy, timestamp, target):
         ],
     ),
 )
-def test_next_daily_occurence(now, target_time, target_datetime):
+def test_next_daily_occurence(
+    now: dt.datetime, target_time: dt.time, target_datetime: dt.datetime
+) -> None:
     assert next_daily_occurrence(now, target_time) == target_datetime
 
 
@@ -123,7 +135,9 @@ def test_next_daily_occurence(now, target_time, target_datetime):
         ],
     ),
 )
-def test_next_hourly_occurence(now, target_time, target_datetime):
+def test_next_hourly_occurence(
+    now: dt.datetime, target_time: dt.time, target_datetime: dt.datetime
+) -> None:
     assert next_hourly_occurrence(now, target_time) == target_datetime
 
 
@@ -147,7 +161,9 @@ def test_next_hourly_occurence(now, target_time, target_datetime):
         ],
     ),
 )
-def test_next_minutely_occurence(now, target_time, target_datetime):
+def test_next_minutely_occurence(
+    now: dt.datetime, target_time: dt.time, target_datetime: dt.datetime
+) -> None:
     assert next_minutely_occurrence(now, target_time) == target_datetime
 
 
@@ -161,7 +177,9 @@ def test_next_minutely_occurence(now, target_time, target_datetime):
         ("abcdefg", 0, True, "", "max_length < 1 not allowed"),
     ],
 )
-def test_str_cutoff(string, max_length, cut_tail, result, err):
+def test_str_cutoff(
+    string: str, max_length: int, cut_tail: bool, result: str, err: Optional[str]
+) -> None:
     if err:
         with pytest.raises(ValueError, match=err):
             str_cutoff(string, max_length, cut_tail)

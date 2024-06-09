@@ -18,7 +18,12 @@ counts and automate Jobs.</p>
 [![Downloads Week](https://pepy.tech/badge/scheduler/week)](https://pepy.tech/project/scheduler)
 [![Downloads Total](https://pepy.tech/badge/scheduler)](https://pepy.tech/project/scheduler)
 [![Documentation](https://img.shields.io/badge/Docs-HostYourDocs-blue)](https://digon.io/hyd/project/scheduler/t/master)
+
 ---
+
+If you find the scheduler library beneficial, please consider supporting the project by [starring it on GitHub](https://github.com/DigonIO/scheduler).
+
+[![GitHub Repo stars](https://img.shields.io/github/stars/digonio/scheduler)](https://github.com/DigonIO/scheduler)
 
 ## Features
 
@@ -146,15 +151,14 @@ View the API documentation [online](https://digon.io/hyd/project/scheduler/t/mas
 <br>
 <div align="center">
   <a href="https://digon.io">
-    <img alt="Digon.IO GmbH - IT Dienstleister Wuppertal Softwareentwicklung und Datenwissenschaften" src="https://digon.io/static/landing/img/digon_name_right_grey.svg" width="50%">
+    <img alt="Digon.IO GmbH - Fine-Tuned AI services for developers" src="https://digon.io/static/modules/img/digon_name_right_grey.svg" width="35%">
   </a>
 </div>
 <br>
 <div align="center">
-We would like to thank Digon.IO for sponsoring the development of this library.
-Digon.IO is building bridges between data science and software development.
-They enable companies to automate and accelerate their data-driven processes.
-Please visit their website: <a href="https://digon.io/">digon.io</a>
+At Digon.IO, we provide your developer team with our knowledge and experience in the field of Large Language Models (LLMs).
+
+We specialize in consulting, data engineering, and data science to fine-tune AI services for seamless integration into your projects.
 </div>
 
 ## License

@@ -1,11 +1,19 @@
 import datetime as dt
+from typing import Any, Optional
 
 import pytest
 
 import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
 
-from ...helpers import DAILY_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples_days, samples_days_utc, utc
+from ...helpers import (
+    DAILY_TYPE_ERROR_MSG,
+    TZ_ERROR_MSG,
+    foo,
+    samples_days,
+    samples_days_utc,
+    utc,
+)
 
 
 @pytest.mark.parametrize(
@@ -37,7 +45,13 @@ from ...helpers import DAILY_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples_days, sa
     ),
     indirect=["patch_datetime_now"],
 )
-def test_daily(timing, counts, patch_datetime_now, tzinfo, err_msg):
+def test_daily(
+    timing: dt.timedelta,
+    counts: list[int],
+    patch_datetime_now: Any,
+    tzinfo: Optional[dt.tzinfo],
+    err_msg: Optional[str],
+) -> None:
     sch = Scheduler(tzinfo=tzinfo)
 
     if err_msg:

@@ -8,19 +8,16 @@ from __future__ import annotations
 
 import asyncio as aio
 import datetime as dt
+from asyncio.selector_events import BaseSelectorEventLoop
+from collections.abc import Iterable
 from logging import Logger
-from typing import Any, Callable, Optional, cast
+from typing import Any, Callable, Coroutine, Optional
 
 import typeguard as tg
 
 from scheduler.asyncio.job import Job
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
-from scheduler.base.scheduler import (
-    BaseJob,
-    BaseScheduler,
-    deprecated,
-    select_jobs_by_tag,
-)
+from scheduler.base.scheduler import BaseScheduler, deprecated, select_jobs_by_tag
 from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
@@ -39,7 +36,7 @@ from scheduler.message import (
 )
 
 
-class Scheduler(BaseScheduler):
+class Scheduler(BaseScheduler[Job, Callable[..., Coroutine[Any, Any, None]]]):
     r"""
     Implementation of an asyncio scheduler.
 
@@ -64,7 +61,7 @@ class Scheduler(BaseScheduler):
     def __init__(
         self,
         *,
-        loop: Optional[aio.selector_events.BaseSelectorEventLoop] = None,
+        loop: Optional[BaseSelectorEventLoop] = None,
         tzinfo: Optional[dt.tzinfo] = None,
         logger: Optional[Logger] = None,
     ):
@@ -76,7 +73,7 @@ class Scheduler(BaseScheduler):
         self.__tzinfo = tzinfo
         self.__tz_str = check_tzname(tzinfo=tzinfo)
 
-        self.__jobs: dict[Job, aio.Task[None]] = {}
+        self._jobs: dict[Job, aio.Task[None]] = {}
 
     def __repr__(self) -> str:
         return "scheduler.asyncio.scheduler.Scheduler({0}, jobs={{{1}}})".format(
@@ -126,7 +123,7 @@ class Scheduler(BaseScheduler):
     def __headings(self) -> list[str]:
         headings = [
             f"tzinfo={self.__tz_str}",
-            f"#jobs={len(self.__jobs)}",
+            f"#jobs={len(self._jobs)}",
         ]
         return headings
 
@@ -138,7 +135,7 @@ class Scheduler(BaseScheduler):
         job: Job = create_job_instance(Job, tzinfo=self.__tzinfo, **kwargs)
 
         task = self.__loop.create_task(self.__supervise_job(job))
-        self.__jobs[job] = task
+        self._jobs[job] = task
 
         return job
 
@@ -149,9 +146,7 @@ class Scheduler(BaseScheduler):
                 sleep_seconds: float = job.timedelta(reference_dt).total_seconds()
                 await aio.sleep(sleep_seconds)
 
-                await job._exec(
-                    logger=self._BaseScheduler__logger
-                )  # pylint: disable=protected-access
+                await job._exec(logger=self._logger)  # pylint: disable=protected-access
 
                 reference_dt = dt.datetime.now(tz=self.__tzinfo)
                 job._calc_next_exec(reference_dt)  # pylint: disable=protected-access
@@ -176,7 +171,7 @@ class Scheduler(BaseScheduler):
             Raises if the |AioJob| of the argument is not scheduled.
         """
         try:
-            task: aio.Task[None] = self.__jobs.pop(job)
+            task: aio.Task[None] = self._jobs.pop(job)
             _: bool = task.cancel()
         except KeyError:
             raise SchedulerError("An unscheduled Job can not be deleted!") from None
@@ -200,15 +195,13 @@ class Scheduler(BaseScheduler):
             False: To delete a |AioJob| all tags have to match.
             True: To delete a |AioJob| at least one tag has to match.
         """
-        all_jobs: set[Job] = set(self.__jobs.keys())
+        all_jobs: set[Job] = set(self._jobs.keys())
         jobs_to_delete: set[Job]
 
-        if tags is None or tags == {}:
+        if tags is None or tags == set():
             jobs_to_delete = all_jobs
         else:
-            jobs_to_delete = cast(
-                set[Job], select_jobs_by_tag(cast(set[BaseJob], all_jobs), tags, any_tag)
-            )
+            jobs_to_delete = select_jobs_by_tag(all_jobs, tags, any_tag)
 
         for job in jobs_to_delete:
             self.delete_job(job)
@@ -240,12 +233,14 @@ class Scheduler(BaseScheduler):
         set[Job]
             Currently scheduled |AioJob|\ s.
         """
-        if tags is None or tags == {}:
+        if tags is None or tags == set():
             return self.jobs
-        return cast(set[Job], select_jobs_by_tag(cast(set[BaseJob], self.jobs), tags, any_tag))
+        return select_jobs_by_tag(self.jobs, tags, any_tag)
 
     @deprecated(["delay"])
-    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> Job:
+    def cyclic(
+        self, timing: TimingCyclic, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule a cyclic `Job`.
 
@@ -256,7 +251,7 @@ class Scheduler(BaseScheduler):
         ----------
         timing : TimingTypeCyclic
             Desired execution time.
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -282,7 +277,9 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+    def minutely(
+        self, timing: TimingDailyUnion, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule a minutely `Job`.
 
@@ -298,7 +295,7 @@ class Scheduler(BaseScheduler):
         ----------
         timing : TimingDailyUnion
             Desired execution time(s).
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -324,7 +321,9 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+    def hourly(
+        self, timing: TimingDailyUnion, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule an hourly `Job`.
 
@@ -340,7 +339,7 @@ class Scheduler(BaseScheduler):
         ----------
         timing : TimingDailyUnion
             Desired execution time(s).
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -366,7 +365,9 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
+    def daily(
+        self, timing: TimingDailyUnion, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule a daily `Job`.
 
@@ -377,7 +378,7 @@ class Scheduler(BaseScheduler):
         ----------
         timing : TimingDailyUnion
             Desired execution time(s).
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -403,7 +404,9 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> Job:
+    def weekly(
+        self, timing: TimingWeeklyUnion, handle: Callable[..., Coroutine[Any, Any, None]], **kwargs
+    ) -> Job:
         r"""
         Schedule a weekly `Job`.
 
@@ -416,7 +419,7 @@ class Scheduler(BaseScheduler):
         ----------
         timing : TimingWeeklyUnion
             Desired execution time(s).
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
 
         Returns
@@ -444,12 +447,12 @@ class Scheduler(BaseScheduler):
     def once(
         self,
         timing: TimingOnceUnion,
-        handle: Callable[..., None],
+        handle: Callable[..., Coroutine[Any, Any, None]],
         *,
-        args: tuple[Any] = None,
+        args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
-        tags: Optional[list[str]] = None,
-        alias: str = None,
+        tags: Optional[Iterable[str]] = None,
+        alias: Optional[str] = None,
     ) -> Job:
         r"""
         Schedule a oneshot `Job`.
@@ -458,13 +461,13 @@ class Scheduler(BaseScheduler):
         ----------
         timing : TimingOnceUnion
             Desired execution time.
-        handle : Callable[..., None]
+        handle : Callable[..., Coroutine[Any, Any, None]]
             Handle to a callback function.
         args : tuple[Any]
             Positional argument payload for the function handle within a |AioJob|.
         kwargs : Optional[dict[str, Any]]
             Keyword arguments payload for the function handle within a |AioJob|.
-        tags : Optional[set[str]]
+        tags : Optional[Iterable[str]]
             The tags of the |AioJob|.
         alias : Optional[str]
             Overwrites the function handle name in the string representation.
@@ -486,7 +489,7 @@ class Scheduler(BaseScheduler):
                 args=args,
                 kwargs=kwargs,
                 max_attempts=1,
-                tags=tags,
+                tags=set(tags) if tags else set(),
                 alias=alias,
                 delay=False,
                 start=timing,
@@ -512,4 +515,4 @@ class Scheduler(BaseScheduler):
         set[Job]
             Currently scheduled |AioJob|\ s.
         """
-        return set(self.__jobs.keys())
+        return set(self._jobs.keys())

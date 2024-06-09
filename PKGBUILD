@@ -1,6 +1,6 @@
 #!/bin/bash
 pkgname=python-scheduler
-pkgver=0.8.5
+pkgver=0.8.6
 pkgrel=1
 pkgdec='A simple in-process python scheduler'
 arch=('any')
@@ -10,7 +10,7 @@ makedepends=('python-setuptools')
 checkdepends=('mypy' 'python-pytest-cov' 'python-typing_extensions' 'python-pytest-asyncio')
 source=("https://gitlab.com/DigonIO/scheduler/-/archive/$pkgver/scheduler-$pkgver.tar.gz")
 
-b2sums=('923db2ae1a2fdf158627694c727dfc550466ec455451d57056476270483509756c2e029f56d86c45f1bfa8c6a20b2eecbddffdfc878ec86e11b4df80a188989f')
+b2sums=('SKIP')
 
 build() {
   cd "$srcdir"/scheduler-"$pkgver" || exit

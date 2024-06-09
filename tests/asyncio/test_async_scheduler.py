@@ -1,9 +1,17 @@
 import asyncio
 import datetime as dt
+from asyncio.selector_events import BaseSelectorEventLoop
+from typing import Optional
 
 import pytest
 
 from scheduler.asyncio.scheduler import Scheduler
+from scheduler.base.timingtype import (
+    TimingCyclic,
+    TimingDailyUnion,
+    TimingOnceUnion,
+    TimingWeeklyUnion,
+)
 from scheduler.error import SchedulerError
 from scheduler.trigger import Monday
 
@@ -19,16 +27,16 @@ from ..helpers import (
 )
 
 
-async def foo():
+async def foo() -> None:
     await asyncio.sleep(0)
 
 
-def test_async_scheduler_init(event_loop):
+def test_async_scheduler_init(event_loop: BaseSelectorEventLoop) -> None:
     _ = Scheduler(loop=event_loop)
 
 
 @pytest.mark.asyncio
-async def test_async_scheduler_exec(event_loop):
+async def test_async_scheduler_exec(event_loop: BaseSelectorEventLoop) -> None:
     sch = Scheduler(loop=event_loop)
     job = sch.cyclic(dt.timedelta(seconds=0.01), foo, max_attempts=3)
 
@@ -46,7 +54,7 @@ async def test_async_scheduler_exec(event_loop):
 
 
 @pytest.mark.asyncio
-async def test_delete_jobs(event_loop):
+async def test_delete_jobs(event_loop: BaseSelectorEventLoop) -> None:
     sch = Scheduler(loop=event_loop)
     job0 = sch.cyclic(dt.timedelta(seconds=1), foo)
     job1 = sch.cyclic(dt.timedelta(seconds=1), foo)
@@ -57,7 +65,7 @@ async def test_delete_jobs(event_loop):
 
 
 @pytest.mark.asyncio
-async def test_delete_job(event_loop):
+async def test_delete_job(event_loop: BaseSelectorEventLoop) -> None:
     sch = Scheduler(loop=event_loop)
     job0 = sch.cyclic(dt.timedelta(seconds=1), foo)
     job1 = sch.cyclic(dt.timedelta(seconds=1), foo)
@@ -79,7 +87,9 @@ async def test_delete_job(event_loop):
         ({"foo", "bar"}, True, 0),
     ],
 )
-async def test_delete_jobs_with_tags(event_loop, tags, any_tag, length):
+async def test_delete_jobs_with_tags(
+    event_loop: BaseSelectorEventLoop, tags: set[str], any_tag: bool, length: int
+) -> None:
     sch = Scheduler(loop=event_loop)
     job0 = sch.cyclic(dt.timedelta(seconds=1), foo, tags={"foo"})
     job1 = sch.cyclic(dt.timedelta(seconds=1), foo, tags={"bar"})
@@ -98,14 +108,16 @@ async def test_delete_jobs_with_tags(event_loop, tags, any_tag, length):
 @pytest.mark.parametrize(
     "tags, any_tag, length",
     [
-        ({}, False, 2),
+        (set(), False, 2),
         (None, False, 2),
         (None, True, 2),
         ({"foo"}, False, 1),
         ({"bar"}, False, 1),
     ],
 )
-async def test_get_jobs_with_tags(event_loop, tags, any_tag, length):
+async def test_get_jobs_with_tags(
+    event_loop: BaseSelectorEventLoop, tags: Optional[set[str]], any_tag: bool, length: int
+) -> None:
     sch = Scheduler(loop=event_loop)
     job0 = sch.cyclic(dt.timedelta(seconds=1), foo, tags={"foo"})
     job1 = sch.cyclic(dt.timedelta(seconds=1), foo, tags={"bar"})
@@ -116,7 +128,7 @@ async def test_get_jobs_with_tags(event_loop, tags, any_tag, length):
 
 
 @pytest.mark.asyncio
-async def test_async_list_timing(event_loop):
+async def test_async_list_timing(event_loop: BaseSelectorEventLoop) -> None:
     sch = Scheduler(loop=event_loop)
     job0 = sch.minutely([dt.time(second=30), dt.time(second=45)], foo)
     sch.delete_jobs()
@@ -130,7 +142,9 @@ async def test_async_list_timing(event_loop):
         (dt.datetime.now(), CYCLIC_TYPE_ERROR_MSG),
     ],
 )
-async def test_async_cyclic(event_loop, timing, err_msg):
+async def test_async_cyclic(
+    event_loop: BaseSelectorEventLoop, timing: TimingCyclic, err_msg: Optional[str]
+) -> None:
     sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError, match=err_msg):
@@ -148,7 +162,9 @@ async def test_async_cyclic(event_loop, timing, err_msg):
         (dt.datetime.now(), MINUTELY_TYPE_ERROR_MSG),
     ],
 )
-async def test_async_minutely(event_loop, timing, err_msg):
+async def test_async_minutely(
+    event_loop: BaseSelectorEventLoop, timing: TimingDailyUnion, err_msg: Optional[str]
+) -> None:
     sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError, match=err_msg):
@@ -166,7 +182,9 @@ async def test_async_minutely(event_loop, timing, err_msg):
         (dt.datetime.now(), HOURLY_TYPE_ERROR_MSG),
     ],
 )
-async def test_async_hourly(event_loop, timing, err_msg):
+async def test_async_hourly(
+    event_loop: BaseSelectorEventLoop, timing: TimingDailyUnion, err_msg: Optional[str]
+) -> None:
     sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError, match=err_msg):
@@ -184,7 +202,9 @@ async def test_async_hourly(event_loop, timing, err_msg):
         (dt.datetime.now(), DAILY_TYPE_ERROR_MSG),
     ],
 )
-async def test_async_daily(event_loop, timing, err_msg):
+async def test_async_daily(
+    event_loop: BaseSelectorEventLoop, timing: TimingDailyUnion, err_msg: Optional[str]
+) -> None:
     sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError, match=err_msg):
@@ -202,7 +222,9 @@ async def test_async_daily(event_loop, timing, err_msg):
         (dt.datetime.now(), WEEKLY_TYPE_ERROR_MSG),
     ],
 )
-async def test_async_weekly(event_loop, timing, err_msg):
+async def test_async_weekly(
+    event_loop: BaseSelectorEventLoop, timing: TimingWeeklyUnion, err_msg: Optional[str]
+) -> None:
     sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError, match=err_msg):
@@ -220,7 +242,9 @@ async def test_async_weekly(event_loop, timing, err_msg):
         ([dt.time(second=30)], ONCE_TYPE_ERROR_MSG),
     ],
 )
-async def test_async_once(event_loop, timing, err_msg):
+async def test_async_once(
+    event_loop: BaseSelectorEventLoop, timing: TimingOnceUnion, err_msg: Optional[str]
+) -> None:
     sch = Scheduler(loop=event_loop)
     if err_msg:
         with pytest.raises(SchedulerError, match=err_msg):
@@ -231,12 +255,12 @@ async def test_async_once(event_loop, timing, err_msg):
 
 
 @pytest.mark.asyncio
-async def test_async_once_datetime(event_loop):
+async def test_async_once_datetime(event_loop: BaseSelectorEventLoop) -> None:
     sch = Scheduler(loop=event_loop)
     job0 = sch.once(dt.datetime.now(), foo)
     sch.delete_jobs()
 
 
-def test_async_scheduler_without_running_loop():
+def test_async_scheduler_without_running_loop() -> None:
     with pytest.raises(SchedulerError, match=MISSING_EVENT_LOOP_ERROR):
         sch = Scheduler()

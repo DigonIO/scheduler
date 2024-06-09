@@ -7,18 +7,14 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 import datetime as dt
 import queue
 import threading
+from collections.abc import Iterable
 from logging import Logger
 from typing import Any, Callable, Optional
 
 import typeguard as tg
 
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
-from scheduler.base.job import BaseJob
-from scheduler.base.scheduler import (
-    BaseScheduler,
-    deprecated,
-    select_jobs_by_tag,
-)
+from scheduler.base.scheduler import BaseScheduler, deprecated, select_jobs_by_tag
 from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
@@ -40,7 +36,7 @@ from scheduler.prioritization import linear_priority_function
 from scheduler.threading.job import Job
 
 
-def _exec_job_worker(que: queue.Queue[Job], logger: Logger):
+def _exec_job_worker(que: queue.Queue[Job], logger: Logger) -> None:
     running = True
     while running:
         try:
@@ -52,7 +48,7 @@ def _exec_job_worker(que: queue.Queue[Job], logger: Logger):
             que.task_done()
 
 
-class Scheduler(BaseScheduler):
+class Scheduler(BaseScheduler[Job, Callable[..., None]]):
     r"""
     Implementation of a scheduler for callback functions.
 
@@ -89,10 +85,10 @@ class Scheduler(BaseScheduler):
         max_exec: int = 0,
         tzinfo: Optional[dt.tzinfo] = None,
         priority_function: Callable[
-            [float, BaseJob, int, int],
+            [float, Job, int, int],
             float,
         ] = linear_priority_function,
-        jobs: Optional[set[Job]] = None,
+        jobs: Optional[Iterable[Job]] = None,
         n_threads: int = 1,
         logger: Optional[Logger] = None,
     ):
@@ -101,7 +97,13 @@ class Scheduler(BaseScheduler):
         self.__tzinfo = tzinfo
         self.__priority_function = priority_function
         self.__jobs_lock = threading.RLock()
-        self.__jobs: set[Job] = jobs or set()
+        if not jobs:
+            self.__jobs = set()
+        elif isinstance(jobs, set):
+            self.__jobs = jobs
+        else:
+            self.__jobs = set(jobs)
+
         for job in self.__jobs:
             if job._tzinfo != self.__tzinfo:
                 raise SchedulerError(TZ_ERROR_MSG)
@@ -199,9 +201,7 @@ class Scheduler(BaseScheduler):
 
         workers = []
         for _ in range(self.__n_threads or n_jobs):
-            worker = threading.Thread(
-                target=_exec_job_worker, args=(que, self._BaseScheduler__logger)
-            )
+            worker = threading.Thread(target=_exec_job_worker, args=(que, self._logger))
             worker.daemon = True
             worker.start()
             workers.append(worker)
@@ -308,7 +308,7 @@ class Scheduler(BaseScheduler):
             True: To deleta a |Job| at least one tag has to match.
         """
         with self.__jobs_lock:
-            if tags is None or tags == {}:
+            if tags is None or tags == set():
                 n_jobs = len(self.__jobs)
                 self.__jobs = set()
                 return n_jobs
@@ -344,12 +344,12 @@ class Scheduler(BaseScheduler):
             Currently scheduled |Job|\ s.
         """
         with self.__jobs_lock:
-            if tags is None or tags == {}:
+            if tags is None or tags == set():
                 return self.__jobs.copy()
             return select_jobs_by_tag(self.__jobs, tags, any_tag)
 
     @deprecated(["delay"])
-    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs):
+    def cyclic(self, timing: TimingCyclic, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a cyclic `Job`.
 
@@ -386,7 +386,7 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.CYCLIC, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+    def minutely(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a minutely `Job`.
 
@@ -428,7 +428,7 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.MINUTELY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+    def hourly(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule an hourly `Job`.
 
@@ -470,7 +470,7 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.HOURLY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs):
+    def daily(self, timing: TimingDailyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a daily `Job`.
 
@@ -507,7 +507,7 @@ class Scheduler(BaseScheduler):
         return self.__schedule(job_type=JobType.DAILY, timing=timing, handle=handle, **kwargs)
 
     @deprecated(["delay"])
-    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs):
+    def weekly(self, timing: TimingWeeklyUnion, handle: Callable[..., None], **kwargs) -> Job:
         r"""
         Schedule a weekly `Job`.
 
@@ -550,12 +550,12 @@ class Scheduler(BaseScheduler):
         timing: TimingOnceUnion,
         handle: Callable[..., None],
         *,
-        args: tuple[Any] = None,
+        args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
-        tags: Optional[list[str]] = None,
-        alias: str = None,
+        tags: Optional[Iterable[str]] = None,
+        alias: Optional[str] = None,
         weight: float = 1,
-    ):
+    ) -> Job:
         r"""
         Schedule a oneshot `Job`.
 
@@ -569,7 +569,7 @@ class Scheduler(BaseScheduler):
             Positional argument payload for the function handle within a |Job|.
         kwargs : Optional[dict[str, Any]]
             Keyword arguments payload for the function handle within a |Job|.
-        tags : Optional[set[str]]
+        tags : Optional[Iterable[str]]
             The tags of the |Job|.
         alias : Optional[str]
             Overwrites the function handle name in the string representation.
@@ -593,7 +593,7 @@ class Scheduler(BaseScheduler):
                 args=args,
                 kwargs=kwargs,
                 max_attempts=1,
-                tags=tags,
+                tags=set(tags) if tags else set(),
                 alias=alias,
                 weight=weight,
                 delay=False,

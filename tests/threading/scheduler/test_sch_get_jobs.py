@@ -1,5 +1,6 @@
 import datetime as dt
 import random
+from typing import Optional
 
 import pytest
 
@@ -35,7 +36,7 @@ from ...helpers import foo
         10,
     ],
 )
-def test_get_all_jobs(n_jobs, any_tag, empty_set):
+def test_get_all_jobs(n_jobs: int, any_tag: Optional[bool], empty_set: bool) -> None:
     sch = Scheduler()
     assert len(sch.jobs) == 0
 
@@ -50,9 +51,9 @@ def test_get_all_jobs(n_jobs, any_tag, empty_set):
             jobs = sch.get_jobs(any_tag=any_tag)
     else:
         if any_tag is None:
-            jobs = sch.get_jobs(tags={})
+            jobs = sch.get_jobs(tags=set())
         else:
-            jobs = sch.get_jobs(tags={}, any_tag=any_tag)
+            jobs = sch.get_jobs(tags=set(), any_tag=any_tag)
 
     assert len(jobs) == n_jobs
 
@@ -110,7 +111,9 @@ def test_get_all_jobs(n_jobs, any_tag, empty_set):
         ],
     ],
 )
-def test_get_tagged_jobs(job_tags, select_tags, any_tag, returned):
+def test_get_tagged_jobs(
+    job_tags: list[set[str]], select_tags: set[str], any_tag: bool, returned: list[bool]
+) -> None:
     sch = Scheduler()
 
     jobs = [sch.once(dt.timedelta(), lambda: None, tags=tags) for tags in job_tags]

@@ -1,9 +1,11 @@
 import datetime as dt
+from typing import Any, Optional
 
 import pytest
 
 import scheduler.trigger as trigger
 from scheduler.base.definition import JobType
+from scheduler.base.timingtype import TimingJobUnion
 from scheduler.threading.job import Job
 
 from ...helpers import (
@@ -17,7 +19,7 @@ from ...helpers import (
 )
 
 
-def test_misc_properties(recwarn):
+def test_misc_properties(recwarn: pytest.WarningsRecorder) -> None:
     job = Job(
         job_type=JobType.CYCLIC,
         timing=[dt.timedelta()],
@@ -74,11 +76,11 @@ def test_misc_properties(recwarn):
     ),
 )
 def test_job__lt__(
-    start_1,
-    start_2,
-    tzinfo,
-    result,
-):
+    start_1: dt.datetime,
+    start_2: dt.datetime,
+    tzinfo: Optional[dt.tzinfo],
+    result: bool,
+) -> None:
     job_1 = Job(
         job_type=JobType.CYCLIC,
         timing=[dt.timedelta()],
@@ -127,13 +129,13 @@ def test_job__lt__(
     indirect=["patch_datetime_now"],
 )
 def test_start_with_no_delay(
-    job_type,
-    timing,
-    base,
-    offset,
-    tzinfo,
-    patch_datetime_now,
-):
+    job_type: JobType,
+    timing: TimingJobUnion,
+    base: dt.datetime,
+    offset: dt.timedelta,
+    tzinfo: dt.tzinfo,
+    patch_datetime_now: Any,
+) -> None:
     job = Job(
         job_type=job_type,
         timing=timing,

@@ -1,11 +1,14 @@
 import datetime as dt
+from typing import Optional
 
 import pytest
 
 import scheduler.trigger as trigger
 from scheduler import SchedulerError
 from scheduler.base.definition import JobType
-from scheduler.base.job_util import JobTimer, sane_timing_types
+from scheduler.base.job_timer import JobTimer
+from scheduler.base.job_util import sane_timing_types
+from scheduler.base.timingtype import TimingJobTimerUnion, TimingJobUnion
 
 from .helpers import CYCLIC_TYPE_ERROR_MSG, T_2021_5_26__3_55, utc
 
@@ -59,7 +62,13 @@ from .helpers import CYCLIC_TYPE_ERROR_MSG, T_2021_5_26__3_55, utc
         ],
     ),
 )
-def test_JobTimer_calc_next_exec(job_type, timing, start, target, next_target):
+def test_JobTimer_calc_next_exec(
+    job_type: JobType,
+    timing: TimingJobTimerUnion,
+    start: dt.datetime,
+    target: dt.datetime,
+    next_target: dt.datetime,
+) -> None:
     timer = JobTimer(job_type, timing, start)
 
     assert timer.datetime == target
@@ -84,7 +93,7 @@ def test_JobTimer_calc_next_exec(job_type, timing, start, target, next_target):
         [20, 1, False, 40],
     ),
 )
-def test_skip(delta_m, offset_m, skip, res_delta_m):
+def test_skip(delta_m: int, offset_m: int, skip: bool, res_delta_m: int) -> None:
     delta = dt.timedelta(minutes=delta_m)
     offset = dt.timedelta(minutes=offset_m)
     res_delta = dt.timedelta(minutes=res_delta_m)
@@ -121,7 +130,7 @@ def test_skip(delta_m, offset_m, skip, res_delta_m):
         # [JobType.MINUTELY, (dt.time(), dt.time()), MINUTELY_TYPE_ERROR_MSG],
     ),
 )
-def test_sane_timing_types(job_type, timing, err):
+def test_sane_timing_types(job_type: JobType, timing: TimingJobUnion, err: Optional[str]) -> None:
     if err:
         with pytest.raises(SchedulerError, match=err):
             sane_timing_types(job_type, timing)

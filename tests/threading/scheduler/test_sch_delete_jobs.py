@@ -1,5 +1,6 @@
 import datetime as dt
 import random
+from typing import Optional
 
 import pytest
 
@@ -19,7 +20,7 @@ from ...helpers import DELETE_NOT_SCHEDULED_ERROR, foo
         10,
     ],
 )
-def test_delete_job(n_jobs):
+def test_delete_job(n_jobs: int) -> None:
     sch = Scheduler()
     assert len(sch.jobs) == 0
 
@@ -63,7 +64,7 @@ def test_delete_job(n_jobs):
         10,
     ],
 )
-def test_delete_jobs(n_jobs, any_tag, empty_set):
+def test_delete_jobs(n_jobs: int, any_tag: Optional[bool], empty_set: bool) -> None:
     sch = Scheduler()
     assert len(sch.jobs) == 0
 
@@ -78,9 +79,9 @@ def test_delete_jobs(n_jobs, any_tag, empty_set):
             num_del = sch.delete_jobs(any_tag=any_tag)
     else:
         if any_tag is None:
-            num_del = sch.delete_jobs(tags={})
+            num_del = sch.delete_jobs(tags=set())
         else:
-            num_del = sch.delete_jobs(tags={}, any_tag=any_tag)
+            num_del = sch.delete_jobs(tags=set(), any_tag=any_tag)
 
     assert len(sch.jobs) == 0
     assert num_del == n_jobs
@@ -99,7 +100,9 @@ def test_delete_jobs(n_jobs, any_tag, empty_set):
         [[{"a", "b"}, {"1", "2", "3"}, {"b", "2"}], {"2", "3"}, False, 1],
     ],
 )
-def test_delete_tagged_jobs(job_tags, delete_tags, any_tag, n_deleted):
+def test_delete_tagged_jobs(
+    job_tags: list[set[str]], delete_tags: set[str], any_tag: bool, n_deleted: int
+) -> None:
     sch = Scheduler()
 
     for tags in job_tags:

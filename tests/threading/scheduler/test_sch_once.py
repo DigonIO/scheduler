@@ -1,9 +1,11 @@
 import datetime as dt
+from typing import Any, Optional
 
 import pytest
 
 import scheduler.trigger as trigger
 from scheduler import Scheduler, SchedulerError
+from scheduler.base.timingtype import TimingOnceUnion
 
 from ...helpers import ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples, samples_utc, utc
 
@@ -64,7 +66,13 @@ from ...helpers import ONCE_TYPE_ERROR_MSG, TZ_ERROR_MSG, foo, samples, samples_
     ),
     indirect=["patch_datetime_now"],
 )
-def test_once(timing, counts, patch_datetime_now, tzinfo, err_msg):
+def test_once(
+    timing: TimingOnceUnion,
+    counts: list[int],
+    patch_datetime_now: Any,
+    tzinfo: Optional[dt.tzinfo],
+    err_msg: Optional[str],
+) -> None:
     sch = Scheduler(tzinfo=tzinfo)
 
     if err_msg:

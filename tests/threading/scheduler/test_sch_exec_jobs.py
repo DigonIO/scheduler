@@ -17,7 +17,7 @@ from ...helpers import foo
         10,
     ],
 )
-def test_exec_all_jobs(n_jobs):
+def test_exec_all_jobs(n_jobs: int) -> None:
     sch = Scheduler()
 
     assert len(sch.jobs) == 0

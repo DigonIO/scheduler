@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import Any
 
 import pytest
 
@@ -65,7 +66,7 @@ from ...helpers import sample_seconds_interference_lag, samples_days
     ],
     indirect=["patch_datetime_now"],
 )
-def test_sch_skip_missing(patch_datetime_now, counts, job):
+def test_sch_skip_missing(patch_datetime_now: Any, counts: list[int], job: Job) -> None:
     sch = Scheduler(jobs={job})
     attempts = []
     for _ in counts:

@@ -9,6 +9,7 @@ Author: Jendrik A. Potyka, Fabian A. Preiss
 
 import random
 
+from scheduler.base.job import BaseJobType
 from scheduler.threading.job import Job
 
 

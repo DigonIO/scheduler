@@ -7,7 +7,7 @@ import pytest
 from scheduler import Scheduler
 
 
-def wrap_sleep(secs: float):
+def wrap_sleep(secs: float) -> None:
     time.sleep(secs)
 
 
@@ -20,7 +20,7 @@ def wrap_sleep(secs: float):
         0.02,
     ),
 )
-def test_thread_safety(duration):
+def test_thread_safety(duration: float) -> None:
     sch = Scheduler()
     sch.cyclic(dt.timedelta(), wrap_sleep, kwargs={"secs": duration}, skip_missing=True)
     thread_1 = threading.Thread(target=sch.exec_jobs)
@@ -47,7 +47,7 @@ def test_thread_safety(duration):
         (3, 2, 10, [2, 2, 2, 2, 2]),
     ],
 )
-def test_worker_count(n_threads, max_exec, n_jobs, res_n_exec):
+def test_worker_count(n_threads: int, max_exec: int, n_jobs: int, res_n_exec: list[int]) -> None:
     sch = Scheduler(n_threads=n_threads, max_exec=max_exec)
 
     for _ in range(n_jobs):
@@ -71,7 +71,14 @@ def test_worker_count(n_threads, max_exec, n_jobs, res_n_exec):
         (0.0005, 4, 4, 3, [3, 3, 3, 3]),  # 4 threads, exec limit, 3 slow jobs
     ],
 )
-def test_threading_slow_jobs(job_sleep, n_threads, max_exec, n_jobs, res_n_exec, recwarn):
+def test_threading_slow_jobs(
+    job_sleep: float,
+    n_threads: int,
+    max_exec: int,
+    n_jobs: int,
+    res_n_exec: list[int],
+    recwarn: pytest.WarningsRecorder,
+) -> None:
     sch = Scheduler(n_threads=n_threads, max_exec=max_exec)
 
     for _ in range(n_jobs):
