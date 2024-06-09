@@ -448,7 +448,7 @@ class Scheduler(BaseScheduler):
         *,
         args: tuple[Any] = None,
         kwargs: Optional[dict[str, Any]] = None,
-        tags: Optional[list[str]] = None,
+        tags: Optional[set[str]] = None,
         alias: str = None,
     ) -> Job:
         r"""

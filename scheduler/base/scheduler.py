@@ -148,7 +148,7 @@ class BaseScheduler(ABC):  # NOTE maybe a typing Protocol class is better than a
         *,
         args: Optional[tuple[Any]] = None,
         kwargs: Optional[dict[str, Any]] = None,
-        tags: Optional[list[str]] = None,
+        tags: Optional[set[str]] = None,
     ) -> BaseJob:
         """Schedule a oneshot |BaseJob|."""
 
