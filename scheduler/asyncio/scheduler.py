@@ -449,7 +449,7 @@ class Scheduler(BaseScheduler[Job, Callable[..., Coroutine[Any, Any, None]]]):
         timing: TimingOnceUnion,
         handle: Callable[..., Coroutine[Any, Any, None]],
         *,
-        args: Optional[tuple[Any]] = None,
+        args: Optional[tuple[Any, ...]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[Iterable[str]] = None,
         alias: Optional[str] = None,
