@@ -1,5 +1,6 @@
 import datetime as dt
 import doctest
+import sys
 from typing import Any
 
 import pytest
@@ -85,4 +86,7 @@ def test_general_readme(patch_datetime_now: Any) -> None:
     assert test_general_readme.__doc__
     dt_readme = DP.get_doctest(test_general_readme.__doc__, globals(), "README", None, None)
     DTR = doctest.DocTestRunner()
-    assert doctest.TestResults(failed=0, attempted=16) == DTR.run(dt_readme)
+    if sys.version_info < (3, 13):
+        assert doctest.TestResults(failed=0, attempted=16) == DTR.run(dt_readme)
+    else:
+        assert doctest.TestResults(failed=0, attempted=17, skipped=1) == DTR.run(dt_readme)

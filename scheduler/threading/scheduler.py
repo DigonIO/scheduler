@@ -550,7 +550,7 @@ class Scheduler(BaseScheduler[Job, Callable[..., None]]):
         timing: TimingOnceUnion,
         handle: Callable[..., None],
         *,
-        args: Optional[tuple[Any]] = None,
+        args: Optional[tuple[Any, ...]] = None,
         kwargs: Optional[dict[str, Any]] = None,
         tags: Optional[Iterable[str]] = None,
         alias: Optional[str] = None,

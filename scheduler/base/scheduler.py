@@ -1,5 +1,4 @@
-"""
-Implementation of a `BaseScheduler`.
+"""Implementation of a `BaseScheduler`.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
@@ -69,9 +68,11 @@ def deprecated(fields: List[str]) -> Callable[[Callable[..., Any]], Callable[...
 
     Examples
     --------
-    @deprecated(['old_arg'])
-    def some_function(new_arg, old_arg=None):
-        pass
+    .. code-block:: python
+
+        @deprecated(["old_arg"])
+        def some_function(new_arg, old_arg=None):
+            pass
 
     Calling `some_function(new_arg=5, old_arg=3)` generates a deprecation warning for using 'old_arg'.
     """
