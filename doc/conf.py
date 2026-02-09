@@ -28,7 +28,7 @@ with open("../scheduler/__init__.py", "r") as file:
             author = line.split('"')[1]
 
 project = "scheduler"
-copyright = "2023, " + author
+copyright = "2026, " + author
 author = author
 
 # The full version, including alpha/beta/rc tags
@@ -49,7 +49,7 @@ extensions = [
     "sphinx.ext.imgmath",
     "sphinx.ext.viewcode",
     "numpydoc",
-    "m2r2",
+    "myst_parser",
 ]
 
 with open("_assets/prolog.rst", encoding="utf-8") as f:
@@ -59,7 +59,10 @@ imgmath_image_format = "svg"
 # Add any paths that contain templates here, relative to this directory.
 numpydoc_show_class_members = False
 templates_path = ["_templates"]
-source_suffix = ".rst"
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
 master_doc = "index"
 
 autosummary_generate = True

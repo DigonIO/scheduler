@@ -45,7 +45,6 @@ classifiers = [
 requires-python = ">=3.9"
 dependencies = ["typeguard>=3.0.0"]
 
-
 [project.urls]
 Repository = "https://gitlab.com/DigonIO/scheduler"
 Documentation = "https://digon.io/hyd/project/scheduler/t/master"
@@ -79,3 +78,27 @@ disallow_subclassing_any = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
+
+[tool.uv.workspace]
+members = [
+    "doc",
+]
+
+[dependency-groups]
+dev = [
+    "bandit==1.8.2",
+    "black==24.10.0",
+    "blacken-docs==1.19.1",
+    "coverage==7.6.10",
+    "isort==5.13.2",
+    "mistune==0.8.4",
+    "mypy==1.14.1",
+    "numpydoc==1.8.0",
+    "pre-commit==4.1.0",
+    "pydocstyle==6.3.0",
+    "pylint==3.3.3",
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.2",
+    "pytest-cov==6.0.0",
+    "typeguard==4.4.1",
+]

@@ -36,20 +36,12 @@ git clone https://gitlab.com/DigonIO/scheduler.git
 cd scheduler
 ```
 
-Create and activate a virtual environment:
-
-```bash
-python -m venv venv
-source ./venv/bin/activate
-```
-
 Install the project with the development requirements and install
 [pre-commit](https://pre-commit.com/) for the repository:
 
 ```bash
-pip install -e .
-pip install -r requirements.txt
-pre-commit install
+uv sync --all-groups
+uv run pre-commit install
 ```
 
 ## Running tests
@@ -59,14 +51,14 @@ Testing is done using [pytest](https://pypi.org/project/pytest/). With
 [coverage](https://pypi.org/project/coverage/) a report for the test coverage can be generated:
 
 ```bash
-pytest --cov=scheduler/ tests/
-coverage html
+uv run pytest --cov=scheduler/ tests/
+uv run coverage html
 ```
 
 To test the examples in the documentation run:
 
 ```bash
-pytest --doctest-modules doc/pages/*/*
+uv run pytest --doctest-modules doc/pages/*/*
 ```
 
 ## Building the documentation
@@ -74,7 +66,7 @@ pytest --doctest-modules doc/pages/*/*
 To build the documentation locally, run:
 
 ```bash
-sphinx-build -b html doc/ doc/_build/html
+uv run sphinx-build -b html doc/ doc/_build/html
 ```
 
 We are using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)
