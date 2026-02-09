@@ -3,6 +3,7 @@ Collection of datetime and trigger related utility functions.
 
 Author: Jendrik A. Potyka, Fabian A. Preiss
 """
+
 from __future__ import annotations
 
 import datetime as dt
