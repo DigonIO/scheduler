@@ -182,6 +182,7 @@ doc_build:
   stage: build_1
   image: $IMG_PYTHON_UV_3_14
   script:
+    - apt install texlive-latex-base texlive-latex-extra dvisvgm
     - uv sync --all-groups
     - uv run sphinx-build -b html ./doc ./doc/_build
   artifacts:

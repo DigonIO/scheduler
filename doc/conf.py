@@ -95,6 +95,7 @@ html_css_files = ["custom.css", "custom_pygments.css"]
 imgmath_latex_preamble = (
     "\\usepackage{xcolor}\n\\definecolor{formulacolor}{RGB}{128,128,128}" "\\color{formulacolor}"
 )
+imgmath_image_format = "svg"
 
 
 latex_elements = {
