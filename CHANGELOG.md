@@ -1,10 +1,18 @@
 # Changelog
 
+## 0.8.9
+
+### Misc
+
++ Move documentation to <https://scheduler.digon.io>.
++ Add support for Python 3.14.
++ Drop support for Python 3.9. (end-of-life).
+
 ## 0.8.8
 
 ### Misc
 
-+ Type hint Scheduler.once() `args` as a variadic generic tuple
++ Type hint Scheduler.once() `args` as a variadic generic tuple.
   (Thanks [@sanurielf](https://github.com/sanurielf)),
   [PR #9](https://github.com/DigonIO/scheduler/pull/9)
 + Python 3.13 support.
