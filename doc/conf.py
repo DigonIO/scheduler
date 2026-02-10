@@ -32,7 +32,7 @@ with open("../scheduler/__init__.py", "r") as file:
             author = line.split('"')[1]
 
 project = "scheduler"
-copyright = "2026, " + author
+copyright = "%Y, " + author
 author = author
 
 # The full version, including alpha/beta/rc tags
@@ -87,7 +87,6 @@ html_theme_path = [
 ]
 html_favicon = "favicon.png"
 html_logo = "logo_w_border.svg"
-
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
