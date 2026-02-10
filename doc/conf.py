@@ -46,7 +46,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.imgconverter",
     "sphinx.ext.coverage",
-    "sphinx.ext.imgmath",
+    "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "numpydoc",
     "myst_parser",
@@ -91,12 +91,6 @@ html_logo = "logo_w_border.svg"
 html_static_path = ["_static"]
 
 html_css_files = ["custom.css", "custom_pygments.css"]
-
-imgmath_latex_preamble = (
-    "\\usepackage{xcolor}\n\\definecolor{formulacolor}{RGB}{128,128,128}" "\\color{formulacolor}"
-)
-imgmath_image_format = "svg"
-
 
 latex_elements = {
     "preamble": [
