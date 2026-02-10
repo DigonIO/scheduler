@@ -198,6 +198,7 @@ source = { virtual = "doc" }
 dependencies = [
     { name = "furo" },
     { name = "myst-parser" },
+    { name = "numpydoc" },
     { name = "sphinx" },
 ]
 
@@ -205,6 +206,7 @@ dependencies = [
 requires-dist = [
     { name = "furo", specifier = ">=2025.12.19" },
     { name = "myst-parser", specifier = ">=5.0.0" },
+    { name = "numpydoc", specifier = ">=1.8.0" },
     { name = "sphinx", specifier = ">=9.1.0" },
 ]
 
@@ -651,7 +653,6 @@ dev = [
     { name = "isort" },
     { name = "mistune" },
     { name = "mypy" },
-    { name = "numpydoc" },
     { name = "pre-commit" },
     { name = "pydocstyle" },
     { name = "pylint" },
@@ -673,7 +674,6 @@ dev = [
     { name = "isort", specifier = "==5.13.2" },
     { name = "mistune", specifier = "==0.8.4" },
     { name = "mypy", specifier = "==1.14.1" },
-    { name = "numpydoc", specifier = "==1.8.0" },
     { name = "pre-commit", specifier = "==4.1.0" },
     { name = "pydocstyle", specifier = "==6.3.0" },
     { name = "pylint", specifier = "==3.3.3" },

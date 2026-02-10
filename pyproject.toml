@@ -91,7 +91,6 @@ dev = [
     "isort==5.13.2",
     "mistune==0.8.4",
     "mypy==1.14.1",
-    "numpydoc==1.8.0",
     "pre-commit==4.1.0",
     "pydocstyle==6.3.0",
     "pylint==3.3.3",
