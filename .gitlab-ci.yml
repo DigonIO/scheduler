@@ -41,10 +41,29 @@ variables:
   IMG_DOC: ${CONTAINER_REGISTRY_URL}/scheduler-doc:${CI_COMMIT_SHORT_SHA}
 
 ####################################################################################################
+### Mixin for uv setup
+####################################################################################################
+
+.uv_setup: &uv_setup
+  variables:
+    UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
+    UV_LINK_MODE: copy
+    UV_FROZEN: true
+  cache:
+    key:
+      files:
+        - uv.lock
+    paths:
+      - "$CI_PROJECT_DIR/.cache/uv"
+  before_script:
+    - uv sync --all-groups
+
+####################################################################################################
 ### Analysis Stage
 ####################################################################################################
 
 pylint_3_10:
+  <<: *uv_setup
   stage: analysis
   image: $IMG_PYTHON_UV_3_10
   script:
@@ -53,6 +72,7 @@ pylint_3_10:
   allow_failure: true
 
 mypy_3_10:
+  <<: *uv_setup
   stage: analysis
   image: $IMG_PYTHON_UV_3_10
   script:
@@ -61,6 +81,7 @@ mypy_3_10:
   allow_failure: true
 
 pydocstyle_3_10:
+  <<: *uv_setup
   stage: analysis
   image: $IMG_PYTHON_UV_3_10
   script:
@@ -69,6 +90,7 @@ pydocstyle_3_10:
   allow_failure: true
 
 bandit_3_10:
+  <<: *uv_setup
   stage: analysis
   image: $IMG_PYTHON_UV_3_10
   script:
@@ -81,6 +103,7 @@ bandit_3_10:
 ####################################################################################################
 
 pytest_3_10:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_10
   script:
@@ -88,6 +111,7 @@ pytest_3_10:
     - uv run pytest --cov=scheduler/ tests/
 
 pydoctest_3_10:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_10
   script:
@@ -95,6 +119,7 @@ pydoctest_3_10:
     - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 pytest_3_11:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_11
   script:
@@ -102,6 +127,7 @@ pytest_3_11:
     - uv run pytest --cov=scheduler/ tests/
 
 pydoctest_3_11:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_11
   script:
@@ -109,6 +135,7 @@ pydoctest_3_11:
     - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 pytest_3_12:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_12
   script:
@@ -116,12 +143,15 @@ pytest_3_12:
     - uv run pytest --cov=scheduler/ tests/
 
 pydoctest_3_12:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_12
   script:
-    - pytest --doctest-modules doc/pages/*/*.rst
+    - uv sync --all-groups
+    - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 pytest_3_13:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_13
   script:
@@ -129,13 +159,15 @@ pytest_3_13:
     - uv run pytest --cov=scheduler/ tests/
 
 pydoctest_3_13:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_13
   script:
     - uv sync --all-groups
-    - zuv run pytest --doctest-modules doc/pages/*/*.rst
+    - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 pytest_3_14:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_14
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
@@ -148,6 +180,7 @@ pytest_3_14:
       - htmlcov/
 
 pydoctest_3_14:
+  <<: *uv_setup
   stage: test
   image: $IMG_PYTHON_UV_3_14
   script:
@@ -159,6 +192,7 @@ pydoctest_3_14:
 ####################################################################################################
 
 doc_build:
+  <<: *uv_setup
   stage: build_1
   image: $IMG_PYTHON_UV_3_14
   script:
@@ -170,6 +204,7 @@ doc_build:
       - doc/_build/html/
 
 pkg_build:
+  <<: *uv_setup
   stage: build_1
   image: $IMG_PYTHON_UV_3_14
   script:
@@ -226,6 +261,7 @@ doc_release:
     - if: $CI_COMMIT_REF_NAME == "master"
 
 pkg_release:
+  <<: *uv_setup
   stage: release
   image:
     name: $IMG_PYTHON_UV_3_14
