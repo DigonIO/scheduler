@@ -47,9 +47,13 @@ dependencies = ["typeguard>=3.0.0"]
 
 [project.urls]
 Repository = "https://gitlab.com/DigonIO/scheduler"
-Documentation = "https://digon.io/hyd/project/scheduler/t/master"
-Changelog = "https://gitlab.com/DigonIO/scheduler/-/blob/master/CHANGELOG.md"
+Documentation = "https://scheduler.digon.io"
+Changelog = "https://scheduler.digon.io/changelog.html"
 "Bug Tracker" = "https://gitlab.com/DigonIO/scheduler/-/issues"
+
+[tool.setuptools.packages.find]
+include = ["scheduler"]
+exclude = ["assets"]
 
 [tool.setuptools.dynamic]
 version = { attr = "scheduler.__version__" }

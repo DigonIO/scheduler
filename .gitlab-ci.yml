@@ -228,7 +228,7 @@ doc_upload:
     - crane auth login -u "${CONTAINER_REGISTRY_USER}" -p "${CONTAINER_REGISTRY_PW}" "${CONTAINER_REGISTRY_URL}"
     - crane push doc_image.tar ${IMG_DOC}
   rules:
-    - if: $CI_COMMIT_REF_NAME == "main"
+    - if: $CI_COMMIT_REF_NAME == "master"
 
 ####################################################################################################
 ### Release Stage

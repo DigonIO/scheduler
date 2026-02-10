@@ -52,7 +52,7 @@ Testing is done using [pytest](https://pypi.org/project/pytest/). With
 
 ```bash
 uv run pytest --cov=scheduler/ tests/
-uv run coverage html
+uv run coverage html -d doc/_static/coverage
 ```
 
 To test the examples in the documentation run:

@@ -13,8 +13,12 @@
 
 import os
 import sys
+from pathlib import Path
 
 from sphinx.locale import _
+from sphinx.util import logging
+
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -97,3 +101,14 @@ latex_elements = {
         r"\usepackage[columns=1]{idxlayout}\makeindex",
     ],
 }
+
+coverage_dir = Path(__file__).parent / "_static" / "coverage"
+
+html_extra_path: list[str] = []
+if coverage_dir.exists():
+    html_extra_path.append("_static/coverage")
+else:
+    logger.warning(
+        "Coverage HTML report not found at doc/_static/coverage/. "
+        "Generate it via: uv run coverage html -d doc/_static/coverage"
+    )
