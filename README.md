@@ -68,16 +68,6 @@ cd scheduler
 pip install .
 ```
 
-### Arch Linux
-
-The `PKGBUILD` file can be utilized from the
-[Arch Build System](https://wiki.archlinux.org/title/Arch_Build_System).
-Download the `PKGBUILD` file and from within the containing folder run
-
-```console
-makepkg -i
-```
-
 ## Example: *How to schedule Jobs*
 
 The following example shows how the `Scheduler` is instantiated and how basic `Job`s are created.
@@ -92,8 +82,10 @@ import datetime as dt
 from scheduler import Scheduler
 from scheduler.trigger import Monday, Tuesday
 
+
 def foo():
     print("foo")
+
 
 schedule = Scheduler()
 
