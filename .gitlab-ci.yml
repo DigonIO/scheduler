@@ -48,7 +48,7 @@ variables:
   variables:
     UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
     UV_LINK_MODE: copy
-    UV_FROZEN: true
+    UV_LOCKED: true
   cache:
     key:
       files:
