@@ -82,6 +82,9 @@ asyncio_mode = "strict"
 [tool.uv.workspace]
 members = ["doc"]
 
+[tool.uv.sources]
+doc = { workspace = true }
+
 [dependency-groups]
 dev = [
     "bandit==1.8.2",
@@ -99,3 +102,4 @@ dev = [
     "pytest-cov==6.0.0",
     "typeguard==4.4.1",
 ]
+doc = ["doc"]

@@ -56,7 +56,7 @@ variables:
     paths:
       - "$CI_PROJECT_DIR/.cache/uv"
   before_script:
-    - uv sync --all-groups
+    - uv sync --dev
 
 ####################################################################################################
 ### Analysis Stage
@@ -67,7 +67,6 @@ pylint_3_10:
   stage: analysis
   image: $IMG_PYTHON_UV_3_10
   script:
-    - uv sync --all-groups
     - uv run pylint scheduler
   allow_failure: true
 
@@ -76,7 +75,6 @@ mypy_3_10:
   stage: analysis
   image: $IMG_PYTHON_UV_3_10
   script:
-    - uv sync --all-groups
     - uv run mypy scheduler
   allow_failure: true
 
@@ -85,7 +83,6 @@ pydocstyle_3_10:
   stage: analysis
   image: $IMG_PYTHON_UV_3_10
   script:
-    - uv sync --all-groups
     - uv run pydocstyle scheduler
   allow_failure: true
 
@@ -94,7 +91,6 @@ bandit_3_10:
   stage: analysis
   image: $IMG_PYTHON_UV_3_10
   script:
-    - uv sync --all-groups
     - uv run bandit -r scheduler
   allow_failure: false
 
@@ -107,7 +103,6 @@ pytest_3_10:
   stage: test
   image: $IMG_PYTHON_UV_3_10
   script:
-    - uv sync --all-groups
     - uv run pytest --cov=scheduler/ tests/
 
 pydoctest_3_10:
@@ -115,7 +110,6 @@ pydoctest_3_10:
   stage: test
   image: $IMG_PYTHON_UV_3_10
   script:
-    - uv sync --all-groups
     - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 pytest_3_11:
@@ -123,7 +117,6 @@ pytest_3_11:
   stage: test
   image: $IMG_PYTHON_UV_3_11
   script:
-    - uv sync --all-groups
     - uv run pytest --cov=scheduler/ tests/
 
 pydoctest_3_11:
@@ -131,7 +124,6 @@ pydoctest_3_11:
   stage: test
   image: $IMG_PYTHON_UV_3_11
   script:
-    - uv sync --all-groups
     - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 pytest_3_12:
@@ -139,7 +131,6 @@ pytest_3_12:
   stage: test
   image: $IMG_PYTHON_UV_3_12
   script:
-    - uv sync --all-groups
     - uv run pytest --cov=scheduler/ tests/
 
 pydoctest_3_12:
@@ -147,7 +138,6 @@ pydoctest_3_12:
   stage: test
   image: $IMG_PYTHON_UV_3_12
   script:
-    - uv sync --all-groups
     - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 pytest_3_13:
@@ -155,7 +145,6 @@ pytest_3_13:
   stage: test
   image: $IMG_PYTHON_UV_3_13
   script:
-    - uv sync --all-groups
     - uv run pytest --cov=scheduler/ tests/
 
 pydoctest_3_13:
@@ -163,7 +152,6 @@ pydoctest_3_13:
   stage: test
   image: $IMG_PYTHON_UV_3_13
   script:
-    - uv sync --all-groups
     - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 pytest_3_14:
@@ -172,7 +160,6 @@ pytest_3_14:
   image: $IMG_PYTHON_UV_3_14
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
-    - uv sync --all-groups
     - uv run pytest --cov=scheduler/ tests/
     - uv run python -m coverage html
   artifacts:
@@ -184,7 +171,6 @@ pydoctest_3_14:
   stage: test
   image: $IMG_PYTHON_UV_3_14
   script:
-    - uv sync --all-groups
     - uv run pytest --doctest-modules doc/pages/*/*.rst
 
 ####################################################################################################
@@ -196,12 +182,11 @@ doc_build:
   stage: build_1
   image: $IMG_PYTHON_UV_3_14
   script:
-    - cd doc
-    - uv sync
-    - uv run sphinx-build -b html . _build/
+    - uv sync --all-groups
+    - uv run sphinx-build -b html ./doc ./doc/_build
   artifacts:
     paths:
-      - doc/_build/html/
+      - doc/_build
 
 pkg_build:
   <<: *uv_setup
@@ -224,11 +209,11 @@ doc_image:
     entrypoint: [""]
   script:
     - >
-      /kaniko/executor --context ./docs --destination "${IMG_DOC}" --tarPath app_image.tar
+      /kaniko/executor --context ./doc --destination "${IMG_DOC}" --tarPath doc_image.tar
       --no-push --force
   artifacts:
     paths:
-      - app_image.tar
+      - doc_image.tar
 
 ####################################################################################################
 #### Upload Stage
@@ -241,7 +226,7 @@ doc_upload:
     entrypoint: [""]
   script:
     - crane auth login -u "${CONTAINER_REGISTRY_USER}" -p "${CONTAINER_REGISTRY_PW}" "${CONTAINER_REGISTRY_URL}"
-    - crane push app_image.tar ${IMG_DOC}
+    - crane push doc_image.tar ${IMG_DOC}
   rules:
     - if: $CI_COMMIT_REF_NAME == "main"
 

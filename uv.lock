@@ -194,7 +194,7 @@ wheels = [
 [[package]]
 name = "doc"
 version = "0.0.0"
-source = { virtual = "doc" }
+source = { editable = "doc" }
 dependencies = [
     { name = "furo" },
     { name = "myst-parser" },
@@ -661,6 +661,9 @@ dev = [
     { name = "pytest-cov" },
     { name = "typeguard" },
 ]
+doc = [
+    { name = "doc" },
+]
 
 [package.metadata]
 requires-dist = [{ name = "typeguard", specifier = ">=3.0.0" }]
@@ -682,6 +685,7 @@ dev = [
     { name = "pytest-cov", specifier = "==6.0.0" },
     { name = "typeguard", specifier = "==4.4.1" },
 ]
+doc = [{ name = "doc", editable = "doc" }]
 
 [[package]]
 name = "snowballstemmer"

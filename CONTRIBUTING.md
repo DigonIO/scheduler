@@ -66,7 +66,7 @@ uv run pytest --doctest-modules doc/pages/*/*
 To build the documentation locally, run:
 
 ```bash
-uv run sphinx-build -b html doc/ doc/_build/html
+uv run sphinx-build -b html doc/ doc/_build
 ```
 
 We are using Sphinx with [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html)
