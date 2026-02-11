@@ -161,10 +161,10 @@ pytest_3_14:
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
     - uv run pytest --cov=scheduler/ tests/
-    - uv run python -m coverage html
+    - uv run python -m coverage html -d doc/_static/coverage
   artifacts:
     paths:
-      - htmlcov/
+      - doc/_static/coverage/
 
 pydoctest_3_14:
   <<: *uv_setup
