@@ -12,4 +12,6 @@
     examples
     guides
     api_reference
+    changelog
+    coverage
     faq

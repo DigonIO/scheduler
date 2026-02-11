@@ -17,7 +17,6 @@ counts and automate Jobs.</p>
 [![versionsupport](https://img.shields.io/pypi/pyversions/scheduler)](https://pypi.org/project/scheduler/)
 [![Downloads Week](https://pepy.tech/badge/scheduler/week)](https://pepy.tech/project/scheduler)
 [![Downloads Total](https://pepy.tech/badge/scheduler)](https://pepy.tech/project/scheduler)
-[![Documentation](https://img.shields.io/badge/Docs-HostYourDocs-blue)](https://digon.io/hyd/project/scheduler/t/master)
 
 ---
 
@@ -27,27 +26,26 @@ If you find the scheduler library beneficial, please consider supporting the pro
 
 ## Features
 
-* Easy and user friendly in-process Job scheduling
-[(Quick Start)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/quick_start.html)
-* Asyncio scheduler [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/asyncio.html)
-* Threading scheduler [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/threading.html)
-* Timezone compatibility [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/timezones.html)
-* Passing of parameters
-  [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/parameters.html)
-* Job prioritization
-  * Default linear prioritization
-    [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/job_prioritization.html)
-  * User definable prioritization functions
-    [(Guide)](https://digon.io/hyd/project/scheduler/t/master/pages/guides/custom_prioritization.html)
-* Job tagging
-  [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/tags.html)
-* Job batching
-  [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/job_batching.html)
-* Job metadata
-  [(Example)](https://digon.io/hyd/project/scheduler/t/master/pages/examples/metrics.html)
-* Lightweight
-* High test coverage
-* [Online documentation](https://digon.io/hyd/project/scheduler/t/master/readme.html)
+- Easy and user friendly in-process Job scheduling
+[(Quick Start)](https://scheduler.digon.io/pages/examples/quick_start.html)
+- Asyncio scheduler [(Example)](https://scheduler.digon.io/pages/examples/asyncio.html)
+- Threading scheduler [(Example)](https://scheduler.digon.io/pages/examples/threading.html)
+- Timezone compatibility [(Example)](https://scheduler.digon.io/pages/examples/timezones.html)
+- Passing of parameters
+  [(Example)](https://scheduler.digon.io/pages/examples/parameters.html)
+- Job prioritization
+  - Default linear prioritization
+    [(Example)](https://scheduler.digon.io/pages/examples/job_prioritization.html)
+  - User definable prioritization functions
+    [(Guide)](https://scheduler.digon.io/pages/guides/custom_prioritization.html)
+- Job tagging
+  [(Example)](https://scheduler.digon.io/pages/examples/tags.html)
+- Job batching
+  [(Example)](https://scheduler.digon.io/pages/examples/job_batching.html)
+- Job metadata
+  [(Example)](https://scheduler.digon.io/pages/examples/metrics.html)
+- Lightweight & high test coverage
+- [Online documentation](https://scheduler.digon.io/readme.html)
 
 ## Installation
 
@@ -68,21 +66,11 @@ cd scheduler
 pip install .
 ```
 
-### Arch Linux
-
-The `PKGBUILD` file can be utilized from the
-[Arch Build System](https://wiki.archlinux.org/title/Arch_Build_System).
-Download the `PKGBUILD` file and from within the containing folder run
-
-```console
-makepkg -i
-```
-
 ## Example: *How to schedule Jobs*
 
 The following example shows how the `Scheduler` is instantiated and how basic `Job`s are created.
 For advanced scheduling examples please visit the online
-[documentation](https://digon.io/hyd/project/scheduler/t/master/examples.html).
+[documentation](https://digon.io/examples.html).
 
 [//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
 
@@ -92,8 +80,10 @@ import datetime as dt
 from scheduler import Scheduler
 from scheduler.trigger import Monday, Tuesday
 
+
 def foo():
     print("foo")
+
 
 schedule = Scheduler()
 
@@ -142,25 +132,22 @@ while True:
     time.sleep(1)
 ```
 
-## Documentation
+## Resources
 
-View the API documentation [online](https://digon.io/hyd/project/scheduler/t/master/readme.html).
+- [Online documentation](https://scheduler.digon.io)
+- [API Reference](https://scheduler.digon.io/api_reference.html)
+- [Changelog](https://scheduler.digon.io/changelog.html)
+- [Coverage Report](https://scheduler.digon.io/coverage.html)
+- [How to contribute](https://gitlab.com/DigonIO/scheduler/-/blob/master/CONTRIBUTING.md)
 
 ## Sponsor
 
-<br>
-<div align="center">
-  <a href="https://digon.io">
-    <img alt="Digon.IO GmbH - Fine-Tuned AI services for developers" src="https://digon.io/static/modules/img/digon_name_right_grey.svg" width="35%">
-  </a>
-</div>
-<br>
-<div align="center">
-At Digon.IO, we provide your developer team with our knowledge and experience in the field of Large Language Models (LLMs).
+![Digon.IO GmbH Logo](https://gitlab.com/DigonIO/scheduler/-/raw/master/assets/logo_digon.io_gmbh.png "Digon.IO GmbH")
 
-We specialize in consulting, data engineering, and data science to fine-tune AI services for seamless integration into your projects.
-</div>
+Digon.IO provides dev & data end-to-end consulting for SMEs and software companies. [(Website)](https://digon.io) [(Technical Blog)](https://digon.io/en/blog)
+
+*The sponsor logo is the property of Digon.IO GmbH. Standard trademark and copyright restrictions apply to any use outside this repository.*
 
 ## License
 
-This free and open source software (FOSS) is published under the [LGPLv3 license](https://www.gnu.org/licenses/lgpl-3.0.en.html).
+- **Library source code:** Licensed under [LGPLv3](https://spdx.org/licenses/LGPL-3.0-only.html).

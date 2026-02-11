@@ -39,8 +39,7 @@ async def fake_sleep(delay: float, result: None = None) -> None:
     return result
 
 
-async def bar() -> None:
-    ...
+async def bar() -> None: ...
 
 
 @pytest.mark.parametrize(

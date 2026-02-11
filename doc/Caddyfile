@@ -1,0 +1,18 @@
+:80 {
+	root * /usr/share/caddy
+	encode zstd gzip
+	try_files {path} {path}/ /index.html
+
+	@assets {
+		path *.css *.js *.woff2 *.svg *.png *.jpg *.jpeg *.gif *.ico
+	}
+	header @assets Cache-Control "public, max-age=31536000, immutable"
+
+	handle_errors {
+		@404 expression {http.error.status_code} == 404
+		rewrite @404 /404.html
+		file_server
+	}
+
+	file_server
+}

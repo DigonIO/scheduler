@@ -15,7 +15,7 @@ src/
 *.whl
 
 # testing
-venv
+.venv
 .coverage*
 *htmlcov/
 .mypy_cache/

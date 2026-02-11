@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduler-doc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scheduler-doc
+  template:
+    metadata:
+      labels:
+        app: scheduler-doc
+    spec:
+      containers:
+        - name: scheduler-doc
+          image: ${IMG_DOC}
+          ports:
+            - containerPort: 80
+              name: http
+      imagePullSecrets:
+        - name: co-reg-sec
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scheduler-doc
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: ${NODE_PORT}
+  selector:
+    app: scheduler-doc

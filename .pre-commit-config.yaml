@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: isort
         name: isort
-        entry: isort
+        entry: uv run isort
         require_serial: true
         language: python
         language_version: python3
@@ -11,8 +11,7 @@ repos:
         args: ["--filter-files"]
       - id: black
         name: black
-        description: "Black: The uncompromising Python code formatter"
-        entry: black
+        entry: uv run black
         language: python
         minimum_pre_commit_version: 2.9.2
         require_serial: true
@@ -20,28 +19,28 @@ repos:
         args: [--safe, --quiet]
       - id: blacken-docs
         name: blacken-docs
-        description: Run `black` on python code blocks in documentation files
-        entry: blacken-docs
+        entry: uv run blacken-docs
         language: python
         language_version: python3
         files: '\.(rst|md|markdown|py|tex)$'
       - id: pytest-check
         name: pytest-check
-        entry: pytest
+        entry: uv run pytest
         language: system
         pass_filenames: false
         always_run: true
         args: [tests/]
       - id: pytest-docs
         name: pytest-docs
-        entry: pytest
+        entry: uv run pytest
         language: system
         pass_filenames: false
         always_run: true
         args: [--doctest-glob=*.rst, doc/pages/]
       - id: sphinx
         name: sphinx
-        entry: sphinx-build
+        working_dir: doc
+        entry: uv run sphinx-build
         language: system
         pass_filenames: false
         always_run: true

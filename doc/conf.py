@@ -13,8 +13,12 @@
 
 import os
 import sys
+from pathlib import Path
 
 from sphinx.locale import _
+from sphinx.util import logging
+
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, os.path.abspath(".."))
 
@@ -28,7 +32,7 @@ with open("../scheduler/__init__.py", "r") as file:
             author = line.split('"')[1]
 
 project = "scheduler"
-copyright = "2023, " + author
+copyright = "%Y, " + author
 author = author
 
 # The full version, including alpha/beta/rc tags
@@ -46,10 +50,10 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.imgconverter",
     "sphinx.ext.coverage",
-    "sphinx.ext.imgmath",
+    "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "numpydoc",
-    "m2r2",
+    "myst_parser",
 ]
 
 with open("_assets/prolog.rst", encoding="utf-8") as f:
@@ -59,7 +63,10 @@ imgmath_image_format = "svg"
 # Add any paths that contain templates here, relative to this directory.
 numpydoc_show_class_members = False
 templates_path = ["_templates"]
-source_suffix = ".rst"
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
 master_doc = "index"
 
 autosummary_generate = True
@@ -81,7 +88,6 @@ html_theme_path = [
 html_favicon = "favicon.png"
 html_logo = "logo_w_border.svg"
 
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -89,13 +95,19 @@ html_static_path = ["_static"]
 
 html_css_files = ["custom.css", "custom_pygments.css"]
 
-imgmath_latex_preamble = (
-    "\\usepackage{xcolor}\n\\definecolor{formulacolor}{RGB}{128,128,128}" "\\color{formulacolor}"
-)
-
-
 latex_elements = {
     "preamble": [
         r"\usepackage[columns=1]{idxlayout}\makeindex",
     ],
 }
+
+coverage_dir = Path(__file__).parent / "_static" / "coverage"
+
+html_extra_path: list[str] = []
+if coverage_dir.exists():
+    html_extra_path.append("_static/coverage")
+else:
+    logger.warning(
+        "Coverage HTML report not found at doc/_static/coverage/. "
+        "Generate it via: uv run coverage html -d doc/_static/coverage"
+    )

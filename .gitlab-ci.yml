@@ -1,180 +1,256 @@
-before_script:
-  - python --version
-  - python ci/secrets.py
-  - pip install -r requirements.txt
-
 stages:
   - analysis
   - test
+  - build_1
+  - build_2
+  - upload
   - release
+
+variables:
+  # v1.24.0-debug
+  # https://console.cloud.google.com/artifacts/docker/kaniko-project/us/gcr.io/executor/sha256:2562c4fe551399514277ffff7dcca9a3b1628c4ea38cb017d7286dc6ea52f4cd
+  IMG_KANIKO: "gcr.io/kaniko-project/executor@sha256:2562c4fe551399514277ffff7dcca9a3b1628c4ea38cb017d7286dc6ea52f4cd"
+
+  # https://hub.docker.com/layers/bitnamilegacy/kubectl/1.32.4/images/sha256-1f0f5615c70c3570a8ff585f7603626b8daa46dfd905d86c6662139f189522de
+  IMG_KUBECTL: bitnamilegacy/kubectl:1.32.4
+
+  # debug
+  # https://console.cloud.google.com/artifacts/docker/go-containerregistry/us/gcr.io/crane/sha256:fbdf6d55c5ae90d9ae637b9bd9f10119496fdf18a3b5f9cd3078ae6044161c18
+  IMG_CRANE: "gcr.io/go-containerregistry/crane@sha256:fbdf6d55c5ae90d9ae637b9bd9f10119496fdf18a3b5f9cd3078ae6044161c18"
+
+  # 0.10.0-python3.10-trixie
+  # https://github.com/astral-sh/uv/pkgs/container/uv/673335164?tag=0.10.0-python3.10-trixie
+  IMG_PYTHON_UV_3_10: "ghcr.io/astral-sh/uv@sha256:c3269254837dee05be4a8d3075fa1faef5bdb915878eae9d362df26b6d9d0e8e"
+
+  # 0.10.0-python3.11-trixie
+  # https://github.com/astral-sh/uv/pkgs/container/uv/673335904?tag=0.10.0-python3.11-trixie
+  IMG_PYTHON_UV_3_11: "ghcr.io/astral-sh/uv@sha256:f1096448765bb333a69cdfe4b924e92a08b3b776f3eaa0dc1003c9b2ccb0f650"
+
+  # 0.10.0-python3.12-trixie
+  # https://github.com/astral-sh/uv/pkgs/container/uv/673335789?tag=0.10.0-python3.12-trixie
+  IMG_PYTHON_UV_3_12: "ghcr.io/astral-sh/uv@sha256:1382c1a95c61ef153a73aacd5647455183ff6ca983a822c9eef3c2e4737fc95d"
+
+  # 0.10.0-python3.13-trixie
+  # https://github.com/astral-sh/uv/pkgs/container/uv/673335781?tag=0.10.0-python3.13-trixie
+  IMG_PYTHON_UV_3_13: "ghcr.io/astral-sh/uv@sha256:6d8f8e2bb4faf78b0689101f17bb90446bcc156cd709c6a6dfcb410a6486ecb5"
+
+  # 0.10.0-python3.14-trixie
+  # https://github.com/astral-sh/uv/pkgs/container/uv/673335080?tag=0.10.0-python3.14-trixie
+  IMG_PYTHON_UV_3_14: "ghcr.io/astral-sh/uv@sha256:d463c8e6fe50b45a34bee0343263dc36beb067df1a0b8e48e4eea737774514db"
+
+  IMG_DOC: ${CONTAINER_REGISTRY_URL}/scheduler-doc:${CI_COMMIT_SHORT_SHA}
+
+####################################################################################################
+### Mixin for uv setup
+####################################################################################################
+
+.uv_setup: &uv_setup
+  variables:
+    UV_CACHE_DIR: "$CI_PROJECT_DIR/.cache/uv"
+    UV_LINK_MODE: copy
+    UV_LOCKED: true
+  cache:
+    key:
+      files:
+        - uv.lock
+    paths:
+      - "$CI_PROJECT_DIR/.cache/uv"
+  before_script:
+    - uv sync --dev
 
 ####################################################################################################
 ### Analysis Stage
 ####################################################################################################
 
-pylint_3_9_16:
+pylint_3_10:
+  <<: *uv_setup
   stage: analysis
-  image: "python:3.9.16-alpine3.17"
+  image: $IMG_PYTHON_UV_3_10
   script:
-    - pylint scheduler
+    - uv run pylint scheduler
   allow_failure: true
 
-mypy_3_9_16:
+mypy_3_10:
+  <<: *uv_setup
   stage: analysis
-  image: "python:3.9.16-alpine3.17"
+  image: $IMG_PYTHON_UV_3_10
   script:
-    - mypy scheduler
+    - uv run mypy scheduler
   allow_failure: true
 
-pydocstyle_3_9_16:
+pydocstyle_3_10:
+  <<: *uv_setup
   stage: analysis
-  image: "python:3.9.16-alpine3.17"
+  image: $IMG_PYTHON_UV_3_10
   script:
-    - pydocstyle scheduler
+    - uv run pydocstyle scheduler
   allow_failure: true
 
-bandit_3_9_16:
+bandit_3_10:
+  <<: *uv_setup
   stage: analysis
-  image: "python:3.9.16-alpine3.17"
+  image: $IMG_PYTHON_UV_3_10
   script:
-    - bandit -r scheduler
+    - uv run bandit -r scheduler
   allow_failure: false
 
 ####################################################################################################
 ### Test Stage
 ####################################################################################################
 
-doc_3_9_16:
+pytest_3_10:
+  <<: *uv_setup
   stage: test
-  image: "python:3.9.16-alpine3.17"
+  image: $IMG_PYTHON_UV_3_10
   script:
-    - sphinx-build -b html doc/ doc/_build/html
-  artifacts:
-    paths:
-    - doc/_build/html/
+    - uv run pytest --cov=scheduler/ tests/
 
-pytest_3_9_16:
+pydoctest_3_10:
+  <<: *uv_setup
   stage: test
-  image: "python:3.9.16-alpine3.17"
+  image: $IMG_PYTHON_UV_3_10
   script:
-    - pytest --cov=scheduler/ tests/
+    - uv run pytest --doctest-modules doc/pages/*/*.rst
 
-pydoctest_3_9_16:
+pytest_3_11:
+  <<: *uv_setup
   stage: test
-  image: "python:3.9.16-alpine3.17"
+  image: $IMG_PYTHON_UV_3_11
   script:
-    - pytest --doctest-modules doc/pages/*/*.rst
+    - uv run pytest --cov=scheduler/ tests/
 
-pytest_3_10_9:
+pydoctest_3_11:
+  <<: *uv_setup
   stage: test
-  image: "python:3.10.9-alpine3.17"
+  image: $IMG_PYTHON_UV_3_11
   script:
-    - pytest --cov=scheduler/ tests/
+    - uv run pytest --doctest-modules doc/pages/*/*.rst
 
-pydoctest_3_10_9:
+pytest_3_12:
+  <<: *uv_setup
   stage: test
-  image: "python:3.10.9-alpine3.17"
+  image: $IMG_PYTHON_UV_3_12
   script:
-    - pytest --doctest-modules doc/pages/*/*.rst
+    - uv run pytest --cov=scheduler/ tests/
 
-pytest_3_11_1:
+pydoctest_3_12:
+  <<: *uv_setup
   stage: test
-  image: "python:3.11.1-alpine3.17"
+  image: $IMG_PYTHON_UV_3_12
   script:
-    - pytest --cov=scheduler/ tests/
+    - uv run pytest --doctest-modules doc/pages/*/*.rst
 
-pydoctest_3_11_1:
+pytest_3_13:
+  <<: *uv_setup
   stage: test
-  image: "python:3.11.1-alpine3.17"
+  image: $IMG_PYTHON_UV_3_13
   script:
-    - pytest --doctest-modules doc/pages/*/*.rst
+    - uv run pytest --cov=scheduler/ tests/
 
-pytest_3_12_1:
+pydoctest_3_13:
+  <<: *uv_setup
   stage: test
-  image: "python:3.12.1-alpine3.19"
+  image: $IMG_PYTHON_UV_3_13
   script:
-    - pytest --cov=scheduler/ tests/
+    - uv run pytest --doctest-modules doc/pages/*/*.rst
 
-pydoctest_3_12_1:
+pytest_3_14:
+  <<: *uv_setup
   stage: test
-  image: "python:3.12.1-alpine3.19"
-  script:
-    - pytest --doctest-modules doc/pages/*/*.rst
-
-pytest_3_13_1:
-  stage: test
-  image: "python:3.13.1-alpine3.21"
+  image: $IMG_PYTHON_UV_3_14
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   script:
-    - pytest --cov=scheduler/ tests/
-    - python -m coverage html
+    - uv run pytest --cov=scheduler/ tests/
+    - uv run python -m coverage html
   artifacts:
     paths:
-    - htmlcov/
+      - htmlcov/
 
-pydoctest_3_13_1:
+pydoctest_3_14:
+  <<: *uv_setup
   stage: test
-  image: "python:3.13.1-alpine3.21"
+  image: $IMG_PYTHON_UV_3_14
   script:
-    - pytest --doctest-modules doc/pages/*/*.rst
+    - uv run pytest --doctest-modules doc/pages/*/*.rst
+
+####################################################################################################
+### First Build Stage
+####################################################################################################
+
+doc_build:
+  <<: *uv_setup
+  stage: build_1
+  image: $IMG_PYTHON_UV_3_14
+  script:
+    - uv sync --all-groups
+    - uv run sphinx-build -b html ./doc ./doc/_build
+  artifacts:
+    paths:
+      - doc/_build
+
+pkg_build:
+  <<: *uv_setup
+  stage: build_1
+  image: $IMG_PYTHON_UV_3_14
+  script:
+    - uv build
+  artifacts:
+    paths:
+      - dist
+
+####################################################################################################
+#### Second Build Stage
+####################################################################################################
+
+doc_image:
+  stage: build_2
+  image:
+    name: $IMG_KANIKO
+    entrypoint: [""]
+  script:
+    - >
+      /kaniko/executor --context ./doc --destination "${IMG_DOC}" --tarPath doc_image.tar
+      --no-push --force
+  artifacts:
+    paths:
+      - doc_image.tar
+
+####################################################################################################
+#### Upload Stage
+####################################################################################################
+
+doc_upload:
+  stage: upload
+  image:
+    name: $IMG_CRANE
+    entrypoint: [""]
+  script:
+    - crane auth login -u "${CONTAINER_REGISTRY_USER}" -p "${CONTAINER_REGISTRY_PW}" "${CONTAINER_REGISTRY_URL}"
+    - crane push doc_image.tar ${IMG_DOC}
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master"
 
 ####################################################################################################
 ### Release Stage
 ####################################################################################################
 
-push_doc:
-  image: archlinux:base-20230108.0.116909
+doc_release:
   stage: release
-  before_script: []
+  image:
+    name: $IMG_KUBECTL
+    entrypoint: [""]
   script:
-    - tar -C ./doc/_build/html -cpz . -f ./doc_build.tar.gz
-    - >
-      curl -X 'POST'
-      'https://digon.io/hyd/api/v1/version/upload'
-      -H 'accept: application/json'
-      -H "Authorization: Bearer ${HYD_TOKEN}"
-      -H 'Content-Type: multipart/form-data'
-      -F 'file=@doc_build.tar.gz;type=application/gzip'
-      -F "project_id=${HYD_PROJECT_ID}"
-      -F "version=${CI_COMMIT_SHORT_SHA}"
-    - >
-      curl -X 'PATCH'
-      "https://digon.io/hyd/api/v1/tag/move?project_id=${HYD_PROJECT_ID}&tag=${CI_COMMIT_BRANCH}&version=${CI_COMMIT_SHORT_SHA}"
-      -H 'accept: application/json'
-      -H "Authorization: Bearer ${HYD_TOKEN}"
-  only:
-  - master
-  - development
+    - source ci/setup_kubectl.sh
+    - envsubst < docs/k8s.yaml | kubectl apply -f -
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master"
 
-push_cov:
-  image: archlinux:base-20230108.0.116909
+pkg_release:
+  <<: *uv_setup
   stage: release
-  before_script: []
+  image:
+    name: $IMG_PYTHON_UV_3_14
   script:
-    - tar -C ./htmlcov -cpz . -f ./cov_report.tar.gz
-    - >
-      curl -X 'POST'
-      'https://digon.io/hyd/api/v1/version/upload'
-      -H 'accept: application/json'
-      -H "Authorization: Bearer ${HYD_TOKEN}"
-      -H 'Content-Type: multipart/form-data'
-      -F 'file=@cov_report.tar.gz;type=application/gzip'
-      -F "project_id=${HYD_PROJECT_ID}"
-      -F "version=${CI_COMMIT_SHORT_SHA}_coverage_report"
-    - >
-      curl -X 'PATCH'
-      "https://digon.io/hyd/api/v1/tag/move?project_id=${HYD_PROJECT_ID}&tag=${CI_COMMIT_BRANCH}_coverage_report&version=${CI_COMMIT_SHORT_SHA}_coverage_report"
-      -H 'accept: application/json'
-      -H "Authorization: Bearer ${HYD_TOKEN}"
-  only:
-  - development
-
-pypi:
-  image: python:3.10.9-bullseye
-  stage: release
-  script:
-    - pip install twine build
-    - python -m build
-    - twine upload dist/*
+    - uv publish
   rules:
     - if: '$CI_COMMIT_TAG =~ /^\d+.\d+.\d+/'

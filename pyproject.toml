@@ -6,12 +6,12 @@ build-backend = "setuptools.build_meta"
 name = "scheduler"
 dynamic = ["readme", "version"]
 authors = [
-    { name = "Fabian A. Preiss", email = "fpreiss@digon.io" },
-    { name = "Jendrik A. Potyka", email = "jpotyka@digon.io" },
+    { name = "Fabian Preiss", email = "fpreiss@digon.io" },
+    { name = "Jendrik Potyka", email = "jpotyka@digon.io" },
 ]
 maintainers = [
-    { name = "Fabian A. Preiss", email = "fpreiss@digon.io" },
-    { name = "Jendrik A. Potyka", email = "jpotyka@digon.io" },
+    { name = "Fabian Preiss", email = "fpreiss@digon.io" },
+    { name = "Jendrik Potyka", email = "jpotyka@digon.io" },
 ]
 description = "A simple in-process python scheduler library with asyncio, threading and timezone support."
 license = { text = "LGPLv3" }
@@ -31,26 +31,29 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
     "Topic :: Software Development :: Libraries",
     "Operating System :: OS Independent",
     "Typing :: Typed",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = ["typeguard>=3.0.0"]
-
 
 [project.urls]
 Repository = "https://gitlab.com/DigonIO/scheduler"
-Documentation = "https://digon.io/hyd/project/scheduler/t/master"
-Changelog = "https://gitlab.com/DigonIO/scheduler/-/blob/master/CHANGELOG.md"
+Documentation = "https://scheduler.digon.io"
+Changelog = "https://scheduler.digon.io/changelog.html"
 "Bug Tracker" = "https://gitlab.com/DigonIO/scheduler/-/issues"
+
+[tool.setuptools.packages.find]
+include = ["scheduler"]
+exclude = ["assets"]
 
 [tool.setuptools.dynamic]
 version = { attr = "scheduler.__version__" }
@@ -70,7 +73,7 @@ convention = "numpy"
 add-ignore = ["D105"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 # strict = true
 warn_return_any = true
 warn_unused_configs = true
@@ -79,3 +82,28 @@ disallow_subclassing_any = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "strict"
+
+[tool.uv.workspace]
+members = ["doc"]
+
+[tool.uv.sources]
+doc = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "bandit==1.8.2",
+    "black==24.10.0",
+    "blacken-docs==1.19.1",
+    "coverage==7.6.10",
+    "isort==5.13.2",
+    "mistune==0.8.4",
+    "mypy==1.14.1",
+    "pre-commit==4.1.0",
+    "pydocstyle==6.3.0",
+    "pylint==3.3.3",
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.2",
+    "pytest-cov==6.0.0",
+    "typeguard==4.4.1",
+]
+doc = ["doc"]
