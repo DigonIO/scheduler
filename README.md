@@ -70,7 +70,7 @@ pip install .
 
 The following example shows how the `Scheduler` is instantiated and how basic `Job`s are created.
 For advanced scheduling examples please visit the online
-[documentation](https://digon.io/examples.html).
+[documentation](https://scheduler.digon.io/examples.html).
 
 [//]: # (This example is not directly included in the testing environment. Make sure to also update the corresponding test in tests/test_readme.py when updating the following example.)
 
