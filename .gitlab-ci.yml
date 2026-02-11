@@ -241,7 +241,7 @@ doc_release:
     entrypoint: [""]
   script:
     - source ci/setup_kubectl.sh
-    - envsubst < docs/k8s.yaml | kubectl apply -f -
+    - envsubst < doc/k8s.yaml | kubectl apply -f -
   rules:
     - if: $CI_COMMIT_REF_NAME == "master"
 
