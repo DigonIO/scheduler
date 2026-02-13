@@ -14,7 +14,7 @@ maintainers = [
     { name = "Jendrik Potyka", email = "jpotyka@digon.io" },
 ]
 description = "A simple in-process python scheduler library with asyncio, threading and timezone support."
-license = { text = "LGPLv3" }
+license = "LGPL-3.0-only"
 keywords = [
     "scheduler",
     "schedule",
@@ -30,7 +30,6 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -52,8 +51,8 @@ Changelog = "https://scheduler.digon.io/changelog.html"
 "Bug Tracker" = "https://gitlab.com/DigonIO/scheduler/-/issues"
 
 [tool.setuptools.packages.find]
-include = ["scheduler"]
-exclude = ["assets"]
+include = ["scheduler*"]
+exclude = ["assets*"]
 
 [tool.setuptools.dynamic]
 version = { attr = "scheduler.__version__" }

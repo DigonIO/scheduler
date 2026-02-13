@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.10
+
+### Bugfix
+
++ [Issues#29](https://gitlab.com/DigonIO/scheduler/-/issues/29) Fix misconfigured setuptools build.
+
 ## 0.8.9
 
 ### Misc
