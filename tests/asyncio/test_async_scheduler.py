@@ -2,6 +2,7 @@ import asyncio
 import datetime as dt
 from asyncio.selector_events import BaseSelectorEventLoop
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -264,3 +265,19 @@ async def test_async_once_datetime(event_loop: BaseSelectorEventLoop) -> None:
 def test_async_scheduler_without_running_loop() -> None:
     with pytest.raises(SchedulerError, match=MISSING_EVENT_LOOP_ERROR):
         sch = Scheduler()
+
+
+@pytest.mark.asyncio
+async def test_async_zoneinfo_vs_timezone(event_loop: BaseSelectorEventLoop) -> None:
+    tz_berlin = ZoneInfo("Europe/Berlin")
+    tz_const = dt.timezone(offset=dt.timedelta(hours=1))
+
+    sch = Scheduler(loop=event_loop, tzinfo=tz_berlin)
+
+    trigger0 = dt.datetime.now(tz_berlin)
+    job0 = sch.once(trigger0, foo)
+
+    trigger1 = dt.datetime.now(tz_const)
+    job1 = sch.once(trigger1, foo)
+
+    sch.delete_jobs()

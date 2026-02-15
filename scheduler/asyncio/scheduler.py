@@ -18,7 +18,7 @@ import typeguard as tg
 from scheduler.asyncio.job import Job
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.scheduler import BaseScheduler, deprecated, select_jobs_by_tag
-from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
+from scheduler.base.scheduler_util import create_job_instance, str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
@@ -34,6 +34,8 @@ from scheduler.message import (
     ONCE_TYPE_ERROR_MSG,
     WEEKLY_TYPE_ERROR_MSG,
 )
+
+_UTC = dt.timezone.utc
 
 
 class Scheduler(BaseScheduler[Job, Callable[..., Coroutine[Any, Any, None]]]):
@@ -71,8 +73,6 @@ class Scheduler(BaseScheduler[Job, Callable[..., Coroutine[Any, Any, None]]]):
         except RuntimeError:
             raise SchedulerError("The asyncio Scheduler requires a running event loop.") from None
         self.__tzinfo = tzinfo
-        self.__tz_str = check_tzname(tzinfo=tzinfo)
-
         self._jobs: dict[Job, aio.Task[None]] = {}
 
     def __repr__(self) -> str:
@@ -100,7 +100,7 @@ class Scheduler(BaseScheduler[Job, Callable[..., Coroutine[Any, Any, None]]]):
         form = [
             f"{{{idx}:{align}{width}}}" for idx, (align, width) in enumerate(zip(c_align, c_width))
         ]
-        if self.__tz_str is None:
+        if self.__tzinfo is None:
             form = form[:3] + form[4:]
 
         fstring = " ".join(form) + "\n"
@@ -121,8 +121,15 @@ class Scheduler(BaseScheduler[Job, Callable[..., Coroutine[Any, Any, None]]]):
         return scheduler_headings + job_table
 
     def __headings(self) -> list[str]:
+
+        if self.__tzinfo is None:
+            tzname = None
+        else:
+            reference_dt = dt.datetime.now(tz=_UTC)
+            tzname = self.__tzinfo.tzname(reference_dt)
+
         headings = [
-            f"tzinfo={self.__tz_str}",
+            f"tzinfo={tzname}",
             f"#jobs={len(self._jobs)}",
         ]
         return headings

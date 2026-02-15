@@ -15,7 +15,7 @@ import typeguard as tg
 
 from scheduler.base.definition import JOB_TYPE_MAPPING, JobType
 from scheduler.base.scheduler import BaseScheduler, deprecated, select_jobs_by_tag
-from scheduler.base.scheduler_util import check_tzname, create_job_instance, str_cutoff
+from scheduler.base.scheduler_util import create_job_instance, str_cutoff
 from scheduler.base.timingtype import (
     TimingCyclic,
     TimingDailyUnion,
@@ -34,6 +34,8 @@ from scheduler.message import (
 )
 from scheduler.prioritization import linear_priority_function
 from scheduler.threading.job import Job
+
+_UTC = dt.timezone.utc
 
 
 def _exec_job_worker(que: queue.Queue[Job], logger: Logger) -> None:
@@ -109,7 +111,6 @@ class Scheduler(BaseScheduler[Job, Callable[..., None]]):
                 raise SchedulerError(TZ_ERROR_MSG)
 
         self.__n_threads = n_threads
-        self.__tz_str = check_tzname(tzinfo=tzinfo)
 
     def __repr__(self) -> str:
         with self.__jobs_lock:
@@ -149,7 +150,8 @@ class Scheduler(BaseScheduler[Job, Callable[..., None]]):
                 f"{{{idx}:{align}{width}}}"
                 for idx, (align, width) in enumerate(zip(c_align, c_width))
             ]
-            if self.__tz_str is None:
+
+            if self.__tzinfo is None:
                 form = form[:3] + form[4:]
 
             fstring = " ".join(form) + "\n"
@@ -172,10 +174,17 @@ class Scheduler(BaseScheduler[Job, Callable[..., None]]):
             return scheduler_headings + job_table
 
     def __headings(self) -> list[str]:
+
+        if self.__tzinfo is None:
+            tzname = None
+        else:
+            reference_dt = dt.datetime.now(tz=_UTC)
+            tzname = self.__tzinfo.tzname(reference_dt)
+
         with self.__jobs_lock:
             headings = [
                 f"max_exec={self.__max_exec if self.__max_exec else float('inf')}",
-                f"tzinfo={self.__tz_str}",
+                f"tzinfo={tzname}",
                 f"priority_function={self.__priority_function.__name__}",
                 f"#jobs={len(self.__jobs)}",
             ]
