@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.11
+
+### Bugfix
+
++ [Issues#20](https://gitlab.com/DigonIO/scheduler/-/issues/20) Fix handling of zoneinfo.ZoneInfo timezones.
+
 ## 0.8.10
 
 ### Bugfix
