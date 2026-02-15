@@ -1,5 +1,6 @@
 import datetime as dt
-from typing import Any, Callable, Optional
+from typing import Callable, Optional
+from zoneinfo import ZoneInfo
 
 import pytest
 
@@ -65,3 +66,18 @@ def test_sch_init(
             priority_function=priority_function,
             jobs=jobs,
         )
+
+
+def test_zoneinfo_vs_timezone() -> None:
+    tz_berlin = ZoneInfo("Europe/Berlin")
+    tz_const = dt.timezone(offset=dt.timedelta(hours=1))
+
+    sch = Scheduler(tzinfo=tz_berlin)
+
+    trigger0 = dt.datetime.now(tz_berlin)
+    job0 = sch.once(trigger0, foo)
+
+    trigger1 = dt.datetime.now(tz_const)
+    job1 = sch.once(trigger1, foo)
+
+    sch.delete_jobs()

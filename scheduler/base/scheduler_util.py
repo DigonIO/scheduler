@@ -48,16 +48,6 @@ def str_cutoff(string: str, max_length: int, cut_tail: bool = False) -> str:
     return string
 
 
-def check_tzname(tzinfo: Optional[dt.tzinfo]) -> Optional[str]:
-    """Composed of the datetime.datetime.tzname and the datetime._check_tzname methode."""
-    if tzinfo is None:
-        return None
-    name: Optional[str] = tzinfo.tzname(None)
-    if not isinstance(name, str):
-        raise SchedulerError(f"tzinfo.tzname() must return None or string, not {type(name)}")
-    return name
-
-
 def create_job_instance(
     job_class: type[BaseJobType],
     timing: Union[TimingCyclic, TimingDailyUnion, TimingWeeklyUnion],
